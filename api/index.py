@@ -251,7 +251,7 @@ HOME_TEMPLATE = r"""
     <div id="loader" class="loader-overlay" role="status" aria-live="polite">
         <div class="spinner"></div>
         <h2 style="margin:0; color:#38bdf8;">Orchestrating 3-Agent Pipeline...</h2>
-        <p style="color:#94a3b8; margin:6px 0 0;">Preparing your dedicated interactive Executive Dashboard</p>
+        <p style="color:#94a3b8; margin:6px 0 0;">Preparing your dedicated interactive Executive Dashboard &bull; <strong id="elapsed-sec" style="color:#38bdf8;">0s</strong></p>
         <ul class="step-list">
             <li id="st-1" class="active-step">1. Schema Profiler: Scanning rows, nulls &amp; duplicates...</li>
             <li id="st-2">2. AST Sandbox Analyst: Cleaning data &amp; generating chart...</li>
@@ -265,7 +265,7 @@ HOME_TEMPLATE = r"""
             if (box) box.value = text;
         }
         document.getElementById("analysis-form").addEventListener("submit", function () {
-            document.getElementById("loader").classList.add("active");
+            document.getElementById("loader").classList.add("active"); let sec = 0; setInterval(() => { sec++; const el = document.getElementById("elapsed-sec"); if (el) el.textContent = sec + "s"; }, 1000);
             setTimeout(() => {
                 document.getElementById("st-1").classList.remove("active-step");
                 document.getElementById("st-2").classList.add("active-step");
