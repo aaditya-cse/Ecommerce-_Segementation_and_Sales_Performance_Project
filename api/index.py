@@ -140,6 +140,11 @@ HTML_TEMPLATE = r"""
         .hint { font-size: 0.875rem; color: var(--muted); margin-top: 4px; }
         .error { color: #fecaca; font-weight: 600; background: #7f1d1d; padding: 14px; border-radius: 8px; border: 1px solid #f87171; }
 
+        /* Quick Prompt Chips */
+        .chip-row { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0 10px 0; }
+        .chip-btn { background: #1e293b; color: #7dd3fc; border: 1px solid #334155; padding: 6px 12px; border-radius: 999px; font-size: 0.84rem; cursor: pointer; }
+        .chip-btn:hover { border-color: var(--accent); background: #0f172a; }
+
         /* Toolbar & Action Buttons */
         .toolbar { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px; padding-bottom: 16px; border-bottom: 1px solid var(--border); margin-bottom: 20px; }
         .tab-group, .action-group { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
@@ -162,8 +167,10 @@ HTML_TEMPLATE = r"""
         table.styled-table tbody tr:nth-child(even) { background: rgba(30, 41, 59, 0.45); }
         table.styled-table tbody tr:hover { background: rgba(56, 189, 248, 0.14); }
 
-        .chart-box { background: #0f172a; padding: 18px; border-radius: 10px; border: 1px solid var(--border); margin-top: 22px; text-align: center; }
+        .chart-box, .trace-box { background: #0f172a; padding: 18px; border-radius: 10px; border: 1px solid var(--border); margin-top: 22px; }
+        .chart-box { text-align: center; }
         .chart-box img { max-width: 100%; height: auto; border-radius: 8px; }
+        pre.code-block { background: #020617; color: #cbd5e1; padding: 14px; border-radius: 8px; overflow-x: auto; font-size: 0.88rem; border: 1px solid #1e293b; }
         .badge { background: #064e3b; color: #6ee7b7; padding: 3px 10px; border-radius: 999px; font-size: 0.82rem; font-weight: 600; border: 1px solid #10b981; }
         .hidden { display: none; }
     </style>
@@ -191,6 +198,11 @@ HTML_TEMPLATE = r"""
                 <p id="csv-hint" class="hint">Only valid .csv files up to 5 MB are accepted.</p>
 
                 <label for="user-goal">2. Ask Any Business or Data Analysis Question:</label>
+                <div class="chip-row" aria-label="Sample Analysis Prompts">
+                    <button type="button" class="chip-btn" onclick="setGoal('Clean duplicates, missing values, and inconsistent text casing; calculate core KPIs and Net Revenue by primary category; and plot a summary bar chart.')">Executive KPIs &amp; Revenue Chart</button>
+                    <button type="button" class="chip-btn" onclick="setGoal('Audit data quality anomalies, clean outliers and nulls, compare performance across regions/cities, and visualize regional distribution.')">Data Quality &amp; Regional Audit</button>
+                    <button type="button" class="chip-btn" onclick="setGoal('Clean the dataset, analyze customer ratings, discounts, and cancellation/return rates, and plot key operational drivers.')">Ratings &amp; Operations Deep-Dive</button>
+                </div>
                 <textarea id="user-goal" name="user_goal" rows="3" required placeholder="e.g., Clean duplicates and nulls, calculate net revenue by category, and plot a chart.">{{ goal }}</textarea>
 
                 <button type="submit" class="btn-primary">Run Multi-Agent Pipeline</button>
@@ -216,6 +228,9 @@ HTML_TEMPLATE = r"""
                         {% endif %}
                         {% if chart_b64 %}
                         <button type="button" class="tab-btn" onclick="switchView('chart', this)">Visual Chart</button>
+                        {% endif %}
+                        {% if generated_code %}
+                        <button type="button" class="tab-btn" onclick="switchView('trace', this)">Agent Code &amp; Trace</button>
                         {% endif %}
                     </div>
                     <div class="action-group">
@@ -254,24 +269,43 @@ HTML_TEMPLATE = r"""
                     <img src="data:image/png;base64,{{ chart_b64 }}" alt="Automated statistical visualization generated for: {{ goal }}">
                 </div>
                 {% endif %}
+
+                {% if generated_code %}
+                <div id="trace-section" class="trace-box">
+                    <h3 style="margin-top:0; color:#38bdf8;">Agentic Execution Trace &amp; AST-Verified Pandas Code <span class="badge">Execution Attempts: {{ retry_count }}</span></h3>
+                    <p class="hint">Verified via static AST security analyzer before sandbox execution.</p>
+                    <pre class="code-block"><code>{{ generated_code }}</code></pre>
+                    {% if analysis_output %}
+                    <h4 style="color:#94a3b8; margin-bottom:6px;">Verified Stdout Output:</h4>
+                    <pre class="code-block"><code>{{ analysis_output }}</code></pre>
+                    {% endif %}
+                </div>
+                {% endif %}
             </section>
             {% endif %}
         </div>
     </main>
 
     <script>
+        function setGoal(text) {
+            const box = document.getElementById("user-goal");
+            if (box) box.value = text;
+        }
+
         function switchView(mode, btn) {
             document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
             btn.classList.add("active");
             const rep = document.getElementById("report-section");
             const dat = document.getElementById("data-section");
             const ch = document.getElementById("chart-section");
+            const tr = document.getElementById("trace-section");
             const show = (el, flag) => { if (el) el.classList.toggle("hidden", !flag); };
 
-            if (mode === "all") { show(rep, true); show(dat, true); show(ch, true); }
-            else if (mode === "report") { show(rep, true); show(dat, false); show(ch, false); }
-            else if (mode === "data") { show(rep, false); show(dat, true); show(ch, false); }
-            else if (mode === "chart") { show(rep, false); show(dat, false); show(ch, true); }
+            if (mode === "all") { show(rep, true); show(dat, true); show(ch, true); show(tr, true); }
+            else if (mode === "report") { show(rep, true); show(dat, false); show(ch, false); show(tr, false); }
+            else if (mode === "data") { show(rep, false); show(dat, true); show(ch, false); show(tr, false); }
+            else if (mode === "chart") { show(rep, false); show(dat, false); show(ch, true); show(tr, false); }
+            else if (mode === "trace") { show(rep, false); show(dat, false); show(ch, false); show(tr, true); }
         }
 
         function copyReport() {
@@ -318,6 +352,9 @@ def home(path):
     cleaned_csv_b64 = ""
     cleaned_preview_html = ""
     cleaned_shape = ""
+    generated_code = ""
+    analysis_output = ""
+    retry_count = 1
     error = ""
     goal = "Clean duplicates and missing values, summarize top KPIs, and plot the primary revenue driver."
 
@@ -358,6 +395,9 @@ def home(path):
 
             report_raw = result.get("final_report", "")
             report_html = render_markdown_to_html(report_raw)
+            generated_code = result.get("generated_code", "")
+            analysis_output = result.get("analysis_output", "")
+            retry_count = result.get("retry_count", 1)
 
             c_path = result.get("chart_path", "")
             if c_path and os.path.exists(c_path):
@@ -386,7 +426,9 @@ def home(path):
         cleaned_csv_b64=cleaned_csv_b64,
         cleaned_preview_html=cleaned_preview_html,
         cleaned_shape=cleaned_shape,
+        generated_code=generated_code,
+        analysis_output=analysis_output,
+        retry_count=retry_count,
         error=error,
         goal=goal,
     )
-
