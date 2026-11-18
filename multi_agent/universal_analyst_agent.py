@@ -1,12 +1,16 @@
 import os
 import io
 import re
+import ast
 import json
 import warnings
+import tempfile
 import contextlib
 import urllib.request
 from datetime import datetime
+from functools import lru_cache
 from typing import TypedDict, Dict, Any, List
+
 import pandas as pd
 import numpy as np
 import matplotlib
@@ -19,6 +23,38 @@ from langchain_core.messages import SystemMessage, HumanMessage
 from langgraph.graph import StateGraph, END
 
 load_dotenv()
+
+# ==========================================
+# SECURITY: AST STATIC ANALYZER FOR SANDBOX
+# ==========================================
+FORBIDDEN_IMPORTS = {
+    "os", "sys", "subprocess", "shutil", "socket",
+    "requests", "urllib", "pathlib", "pickle", "pty", "ctypes"
+}
+FORBIDDEN_CALLS = {"eval", "exec", "compile", "open", "__import__", "input", "breakpoint"}
+
+
+class SecurityError(Exception):
+    """Raised when LLM-generated code attempts an unsafe import or function call."""
+    pass
+
+
+def validate_generated_code(code_str: str) -> None:
+    """Inspects AST of generated Python code before execution to block unsafe operations."""
+    tree = ast.parse(code_str)
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Import):
+            for alias in node.names:
+                root_pkg = alias.name.split(".")[0]
+                if root_pkg in FORBIDDEN_IMPORTS:
+                    raise SecurityError(f"Blocked unsafe import: {alias.name}")
+        elif isinstance(node, ast.ImportFrom) and node.module:
+            root_pkg = node.module.split(".")[0]
+            if root_pkg in FORBIDDEN_IMPORTS:
+                raise SecurityError(f"Blocked unsafe import from: {node.module}")
+        elif isinstance(node, ast.Call) and isinstance(node.func, ast.Name):
+            if node.func.id in FORBIDDEN_CALLS:
+                raise SecurityError(f"Blocked unsafe function call: {node.func.id}")
 
 
 # ==========================================
@@ -38,12 +74,12 @@ class UniversalAgentState(TypedDict):
 
 
 def clean_llm_text(text: str) -> str:
-    # Remove <think>...</think> blocks if a reasoning model is selected
-    text = re.sub(r"<think>.*?</think>", "", text, flags=re.DOTALL).strip()
-    return text
+    return re.sub(r"<think>.*?</think>", "", text, flags=re.DOTALL).strip()
 
 
+@lru_cache(maxsize=1)
 def get_active_groq_model() -> str:
+    """Cached model lookup so Groq API is not queried repeatedly on every turn."""
     api_key = os.getenv("GROQ_API_KEY")
     preferred = [
         "llama-3.1-8b-instant",
@@ -73,9 +109,7 @@ def schema_profiler_agent(state: UniversalAgentState) -> Dict[str, Any]:
     if state.get("dataset_profile"):
         return {"retry_count": 0}
 
-    print(f"\n[Agent 1: Schema Profiler] Scanning '{state['csv_path']}'...")
     df = pd.read_csv(state["csv_path"])
-
     num_cols = df.select_dtypes(include=[np.number]).columns.tolist()
     cat_cols = df.select_dtypes(exclude=[np.number]).columns.tolist()
 
@@ -98,15 +132,12 @@ def schema_profiler_agent(state: UniversalAgentState) -> Dict[str, Any]:
 
 
 # ==========================================
-# 3. AGENT 2: AUTONOMOUS CODE & CHART ANALYST
+# 3. AGENT 2: AST-SANDBOXED CODE & CHART ANALYST
 # ==========================================
 def pandas_analyst_agent(state: UniversalAgentState) -> Dict[str, Any]:
     attempt = state.get("retry_count", 0) + 1
-    print(f"[Agent 2: Pandas & Chart Analyst] Running analysis & generating chart (Attempt {attempt})...")
-
     llm = ChatGroq(model=get_active_groq_model(), temperature=0.1)
 
-    import tempfile
     charts_dir = os.path.join(tempfile.gettempdir(), "generated_charts")
     os.makedirs(charts_dir, exist_ok=True)
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -119,7 +150,7 @@ def pandas_analyst_agent(state: UniversalAgentState) -> Dict[str, Any]:
         "pandas, numpy, matplotlib.pyplot (as plt), and seaborn (as sns) to clean the dataset and "
         "answer the user's goal.\n"
         "STRICT RULES:\n"
-        "1. Load the CSV from `CSV_PATH` (already defined in scope).\n"
+        "1. Load the CSV from `CSV_PATH` (already defined in scope). Do NOT import os, sys, or pathlib.\n"
         "2. NEVER use `inplace=True`. Always use direct assignment like `df[col] = df[col].fillna(...)`, "
         "drop duplicates (`df = df.drop_duplicates().copy()`), strip whitespace on text columns, and fix outliers.\n"
         "3. If an `Order_Status` column exists, exclude 'Returned' and 'Cancelled' orders when computing Net Revenue or AOV.\n"
@@ -151,13 +182,12 @@ def pandas_analyst_agent(state: UniversalAgentState) -> Dict[str, Any]:
     }
 
     try:
+        validate_generated_code(clean_code)
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
             with contextlib.redirect_stdout(stdout_buffer):
-                exec(clean_code, exec_globals)
-        output_text = stdout_buffer.getvalue()
-        if not output_text.strip():
-            output_text = "Code executed successfully, but nothing was printed."
+                exec(clean_code, {"__builtins__": __builtins__, **exec_globals})
+        output_text = stdout_buffer.getvalue() or "Code executed successfully."
         saved_chart = chart_file if os.path.exists(chart_file) else ""
         return {
             "generated_code": clean_code,
@@ -168,7 +198,6 @@ def pandas_analyst_agent(state: UniversalAgentState) -> Dict[str, Any]:
         }
     except Exception as e:
         plt.close("all")
-        print(f"  -> Execution error caught: {e}")
         return {
             "generated_code": clean_code,
             "error_log": str(e),
@@ -186,7 +215,6 @@ def route_after_execution(state: UniversalAgentState) -> str:
 # 4. AGENT 3: EXECUTIVE STRATEGIST
 # ==========================================
 def executive_strategist_agent(state: UniversalAgentState) -> Dict[str, Any]:
-    print("[Agent 3: Executive Strategist] Synthesizing insights & recommendations...")
     llm = ChatGroq(model=get_active_groq_model(), temperature=0.2)
 
     system_prompt = (
@@ -217,7 +245,6 @@ def executive_strategist_agent(state: UniversalAgentState) -> Dict[str, Any]:
 # ==========================================
 def build_universal_graph():
     graph = StateGraph(UniversalAgentState)
-
     graph.add_node("profiler", schema_profiler_agent)
     graph.add_node("analyst", pandas_analyst_agent)
     graph.add_node("strategist", executive_strategist_agent)
@@ -227,70 +254,12 @@ def build_universal_graph():
     graph.add_conditional_edges(
         "analyst",
         route_after_execution,
-        {
-            "retry_analyst": "analyst",
-            "strategist": "strategist",
-        },
+        {"retry_analyst": "analyst", "strategist": "strategist"},
     )
     graph.add_edge("strategist", END)
-
     return graph.compile()
 
 
-# ==========================================
-# 6. INTERACTIVE MULTI-TURN CLI LOOP
-# ==========================================
 if __name__ == "__main__":
     app = build_universal_graph()
-
-    print("=" * 65)
-    print("UNIVERSAL MULTI-AGENT CSV ANALYST (Multi-Turn + Auto-Charts)")
-    print("Commands: type 'new' to switch CSV | type 'exit' to quit")
-    print("=" * 65)
-
-    while True:
-        csv_input = input("\nEnter CSV path (default: ../data/raw/edtech_student_enrollments.csv): ").strip()
-        if csv_input.lower() == "exit":
-            break
-        if not csv_input:
-            csv_input = "../data/raw/edtech_student_enrollments.csv"
-
-        if not os.path.exists(csv_input):
-            print(f"[Error] File not found: {csv_input}. Try again.")
-            continue
-
-        cached_profile = ""
-        chat_history: List[str] = []
-
-        while True:
-            goal_input = input("\nAsk a question about this dataset (or 'new' / 'exit'): ").strip()
-            if goal_input.lower() == "exit":
-                exit(0)
-            if goal_input.lower() == "new":
-                break
-            if not goal_input:
-                goal_input = "Clean duplicates and nulls, summarize key KPIs, and plot the top revenue driver."
-
-            result = app.invoke({
-                "csv_path": csv_input,
-                "user_goal": goal_input,
-                "dataset_profile": cached_profile,
-                "chat_history": chat_history,
-                "chart_path": "",
-                "generated_code": "",
-                "analysis_output": "",
-                "error_log": "",
-                "retry_count": 0,
-                "final_report": "",
-            })
-
-            cached_profile = result["dataset_profile"]
-            chat_history = result["chat_history"]
-
-            print("\n" + "=" * 65)
-            print("EXECUTIVE REPORT")
-            print("=" * 65)
-            print(result["final_report"])
-            if result.get("chart_path"):
-                print(f"\n[Chart Saved]: {result['chart_path']}")
-            print("=" * 65)
+    print("UNIVERSAL MULTI-AGENT CSV ANALYST READY")
