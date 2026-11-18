@@ -1,5 +1,9 @@
-pandas>=2.0.0
-numpy>=1.24.0
-matplotlib>=3.7.0
-seaborn>=0.12.0
-jupyter>=1.0.0
+flask
+pandas
+numpy
+matplotlib
+seaborn
+langgraph
+langchain-core
+langchain-groq
+python-dotenv

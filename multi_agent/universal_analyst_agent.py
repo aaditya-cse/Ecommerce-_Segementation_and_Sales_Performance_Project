@@ -106,7 +106,8 @@ def pandas_analyst_agent(state: UniversalAgentState) -> Dict[str, Any]:
 
     llm = ChatGroq(model=get_active_groq_model(), temperature=0.1)
 
-    charts_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "generated_charts")
+    import tempfile
+    charts_dir = os.path.join(tempfile.gettempdir(), "generated_charts")
     os.makedirs(charts_dir, exist_ok=True)
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     chart_file = os.path.join(charts_dir, f"chart_{timestamp}.png")
