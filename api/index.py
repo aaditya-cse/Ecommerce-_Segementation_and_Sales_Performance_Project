@@ -32,7 +32,9 @@ ALLOWED_SAMPLES = {
 
 
 def format_inline_md(text: str) -> str:
-    escaped = html.escape(text)
+    cleaned = text.replace(r"\$", "$").replace(r"\|", " / ")
+    cleaned = re.sub(r"<br\s*/?>", "\n", cleaned, flags=re.IGNORECASE)
+    escaped = html.escape(cleaned).replace("\n", "<br>")
     escaped = re.sub(r"\*\*(.+?)\*\*", r"<strong>\1</strong>", escaped)
     escaped = re.sub(r"\*(.+?)\*", r"<em>\1</em>", escaped)
     escaped = re.sub(r"`(.+?)`", r"<code>\1</code>", escaped)
@@ -387,3 +389,4 @@ def home(path):
         error=error,
         goal=goal,
     )
+

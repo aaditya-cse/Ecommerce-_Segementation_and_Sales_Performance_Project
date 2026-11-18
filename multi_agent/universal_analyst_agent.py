@@ -153,7 +153,7 @@ def pandas_analyst_agent(state: UniversalAgentState) -> Dict[str, Any]:
         "STRICT RULES:\n"
         "1. Load the CSV into `df` from `CSV_PATH` (already defined in scope). Do NOT import os, sys, or pathlib.\n"
         "2. NEVER use `inplace=True`. Always use direct assignment like `df[col] = df[col].fillna(...)`, "
-        "drop duplicates (`df = df.drop_duplicates().copy()`), strip whitespace on text columns, and fix outliers.\n"
+        "drop duplicates (`df = df.drop_duplicates().copy()`), normalize all text columns with `.str.strip().str.title()` so case variants like FASHION/fashion merge cleanly, and fix outliers (e.g., Quantity <= 0, Age > 100, Discount_Pct > 100).\n"
         "3. Save the cleaned DataFrame `df` to `CLEANED_CSV_PATH` (already defined in scope) using `df.to_csv(CLEANED_CSV_PATH, index=False)`.\n"
         "4. If an `Order_Status` column exists, exclude 'Returned' and 'Cancelled' orders when computing Net Revenue or AOV.\n"
         "5. Print clear, labeled summary tables and exact KPIs using `print()`.\n"
@@ -235,7 +235,7 @@ def executive_strategist_agent(state: UniversalAgentState) -> Dict[str, Any]:
         "provided, write a crisp executive summary with:\n"
         "1. Data Cleaning & Quality Summary (as a Markdown table)\n"
         "2. Key Quantitative Findings (as a Markdown table citing exact numbers)\n"
-        "3. Top 3-4 Actionable Business Recommendations"
+        "3. Top 3-4 Actionable Business Recommendations\nSTRICT FORMATTING RULES:\n- NEVER put a Markdown table inside another table cell.\n- NEVER use `<br>` HTML tags or escaped `\$` backslashes; separate multiple items in a cell with semicolons (;).\n- Use INR (₹) for Indian datasets (like prices 699, 1899) unless another currency is explicitly specified."
     )
 
     user_msg = (
@@ -275,3 +275,4 @@ def build_universal_graph():
 if __name__ == "__main__":
     app = build_universal_graph()
     print("UNIVERSAL MULTI-AGENT CSV ANALYST READY")
+
