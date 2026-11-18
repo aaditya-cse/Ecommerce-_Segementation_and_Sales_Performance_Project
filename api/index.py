@@ -1,4 +1,4 @@
-﻿import os
+import os
 import re
 import sys
 import html
@@ -29,6 +29,24 @@ ALLOWED_SAMPLES = {
     "data/raw/edtech_student_enrollments.csv",
     "data/raw/food_delivery_operations.csv",
 }
+
+
+def extract_kpi_cards(stdout_text: str) -> list:
+    """Extracts up to 4 clean Key: Value KPI metrics from verified stdout for executive cards."""
+    kpis = []
+    if not stdout_text:
+        return kpis
+    for line in stdout_text.splitlines():
+        line = line.strip()
+        if ":" in line and not line.startswith("===") and len(line) < 75:
+            parts = line.split(":", 1)
+            label = re.sub(r"\s*\(.*?\)", "", parts[0]).strip()
+            val = parts[1].strip()
+            if label and val and any(ch.isdigit() for ch in val) and len(label) <= 32:
+                kpis.append({"label": label, "value": val})
+        if len(kpis) >= 4:
+            break
+    return kpis
 
 
 def format_inline_md(text: str) -> str:
@@ -112,66 +130,57 @@ HOME_TEMPLATE = r"""
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Autonomous Multi-Agent CSV Analyst | AI Operations Studio</title>
+    <title>AgentOps BI Studio | Autonomous Multi-Agent CSV Analyst</title>
     <style>
         :root {
-            --bg: #070d19;
+            --bg: #060b16;
             --card: #0f172a;
-            --card-alt: #1e293b;
-            --border: #334155;
+            --border: #263348;
             --accent: #38bdf8;
-            --accent-2: #818cf8;
-            --accent-btn: #0284c7;
             --text: #f8fafc;
             --muted: #94a3b8;
         }
         * { box-sizing: border-box; }
-        body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: radial-gradient(circle at top right, #0f2942 0%, var(--bg) 55%); color: var(--text); margin: 0; padding: 0; line-height: 1.65; min-height: 100vh; }
+        body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: radial-gradient(circle at 85% 10%, #0f2d4a 0%, var(--bg) 52%); color: var(--text); margin: 0; padding: 0; line-height: 1.65; min-height: 100vh; }
         .skip-link { position: absolute; left: -999px; background: var(--accent); color: #0f172a; padding: 8px 12px; font-weight: 700; }
         .skip-link:focus { left: 16px; top: 16px; z-index: 100; }
 
-        /* Top Navbar */
-        .navbar { display: flex; justify-content: space-between; align-items: center; max-width: 1120px; margin: 0 auto; padding: 18px 24px; border-bottom: 1px solid rgba(51,65,85,0.6); }
-        .brand { font-weight: 800; font-size: 1.15rem; color: #f8fafc; display: flex; align-items: center; gap: 10px; }
-        .brand-dot { width: 10px; height: 10px; background: #10b981; border-radius: 50%; box-shadow: 0 0 10px #10b981; }
+        .navbar { display: flex; justify-content: space-between; align-items: center; max-width: 1120px; margin: 0 auto; padding: 18px 24px; border-bottom: 1px solid rgba(51,65,85,0.55); }
+        .brand { font-weight: 800; font-size: 1.18rem; color: #f8fafc; display: flex; align-items: center; gap: 10px; }
+        .brand-dot { width: 10px; height: 10px; background: #10b981; border-radius: 50%; box-shadow: 0 0 12px #10b981; }
         .nav-pills { display: flex; gap: 10px; flex-wrap: wrap; }
-        .pill { background: rgba(30,41,59,0.8); border: 1px solid var(--border); color: #cbd5e1; padding: 4px 12px; border-radius: 999px; font-size: 0.8rem; font-weight: 600; }
+        .pill { background: rgba(30,41,59,0.75); border: 1px solid var(--border); color: #cbd5e1; padding: 4px 12px; border-radius: 999px; font-size: 0.78rem; font-weight: 600; }
 
-        .container { max-width: 1060px; margin: 28px auto; padding: 0 20px 48px; }
+        .container { max-width: 1060px; margin: 26px auto; padding: 0 20px 52px; }
+        .hero { text-align: center; padding: 18px 12px 26px; }
+        .hero h1 { font-size: 2.4rem; margin: 0 0 12px; background: linear-gradient(90deg, #38bdf8, #818cf8, #34d399); -webkit-background-clip: text; -webkit-text-fill-color: transparent; line-height: 1.2; }
+        .hero p { color: #cbd5e1; max-width: 720px; margin: 0 auto 24px; font-size: 1.04rem; }
 
-        /* Hero Section */
-        .hero { text-align: center; padding: 22px 12px 28px; }
-        .hero h1 { font-size: 2.35rem; margin: 0 0 12px; background: linear-gradient(90deg, #38bdf8, #818cf8, #34d399); -webkit-background-clip: text; -webkit-text-fill-color: transparent; line-height: 1.2; }
-        .hero p { color: #cbd5e1; max-width: 720px; margin: 0 auto 24px; font-size: 1.05rem; }
-
-        /* 3-Agent Architecture Strip */
-        .pipeline-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; margin-bottom: 28px; }
-        .agent-card { background: rgba(15,23,42,0.85); border: 1px solid var(--border); border-radius: 12px; padding: 16px; text-align: left; }
-        .agent-step { color: var(--accent); font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; }
+        .pipeline-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; margin-bottom: 26px; }
+        .agent-card { background: rgba(15,23,42,0.85); border: 1px solid var(--border); border-radius: 14px; padding: 16px 18px; text-align: left; }
+        .agent-step { color: var(--accent); font-size: 0.76rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; }
         .agent-title { font-weight: 700; font-size: 1.02rem; margin: 4px 0; color: #f1f5f9; }
-        .agent-desc { font-size: 0.86rem; color: var(--muted); margin: 0; }
+        .agent-desc { font-size: 0.85rem; color: var(--muted); margin: 0; }
 
-        /* Studio Form Card */
-        .card { background: var(--card); padding: 28px; border-radius: 16px; border: 1px solid var(--border); box-shadow: 0 18px 40px rgba(0,0,0,0.45); }
+        .card { background: var(--card); padding: 28px; border-radius: 16px; border: 1px solid var(--border); box-shadow: 0 20px 45px rgba(0,0,0,0.48); }
         h2 { color: #f1f5f9; font-size: 1.35rem; margin-top: 0; }
         label { display: block; margin: 16px 0 6px; font-weight: 600; color: #f1f5f9; }
-        select, input[type="file"], textarea { width: 100%; padding: 12px 14px; border-radius: 10px; border: 1px solid #475569; background: #070d19; color: var(--text); font-size: 1rem; }
+        select, input[type="file"], textarea { width: 100%; padding: 12px 14px; border-radius: 10px; border: 1px solid #334155; background: #060b16; color: var(--text); font-size: 1rem; }
         select:focus, input[type="file"]:focus, textarea:focus, button:focus { outline: 3px solid var(--accent); outline-offset: 2px; }
-        .hint { font-size: 0.86rem; color: var(--muted); margin-top: 5px; }
+        .hint { font-size: 0.85rem; color: var(--muted); margin-top: 5px; }
 
         .chip-row { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0 10px; }
-        .chip-btn { background: #1e293b; color: #7dd3fc; border: 1px solid #334155; padding: 7px 14px; border-radius: 999px; font-size: 0.85rem; cursor: pointer; transition: 0.15s; }
+        .chip-btn { background: #1e293b; color: #7dd3fc; border: 1px solid #334155; padding: 7px 14px; border-radius: 999px; font-size: 0.84rem; cursor: pointer; transition: 0.15s; }
         .chip-btn:hover { border-color: var(--accent); background: #0f172a; transform: translateY(-1px); }
 
-        .btn-launch { margin-top: 22px; width: 100%; background: linear-gradient(90deg, #0284c7, #2563eb); color: #ffffff; border: none; padding: 15px 28px; border-radius: 10px; font-size: 1.08rem; font-weight: 700; cursor: pointer; letter-spacing: 0.02em; box-shadow: 0 8px 20px rgba(2,132,199,0.35); transition: 0.2s; }
+        .btn-launch { margin-top: 22px; width: 100%; background: linear-gradient(90deg, #0284c7, #2563eb); color: #ffffff; border: none; padding: 15px 28px; border-radius: 10px; font-size: 1.08rem; font-weight: 700; cursor: pointer; box-shadow: 0 8px 22px rgba(2,132,199,0.38); transition: 0.2s; }
         .btn-launch:hover { filter: brightness(1.1); transform: translateY(-1px); }
 
-        /* Full-Screen Interactive Loading Overlay */
-        .loader-overlay { display: none; position: fixed; inset: 0; background: rgba(7, 13, 25, 0.94); z-index: 999; flex-direction: column; justify-content: center; align-items: center; padding: 24px; text-align: center; }
+        .loader-overlay { display: none; position: fixed; inset: 0; background: rgba(6, 11, 22, 0.95); z-index: 999; flex-direction: column; justify-content: center; align-items: center; padding: 24px; text-align: center; }
         .loader-overlay.active { display: flex; }
         .spinner { width: 54px; height: 54px; border: 4px solid #1e293b; border-top-color: #38bdf8; border-radius: 50%; animation: spin 0.9s linear infinite; margin-bottom: 20px; }
         @keyframes spin { to { transform: rotate(360deg); } }
-        .step-list { list-style: none; padding: 0; margin: 16px 0 0; text-align: left; max-width: 420px; width: 100%; }
+        .step-list { list-style: none; padding: 0; margin: 16px 0 0; text-align: left; max-width: 430px; width: 100%; }
         .step-list li { padding: 10px 14px; margin-bottom: 8px; border-radius: 8px; background: #0f172a; border: 1px solid #334155; color: #94a3b8; font-size: 0.92rem; }
         .step-list li.active-step { border-color: #38bdf8; color: #f8fafc; font-weight: 600; }
     </style>
@@ -191,23 +200,23 @@ HOME_TEMPLATE = r"""
     <main id="main-content" class="container" role="main">
         <header class="hero" role="banner">
             <h1>Autonomous Multi-Agent CSV Analyst</h1>
-            <p>Upload any raw business dataset or choose an operational benchmark. Three specialized AI agents profile, clean, verify in a secure sandbox, and launch a dedicated Executive Intelligence Dashboard.</p>
+            <p>Upload any raw operational CSV or choose a benchmark dataset. Three autonomous agents clean anomalies, verify computations in an AST sandbox, and launch a dedicated Executive Dashboard.</p>
 
             <div class="pipeline-grid" aria-label="Multi-Agent Architecture Overview">
                 <div class="agent-card">
-                    <div class="agent-step">Agent 01 • Profiler</div>
+                    <div class="agent-step">Agent 01 &bull; Profiler</div>
                     <div class="agent-title">Schema &amp; Anomaly Inspector</div>
-                    <p class="agent-desc">Detects duplicates, missing values, case variance, and column data types automatically.</p>
+                    <p class="agent-desc">Profiles column types, duplicate rows, missing values, and distribution skew automatically.</p>
                 </div>
                 <div class="agent-card">
-                    <div class="agent-step">Agent 02 • AST Sandbox</div>
+                    <div class="agent-step">Agent 02 &bull; AST Sandbox</div>
                     <div class="agent-title">Self-Healing Pandas Cleaner</div>
-                    <p class="agent-desc">Writes &amp; executes verified Pandas code, exports a clean CSV, and plots high-DPI charts.</p>
+                    <p class="agent-desc">Runs AST-verified Pandas code, exports a downloadable clean CSV, and plots charts.</p>
                 </div>
                 <div class="agent-card">
-                    <div class="agent-step">Agent 03 • Strategist</div>
+                    <div class="agent-step">Agent 03 &bull; Strategist</div>
                     <div class="agent-title">Executive BI Synthesizer</div>
-                    <p class="agent-desc">Transforms verified metrics into structured KPI tables and actionable business decisions.</p>
+                    <p class="agent-desc">Converts verified outputs into structured KPI cards, tables, and strategic actions.</p>
                 </div>
             </div>
         </header>
@@ -224,7 +233,7 @@ HOME_TEMPLATE = r"""
 
                 <label for="uploaded-csv">OR Upload Custom CSV File (Max 5 MB):</label>
                 <input id="uploaded-csv" type="file" name="uploaded_csv" accept=".csv" aria-describedby="csv-hint">
-                <p id="csv-hint" class="hint">Only valid .csv files up to 5 MB are accepted. Cleaned output will be available for download on the dashboard.</p>
+                <p id="csv-hint" class="hint">Only valid .csv files up to 5 MB are accepted. Cleaned output will be ready for download on the dashboard.</p>
 
                 <label for="user-goal">2. Ask Any Business or Data Analysis Question:</label>
                 <div class="chip-row" aria-label="Sample Analysis Prompts">
@@ -242,11 +251,11 @@ HOME_TEMPLATE = r"""
     <div id="loader" class="loader-overlay" role="status" aria-live="polite">
         <div class="spinner"></div>
         <h2 style="margin:0; color:#38bdf8;">Orchestrating 3-Agent Pipeline...</h2>
-        <p style="color:#94a3b8; margin:6px 0 0;">Building your dedicated interactive dashboard page</p>
+        <p style="color:#94a3b8; margin:6px 0 0;">Preparing your dedicated interactive Executive Dashboard</p>
         <ul class="step-list">
             <li id="st-1" class="active-step">1. Schema Profiler: Scanning rows, nulls &amp; duplicates...</li>
             <li id="st-2">2. AST Sandbox Analyst: Cleaning data &amp; generating chart...</li>
-            <li id="st-3">3. Executive Strategist: Compiling KPI dashboard...</li>
+            <li id="st-3">3. Executive Strategist: Building KPI cards &amp; report...</li>
         </ul>
     </div>
 
@@ -281,10 +290,10 @@ DASHBOARD_TEMPLATE = r"""
     <title>Executive Intelligence Dashboard | AgentOps BI</title>
     <style>
         :root {
-            --bg: #070d19;
+            --bg: #060b16;
             --card: #0f172a;
             --card-alt: #1e293b;
-            --border: #334155;
+            --border: #263348;
             --accent: #38bdf8;
             --accent-btn: #0284c7;
             --green-btn: #059669;
@@ -292,30 +301,37 @@ DASHBOARD_TEMPLATE = r"""
             --muted: #94a3b8;
         }
         * { box-sizing: border-box; }
-        body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 0; line-height: 1.65; }
+        body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: radial-gradient(circle at top left, #0c223a 0%, var(--bg) 45%); color: var(--text); margin: 0; padding: 0; line-height: 1.65; }
         .skip-link { position: absolute; left: -999px; background: var(--accent); color: #0f172a; padding: 8px 12px; font-weight: 700; }
         .skip-link:focus { left: 16px; top: 16px; z-index: 100; }
 
         /* Sticky Dashboard Top Bar */
-        .topbar { position: sticky; top: 0; z-index: 50; background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(8px); border-bottom: 1px solid var(--border); padding: 14px 24px; }
-        .topbar-inner { max-width: 1140px; margin: 0 auto; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px; }
-        .back-btn { background: #1e293b; color: #38bdf8; border: 1px solid #38bdf8; padding: 8px 16px; border-radius: 8px; text-decoration: none; font-weight: 700; font-size: 0.92rem; display: inline-flex; align-items: center; gap: 6px; }
+        .topbar { position: sticky; top: 0; z-index: 50; background: rgba(15, 23, 42, 0.94); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); padding: 14px 24px; }
+        .topbar-inner { max-width: 1160px; margin: 0 auto; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px; }
+        .back-btn { background: #1e293b; color: #38bdf8; border: 1px solid #38bdf8; padding: 8px 16px; border-radius: 8px; text-decoration: none; font-weight: 700; font-size: 0.9rem; display: inline-flex; align-items: center; gap: 6px; transition: 0.15s; }
         .back-btn:hover { background: #0284c7; color: #ffffff; }
-        .dash-title { font-weight: 800; font-size: 1.1rem; color: #f8fafc; }
+        .dash-title { font-weight: 800; font-size: 1.12rem; color: #f8fafc; letter-spacing: 0.01em; }
 
-        .container { max-width: 1140px; margin: 24px auto; padding: 0 20px 48px; }
+        .container { max-width: 1160px; margin: 24px auto; padding: 0 20px 54px; }
 
-        /* Context Banner */
-        .context-banner { background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); border: 1px solid var(--border); border-left: 4px solid var(--accent); border-radius: 12px; padding: 18px 22px; margin-bottom: 22px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 14px; }
-        .meta-pill { background: #064e3b; color: #6ee7b7; border: 1px solid #10b981; padding: 4px 12px; border-radius: 999px; font-size: 0.82rem; font-weight: 700; }
+        /* Context Banner & Pipeline Timeline */
+        .context-banner { background: linear-gradient(135deg, #0f172a 0%, #17253b 100%); border: 1px solid var(--border); border-left: 4px solid var(--accent); border-radius: 14px; padding: 18px 22px; margin-bottom: 20px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 14px; }
+        .pipeline-status { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+        .status-step { background: rgba(6, 78, 59, 0.55); color: #6ee7b7; border: 1px solid #10b981; padding: 4px 11px; border-radius: 999px; font-size: 0.78rem; font-weight: 700; }
 
-        .card { background: var(--card); padding: 26px; border-radius: 14px; border: 1px solid var(--border); box-shadow: 0 12px 30px rgba(0,0,0,0.4); }
+        /* Auto-Extracted KPI Cards Strip */
+        .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 14px; margin-bottom: 22px; }
+        .kpi-card { background: linear-gradient(180deg, #111c33 0%, #0f172a 100%); border: 1px solid var(--border); border-top: 3px solid var(--accent); border-radius: 12px; padding: 16px 18px; box-shadow: 0 8px 20px rgba(0,0,0,0.3); }
+        .kpi-label { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); font-weight: 700; }
+        .kpi-val { font-size: 1.45rem; font-weight: 800; color: #f8fafc; margin-top: 4px; }
+
+        .card { background: var(--card); padding: 26px; border-radius: 16px; border: 1px solid var(--border); box-shadow: 0 14px 34px rgba(0,0,0,0.42); }
         .error { color: #fecaca; font-weight: 600; background: #7f1d1d; padding: 16px; border-radius: 10px; border: 1px solid #f87171; }
 
         /* Navigation Tabs & Export Actions */
         .toolbar { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px; padding-bottom: 16px; border-bottom: 1px solid var(--border); margin-bottom: 22px; }
         .tab-group, .action-group { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
-        .tab-btn, .action-btn { background: var(--card-alt); color: #e2e8f0; border: 1px solid var(--border); padding: 9px 15px; border-radius: 8px; font-size: 0.9rem; font-weight: 600; cursor: pointer; text-decoration: none; }
+        .tab-btn, .action-btn { background: var(--card-alt); color: #e2e8f0; border: 1px solid var(--border); padding: 9px 15px; border-radius: 8px; font-size: 0.9rem; font-weight: 600; cursor: pointer; text-decoration: none; transition: 0.15s; }
         .tab-btn.active { background: var(--accent-btn); color: #ffffff; border-color: var(--accent); }
         .action-btn:hover, .tab-btn:hover { border-color: var(--accent); color: #ffffff; }
         .download-csv-btn { background: var(--green-btn); color: #ffffff; border: 1px solid #34d399; padding: 9px 16px; border-radius: 8px; font-size: 0.9rem; font-weight: 700; text-decoration: none; display: inline-block; }
@@ -335,12 +351,16 @@ DASHBOARD_TEMPLATE = r"""
         table.styled-table tbody tr:nth-child(even) { background: rgba(30, 41, 59, 0.45); }
         table.styled-table tbody tr:hover { background: rgba(56, 189, 248, 0.14); }
 
-        .search-input { padding: 8px 12px; border-radius: 8px; border: 1px solid #475569; background: #070d19; color: #f8fafc; font-size: 0.9rem; width: 240px; }
-        .chart-box, .trace-box { background: #070d19; padding: 20px; border-radius: 12px; border: 1px solid var(--border); margin-top: 24px; }
-        .chart-box { text-align: center; }
+        .search-input { padding: 8px 12px; border-radius: 8px; border: 1px solid #334155; background: #060b16; color: #f8fafc; font-size: 0.9rem; width: 240px; }
+        .chart-box { background: #060b16; padding: 20px; border-radius: 12px; border: 1px solid var(--border); margin-top: 24px; text-align: center; }
         .chart-box img { max-width: 100%; height: auto; border-radius: 8px; }
-        pre.code-block { background: #020617; color: #cbd5e1; padding: 14px; border-radius: 8px; overflow-x: auto; font-size: 0.88rem; border: 1px solid #1e293b; }
+
+        /* Collapsible Interactive Code Drawer */
+        .trace-drawer-bar { margin-top: 26px; padding: 16px 20px; background: #0b1324; border: 1px dashed #334155; border-radius: 12px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px; }
+        .trace-box { background: #060b16; padding: 20px; border-radius: 12px; border: 1px solid var(--border); margin-top: 14px; }
+        pre.code-block { background: #020617; color: #cbd5e1; padding: 14px; border-radius: 8px; overflow-x: auto; font-size: 0.87rem; border: 1px solid #1e293b; }
         .hidden { display: none; }
+        @media print { .topbar, .toolbar, .trace-drawer-bar, .search-input { display: none !important; } body { background: #ffffff; color: #000000; } }
     </style>
 </head>
 <body>
@@ -357,6 +377,7 @@ DASHBOARD_TEMPLATE = r"""
                 {% if report_raw %}
                 <button type="button" class="action-btn" id="copy-btn" onclick="copyReport()">Copy Report</button>
                 <button type="button" class="action-btn" onclick="downloadReport()">Export .MD</button>
+                <button type="button" class="action-btn" onclick="window.print()">Print / PDF</button>
                 {% endif %}
             </div>
         </div>
@@ -365,14 +386,26 @@ DASHBOARD_TEMPLATE = r"""
     <main id="main-content" class="container" role="main" aria-live="polite">
         <section class="context-banner" aria-label="Analysis Summary Context">
             <div>
-                <div style="font-size:0.82rem; color:#94a3b8; font-weight:600; text-transform:uppercase;">Active Dataset: {{ dataset_label }}</div>
+                <div style="font-size:0.8rem; color:#94a3b8; font-weight:700; text-transform:uppercase;">Dataset: {{ dataset_label }} {% if cleaned_shape %}({{ cleaned_shape }}){% endif %}</div>
                 <div style="font-size:1.05rem; font-weight:700; color:#f8fafc; margin-top:3px;">Goal: {{ goal }}</div>
             </div>
-            <div style="display:flex; gap:8px; flex-wrap:wrap;">
-                {% if cleaned_shape %}<span class="meta-pill">{{ cleaned_shape }}</span>{% endif %}
-                <span class="meta-pill">AST Verified • Attempts: {{ retry_count }}</span>
+            <div class="pipeline-status" aria-label="Agent Execution Status">
+                <span class="status-step">01 Profiler &#10003;</span>
+                <span class="status-step">02 AST Sandbox &#10003; ({{ retry_count }} try)</span>
+                <span class="status-step">03 Strategist &#10003;</span>
             </div>
         </section>
+
+        {% if kpi_cards %}
+        <section class="kpi-grid" aria-label="Key Performance Metrics">
+            {% for kpi in kpi_cards %}
+            <div class="kpi-card">
+                <div class="kpi-label">{{ kpi.label }}</div>
+                <div class="kpi-val">{{ kpi.value }}</div>
+            </div>
+            {% endfor %}
+        </section>
+        {% endif %}
 
         {% if error %}
         <section class="card" role="alert">
@@ -386,16 +419,16 @@ DASHBOARD_TEMPLATE = r"""
         <section class="card" aria-labelledby="report-heading">
             <div class="toolbar">
                 <div class="tab-group" role="tablist" aria-label="Dashboard View Switcher">
-                    <button type="button" class="tab-btn active" onclick="switchView('all', this)">Full Dashboard</button>
-                    <button type="button" class="tab-btn" onclick="switchView('report', this)">KPI Report &amp; Tables</button>
+                    <button type="button" class="tab-btn active" id="tab-all" onclick="switchView('all', this)">Executive Overview</button>
+                    <button type="button" class="tab-btn" id="tab-report" onclick="switchView('report', this)">KPI Report &amp; Tables</button>
                     {% if cleaned_preview_html %}
-                    <button type="button" class="tab-btn" onclick="switchView('data', this)">Cleaned Dataset</button>
+                    <button type="button" class="tab-btn" id="tab-data" onclick="switchView('data', this)">Cleaned Dataset</button>
                     {% endif %}
                     {% if chart_b64 %}
-                    <button type="button" class="tab-btn" onclick="switchView('chart', this)">Visual Chart</button>
+                    <button type="button" class="tab-btn" id="tab-chart" onclick="switchView('chart', this)">Visual Chart</button>
                     {% endif %}
                     {% if generated_code %}
-                    <button type="button" class="tab-btn" onclick="switchView('trace', this)">Agent Code &amp; Trace</button>
+                    <button type="button" class="tab-btn" id="tab-trace" onclick="switchView('trace', this)">AST Code &amp; Audit</button>
                     {% endif %}
                 </div>
             </div>
@@ -427,10 +460,20 @@ DASHBOARD_TEMPLATE = r"""
             {% endif %}
 
             {% if generated_code %}
-            <div id="trace-section" class="trace-box">
-                <h3 style="margin-top:0; color:#38bdf8;">Agentic Execution Trace &amp; AST-Verified Pandas Code</h3>
-                <p style="color:#94a3b8; font-size:0.88rem;">Verified via static AST security analyzer before sandbox execution.</p>
-                <pre class="code-block"><code>{{ generated_code }}</code></pre>
+            <div id="trace-drawer-bar" class="trace-drawer-bar">
+                <div>
+                    <strong style="color:#e2e8f0;">Zero-Hallucination Audit &amp; AST Sandbox Verification</strong>
+                    <div style="font-size:0.84rem; color:#94a3b8;">Click to inspect the exact Python code &amp; verified stdout metrics behind this report.</div>
+                </div>
+                <button type="button" class="action-btn" id="toggle-trace-btn" onclick="toggleTraceDrawer()">Show AST-Verified Code &amp; Trace &#9662;</button>
+            </div>
+
+            <div id="trace-section" class="trace-box hidden">
+                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:10px;">
+                    <h3 style="margin:0; color:#38bdf8;">AST-Verified Pandas Code (Attempts: {{ retry_count }})</h3>
+                    <button type="button" class="action-btn" id="copy-code-btn" onclick="copyCode()">Copy Python Code</button>
+                </div>
+                <pre class="code-block" id="agent-code-block"><code>{{ generated_code }}</code></pre>
                 {% if analysis_output %}
                 <h4 style="color:#94a3b8; margin-bottom:6px;">Verified Stdout Output:</h4>
                 <pre class="code-block"><code>{{ analysis_output }}</code></pre>
@@ -448,14 +491,26 @@ DASHBOARD_TEMPLATE = r"""
             const rep = document.getElementById("report-section");
             const dat = document.getElementById("data-section");
             const ch = document.getElementById("chart-section");
+            const bar = document.getElementById("trace-drawer-bar");
             const tr = document.getElementById("trace-section");
             const show = (el, flag) => { if (el) el.classList.toggle("hidden", !flag); };
 
-            if (mode === "all") { show(rep, true); show(dat, true); show(ch, true); show(tr, true); }
-            else if (mode === "report") { show(rep, true); show(dat, false); show(ch, false); show(tr, false); }
-            else if (mode === "data") { show(rep, false); show(dat, true); show(ch, false); show(tr, false); }
-            else if (mode === "chart") { show(rep, false); show(dat, false); show(ch, true); show(tr, false); }
-            else if (mode === "trace") { show(rep, false); show(dat, false); show(ch, false); show(tr, true); }
+            if (mode === "all") {
+                show(rep, true); show(dat, true); show(ch, true); show(bar, true); show(tr, false);
+                const tBtn = document.getElementById("toggle-trace-btn");
+                if (tBtn) tBtn.innerHTML = "Show AST-Verified Code &amp; Trace &#9662;";
+            } else if (mode === "report") { show(rep, true); show(dat, false); show(ch, false); show(bar, false); show(tr, false); }
+            else if (mode === "data") { show(rep, false); show(dat, true); show(ch, false); show(bar, false); show(tr, false); }
+            else if (mode === "chart") { show(rep, false); show(dat, false); show(ch, true); show(bar, false); show(tr, false); }
+            else if (mode === "trace") { show(rep, false); show(dat, false); show(ch, false); show(bar, false); show(tr, true); }
+        }
+
+        function toggleTraceDrawer() {
+            const tr = document.getElementById("trace-section");
+            const btn = document.getElementById("toggle-trace-btn");
+            if (!tr || !btn) return;
+            const isHidden = tr.classList.toggle("hidden");
+            btn.innerHTML = isHidden ? "Show AST-Verified Code &amp; Trace &#9662;" : "Hide AST-Verified Code &amp; Trace &#9652;";
         }
 
         function filterCleanTable() {
@@ -473,6 +528,16 @@ DASHBOARD_TEMPLATE = r"""
                 const btn = document.getElementById("copy-btn");
                 btn.textContent = "Copied!";
                 setTimeout(() => { btn.textContent = "Copy Report"; }, 2000);
+            });
+        }
+
+        function copyCode() {
+            const codeEl = document.getElementById("agent-code-block");
+            if (!codeEl) return;
+            navigator.clipboard.writeText(codeEl.innerText).then(() => {
+                const btn = document.getElementById("copy-code-btn");
+                btn.textContent = "Code Copied!";
+                setTimeout(() => { btn.textContent = "Copy Python Code"; }, 2000);
             });
         }
 
@@ -515,6 +580,7 @@ def analyze(path):
     cleaned_shape = ""
     generated_code = ""
     analysis_output = ""
+    kpi_cards = []
     retry_count = 1
     error = ""
     dataset_label = "Sample Dataset"
@@ -558,6 +624,7 @@ def analyze(path):
         report_html = render_markdown_to_html(report_raw)
         generated_code = result.get("generated_code", "")
         analysis_output = result.get("analysis_output", "")
+        kpi_cards = extract_kpi_cards(analysis_output)
         retry_count = result.get("retry_count", 1)
 
         c_path = result.get("chart_path", "")
@@ -589,9 +656,9 @@ def analyze(path):
         cleaned_shape=cleaned_shape,
         generated_code=generated_code,
         analysis_output=analysis_output,
+        kpi_cards=kpi_cards,
         retry_count=retry_count,
         dataset_label=dataset_label,
         error=error,
         goal=goal,
     )
-
