@@ -257,6 +257,7 @@ HOME_TEMPLATE = r"""
             <li id="st-2">2. AST Sandbox Analyst: Cleaning data &amp; generating chart...</li>
             <li id="st-3">3. Executive Strategist: Building KPI cards &amp; report...</li>
         </ul>
+        <button type="button" onclick="window.stop(); document.getElementById('loader').classList.remove('active');" style="margin-top:18px; background:transparent; border:1px solid #475569; color:#94a3b8; padding:7px 16px; border-radius:8px; cursor:pointer; font-size:0.85rem;">Cancel Request</button>
     </div>
 
     <script>

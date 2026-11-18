@@ -83,7 +83,7 @@ def get_active_groq_model() -> str:
     api_key = os.getenv("GROQ_API_KEY")
     preferred = [
         "llama-3.1-8b-instant",
-        "openai/gpt-oss-120b",
+        "llama-3.1-8b-instant",
         "openai/gpt-oss-20b",
         "qwen/qwen3-32b",
     ]
