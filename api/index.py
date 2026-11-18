@@ -73,13 +73,9 @@ HTML_TEMPLATE = """
 </html>
 """
 
-@app.route("/", methods=["GET", "POST"])
-def home():
-    report = ""
-    chart_b64 = ""
-    error = ""
-    goal = "Clean duplicates and missing values, summarize top KPIs, and plot the primary revenue driver."
-
+@app.route("/", defaults={"path": ""}, methods=["GET", "POST"])
+@app.route("/<path:path>", methods=["GET", "POST"])
+def home(path):
     if request.method == "POST":
         goal = request.form.get("user_goal", "").strip() or goal
         uploaded = request.files.get("uploaded_csv")
