@@ -235,7 +235,7 @@ def executive_strategist_agent(state: UniversalAgentState) -> Dict[str, Any]:
         "provided, write a crisp executive summary with:\n"
         "1. Data Cleaning & Quality Summary (as a Markdown table)\n"
         "2. Key Quantitative Findings (as a Markdown table citing exact numbers)\n"
-        "3. Top 3-4 Actionable Business Recommendations\nSTRICT FORMATTING RULES:\n- NEVER put a Markdown table inside another table cell.\n- NEVER use `<br>` HTML tags or escaped `\$` backslashes; separate multiple items in a cell with semicolons (;).\n- Use INR (₹) for Indian datasets (like prices 699, 1899) unless another currency is explicitly specified."
+        "3. Top 3-4 Actionable Business Recommendations\nSTRICT FORMATTING RULES:\n- NEVER put a Markdown table inside another table cell.\n- NEVER use `<br>` HTML tags or escaped `\\$` backslashes; separate multiple items in a cell with semicolons (;).\n- Use INR (₹) for Indian datasets (like prices 699, 1899) unless another currency is explicitly specified."
     )
 
     user_msg = (
@@ -275,4 +275,5 @@ def build_universal_graph():
 if __name__ == "__main__":
     app = build_universal_graph()
     print("UNIVERSAL MULTI-AGENT CSV ANALYST READY")
+
 
