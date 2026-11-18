@@ -27,7 +27,7 @@ ALLOWED_SAMPLES = {
     "data/raw/food_delivery_operations.csv",
 }
 
-HTML_TEMPLATE = """
+HTML_TEMPLATE = r"""
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -339,3 +339,4 @@ def home(path):
             error = f"Unable to complete analysis: {type(exc).__name__}. Please verify your CSV format and try again."
 
     return render_template_string(HTML_TEMPLATE, report=report, chart_b64=chart_b64, error=error, goal=goal)
+
