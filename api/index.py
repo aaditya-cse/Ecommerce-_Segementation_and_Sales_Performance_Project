@@ -501,15 +501,11 @@ def add_security_headers(response):
     return response
 
 
-@app.route("/", methods=["GET"])
-def home():
-    return render_template_string(HOME_TEMPLATE)
-
-
-@app.route("/analyze", methods=["GET", "POST"])
-def analyze():
+@app.route("/", defaults={"path": ""}, methods=["GET", "POST"])
+@app.route("/<path:path>", methods=["GET", "POST"])
+def analyze(path):
     if request.method == "GET":
-        return redirect(url_for("home"))
+        return render_template_string(HOME_TEMPLATE)
 
     report_raw = ""
     report_html = ""
@@ -598,3 +594,4 @@ def analyze():
         error=error,
         goal=goal,
     )
+
