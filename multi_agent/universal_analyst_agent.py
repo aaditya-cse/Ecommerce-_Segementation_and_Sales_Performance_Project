@@ -1,11 +1,18 @@
 import os
 import io
+import re
 import json
+import warnings
 import contextlib
 import urllib.request
-from typing import TypedDict, Dict, Any
+from datetime import datetime
+from typing import TypedDict, Dict, Any, List
 import pandas as pd
 import numpy as np
+import matplotlib
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
+import seaborn as sns
 from dotenv import load_dotenv
 from langchain_groq import ChatGroq
 from langchain_core.messages import SystemMessage, HumanMessage
@@ -21,6 +28,8 @@ class UniversalAgentState(TypedDict):
     csv_path: str
     user_goal: str
     dataset_profile: str
+    chat_history: List[str]
+    chart_path: str
     generated_code: str
     analysis_output: str
     error_log: str
@@ -28,9 +37,20 @@ class UniversalAgentState(TypedDict):
     final_report: str
 
 
+def clean_llm_text(text: str) -> str:
+    # Remove <think>...</think> blocks if a reasoning model is selected
+    text = re.sub(r"<think>.*?</think>", "", text, flags=re.DOTALL).strip()
+    return text
+
+
 def get_active_groq_model() -> str:
     api_key = os.getenv("GROQ_API_KEY")
-    preferred = ["openai/gpt-oss-120b", "openai/gpt-oss-20b", "qwen/qwen3-32b", "llama-3.1-8b-instant"]
+    preferred = [
+        "llama-3.1-8b-instant",
+        "openai/gpt-oss-120b",
+        "openai/gpt-oss-20b",
+        "qwen/qwen3-32b",
+    ]
     try:
         req = urllib.request.Request(
             "https://api.groq.com/openai/v1/models",
@@ -43,14 +63,17 @@ def get_active_groq_model() -> str:
                     return m
     except Exception:
         pass
-    return "openai/gpt-oss-120b"
+    return "llama-3.1-8b-instant"
 
 
 # ==========================================
 # 2. AGENT 1: DYNAMIC SCHEMA & QUALITY PROFILER
 # ==========================================
 def schema_profiler_agent(state: UniversalAgentState) -> Dict[str, Any]:
-    print(f"\n[Agent 1: Schema Profiler] Inspecting '{state['csv_path']}'...")
+    if state.get("dataset_profile"):
+        return {"retry_count": 0}
+
+    print(f"\n[Agent 1: Schema Profiler] Scanning '{state['csv_path']}'...")
     df = pd.read_csv(state["csv_path"])
 
     num_cols = df.select_dtypes(include=[np.number]).columns.tolist()
@@ -75,48 +98,75 @@ def schema_profiler_agent(state: UniversalAgentState) -> Dict[str, Any]:
 
 
 # ==========================================
-# 3. AGENT 2: AUTONOMOUS PANDAS CODE ANALYST
+# 3. AGENT 2: AUTONOMOUS CODE & CHART ANALYST
 # ==========================================
 def pandas_analyst_agent(state: UniversalAgentState) -> Dict[str, Any]:
     attempt = state.get("retry_count", 0) + 1
-    print(f"[Agent 2: Pandas Analyst] Writing & executing analysis code (Attempt {attempt})...")
+    print(f"[Agent 2: Pandas & Chart Analyst] Running analysis & generating chart (Attempt {attempt})...")
 
     llm = ChatGroq(model=get_active_groq_model(), temperature=0.1)
 
+    charts_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "generated_charts")
+    os.makedirs(charts_dir, exist_ok=True)
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    chart_file = os.path.join(charts_dir, f"chart_{timestamp}.png")
+
+    history_context = "\n".join(state.get("chat_history", [])[-4:]) or "None (First question)"
+
     system_prompt = (
-        "You are an expert Python Data Analyst. Write executable Python code using pandas and numpy "
-        "to clean the dataset (drop duplicates, handle nulls/outliers) and perform deep analysis "
-        "aligned with the user's goal.\n"
-        "RULES:\n"
-        "1. Load the CSV from the variable `CSV_PATH` (already defined in scope).\n"
-        "2. Print clear, labeled summary tables and exact KPIs using `print()`.\n"
-        "3. Do NOT call `plt.show()` or open GUI windows.\n"
-        "4. Return ONLY raw Python code—no markdown backticks (```) and no explanations."
+        "You are an expert Python Data Analyst using Pandas 3.0+. Write executable Python code using "
+        "pandas, numpy, matplotlib.pyplot (as plt), and seaborn (as sns) to clean the dataset and "
+        "answer the user's goal.\n"
+        "STRICT RULES:\n"
+        "1. Load the CSV from `CSV_PATH` (already defined in scope).\n"
+        "2. NEVER use `inplace=True`. Always use direct assignment like `df[col] = df[col].fillna(...)`, "
+        "drop duplicates (`df = df.drop_duplicates().copy()`), strip whitespace on text columns, and fix outliers.\n"
+        "3. If an `Order_Status` column exists, exclude 'Returned' and 'Cancelled' orders when computing Net Revenue or AOV.\n"
+        "4. Print clear, labeled summary tables and exact KPIs using `print()`.\n"
+        "5. Create ONE clean matplotlib/seaborn figure, call `plt.tight_layout()`, save to `CHART_PATH` "
+        "(already defined in scope) with `dpi=150`, and call `plt.close()`. NEVER call `plt.show()`.\n"
+        "6. Return ONLY raw Python code—no markdown backticks (```) and no explanations."
     )
 
-    prompt = f"USER GOAL: {state['user_goal']}\n\nDATASET PROFILE:\n{state['dataset_profile']}"
+    prompt = (
+        f"USER GOAL: {state['user_goal']}\n\n"
+        f"PREVIOUS CONVERSATION CONTEXT:\n{history_context}\n\n"
+        f"DATASET PROFILE:\n{state['dataset_profile']}"
+    )
     if state.get("error_log"):
         prompt += f"\n\nPREVIOUS CODE FAILED WITH ERROR:\n{state['error_log']}\nFix the bug and output corrected Python code only."
 
-    raw_code = llm.invoke([SystemMessage(content=system_prompt), HumanMessage(content=prompt)]).content
-    clean_code = raw_code.replace("```python", "").replace("```", "").strip()
+    raw_reply = llm.invoke([SystemMessage(content=system_prompt), HumanMessage(content=prompt)]).content
+    clean_code = clean_llm_text(raw_reply).replace("```python", "").replace("```", "").strip()
 
-    # Execute generated code and capture stdout
     stdout_buffer = io.StringIO()
-    exec_globals = {"pd": pd, "np": np, "CSV_PATH": state["csv_path"]}
+    exec_globals = {
+        "pd": pd,
+        "np": np,
+        "plt": plt,
+        "sns": sns,
+        "CSV_PATH": state["csv_path"],
+        "CHART_PATH": chart_file,
+    }
+
     try:
-        with contextlib.redirect_stdout(stdout_buffer):
-            exec(clean_code, exec_globals)
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            with contextlib.redirect_stdout(stdout_buffer):
+                exec(clean_code, exec_globals)
         output_text = stdout_buffer.getvalue()
         if not output_text.strip():
             output_text = "Code executed successfully, but nothing was printed."
+        saved_chart = chart_file if os.path.exists(chart_file) else ""
         return {
             "generated_code": clean_code,
             "analysis_output": output_text,
+            "chart_path": saved_chart,
             "error_log": "",
             "retry_count": attempt,
         }
     except Exception as e:
+        plt.close("all")
         print(f"  -> Execution error caught: {e}")
         return {
             "generated_code": clean_code,
@@ -135,29 +185,34 @@ def route_after_execution(state: UniversalAgentState) -> str:
 # 4. AGENT 3: EXECUTIVE STRATEGIST
 # ==========================================
 def executive_strategist_agent(state: UniversalAgentState) -> Dict[str, Any]:
-    print("[Agent 3: Executive Strategist] Generating final insights & action plan...")
+    print("[Agent 3: Executive Strategist] Synthesizing insights & recommendations...")
     llm = ChatGroq(model=get_active_groq_model(), temperature=0.2)
 
     system_prompt = (
-        "You are a Principal Data Consultant. Based ONLY on the verified dataset profile and "
-        "Python execution output provided, write an executive report with:\n"
-        "1. Data Quality & Cleaning Summary\n"
-        "2. Key Quantitative Findings (cite exact numbers from the output)\n"
-        "3. Top 4 Actionable Recommendations"
+        "You are a Principal Data Consultant writing a business report in plain English and Markdown. "
+        "NEVER output Python code. Based ONLY on the verified dataset profile and Python execution output "
+        "provided, write a crisp executive summary with:\n"
+        "1. Data Cleaning & Quality Summary\n"
+        "2. Key Quantitative Findings (cite exact numbers from the execution output)\n"
+        "3. Top 3-4 Actionable Business Recommendations"
     )
 
     user_msg = (
         f"USER GOAL: {state['user_goal']}\n\n"
         f"DATASET PROFILE:\n{state['dataset_profile']}\n\n"
-        f"VERIFIED PYTHON ANALYSIS OUTPUT:\n{state['analysis_output']}"
+        f"VERIFIED PYTHON EXECUTION OUTPUT:\n{state['analysis_output']}"
     )
 
-    report = llm.invoke([SystemMessage(content=system_prompt), HumanMessage(content=user_msg)]).content
-    return {"final_report": report}
+    raw_report = llm.invoke([SystemMessage(content=system_prompt), HumanMessage(content=user_msg)]).content
+    report = clean_llm_text(raw_report)
+    updated_history = state.get("chat_history", []) + [
+        f"Q: {state['user_goal']} | Summary: {report[:250]}..."
+    ]
+    return {"final_report": report, "chat_history": updated_history}
 
 
 # ==========================================
-# 5. BUILD LANGGRAPH WITH CONDITIONAL RETRY LOOP
+# 5. BUILD LANGGRAPH WITH RETRY LOOP
 # ==========================================
 def build_universal_graph():
     graph = StateGraph(UniversalAgentState)
@@ -181,22 +236,60 @@ def build_universal_graph():
     return graph.compile()
 
 
+# ==========================================
+# 6. INTERACTIVE MULTI-TURN CLI LOOP
+# ==========================================
 if __name__ == "__main__":
     app = build_universal_graph()
 
-    # Pass ANY CSV path and ANY business question here!
-    result = app.invoke({
-        "csv_path": "../data/raw/ecommerce_sales_data.csv",
-        "user_goal": "Clean the data, find top revenue drivers, segment customers, and identify churn risks.",
-        "dataset_profile": "",
-        "generated_code": "",
-        "analysis_output": "",
-        "error_log": "",
-        "retry_count": 0,
-        "final_report": "",
-    })
-
-    print("\n" + "=" * 65)
-    print("UNIVERSAL MULTI-AGENT ANALYSIS REPORT")
     print("=" * 65)
-    print(result["final_report"])
+    print("UNIVERSAL MULTI-AGENT CSV ANALYST (Multi-Turn + Auto-Charts)")
+    print("Commands: type 'new' to switch CSV | type 'exit' to quit")
+    print("=" * 65)
+
+    while True:
+        csv_input = input("\nEnter CSV path (default: ../data/raw/edtech_student_enrollments.csv): ").strip()
+        if csv_input.lower() == "exit":
+            break
+        if not csv_input:
+            csv_input = "../data/raw/edtech_student_enrollments.csv"
+
+        if not os.path.exists(csv_input):
+            print(f"[Error] File not found: {csv_input}. Try again.")
+            continue
+
+        cached_profile = ""
+        chat_history: List[str] = []
+
+        while True:
+            goal_input = input("\nAsk a question about this dataset (or 'new' / 'exit'): ").strip()
+            if goal_input.lower() == "exit":
+                exit(0)
+            if goal_input.lower() == "new":
+                break
+            if not goal_input:
+                goal_input = "Clean duplicates and nulls, summarize key KPIs, and plot the top revenue driver."
+
+            result = app.invoke({
+                "csv_path": csv_input,
+                "user_goal": goal_input,
+                "dataset_profile": cached_profile,
+                "chat_history": chat_history,
+                "chart_path": "",
+                "generated_code": "",
+                "analysis_output": "",
+                "error_log": "",
+                "retry_count": 0,
+                "final_report": "",
+            })
+
+            cached_profile = result["dataset_profile"]
+            chat_history = result["chat_history"]
+
+            print("\n" + "=" * 65)
+            print("EXECUTIVE REPORT")
+            print("=" * 65)
+            print(result["final_report"])
+            if result.get("chart_path"):
+                print(f"\n[Chart Saved]: {result['chart_path']}")
+            print("=" * 65)

@@ -1,0 +1,185 @@
+Student_ID,City,Course_Name,Lead_Source,Course_Fee_INR,Discount_Pct,Net_Revenue_INR,Lectures_Watched_Pct,Assignments_Completed,Placement_Ready,Student_Rating
+ED_3001,Delhi NCR,Full Stack Web Dev,Organic Search,19999,0,19999.0,75.5,9,Yes,5.0
+ED_3002,Delhi NCR,Full Stack Web Dev,Instagram Ads,19999,20,15999.2,75.2,9,Yes,4.1
+ED_3003,Bengaluru,Full Stack Web Dev,Referral,19999,30,13999.3,83.9,8,Yes,5.0
+ED_3004,Hyderabad,AI & Machine Learning,Referral,24999,10,22499.1,60.4,7,No,2.1
+ED_3005,Pune,Full Stack Web Dev,YouTube,19999,10,17999.1,64.0,8,No,2.7
+ED_3006,Pune,AI & Machine Learning,College Seminar,24999,0,24999.0,53.5,6,No,3.1
+ED_3007,Delhi NCR,AI & Machine Learning,Organic Search,24999,10,22499.1,100.0,10,Yes,5.0
+ED_3008,Pune,Data Analytics,Organic Search,14999,15,12749.15,100.0,12,Yes,4.4
+ED_3009,Delhi NCR,Full Stack Web Dev,Referral,19999,10,17999.1,5.0,1,No,3.6
+ED_3010,Delhi NCR,Data Analytics,College Seminar,14999,20,11999.2,43.2,6,No,2.8
+ED_3011,Hyderabad,Cybersecurity,Instagram Ads,18999,0,18999.0,83.6,9,Yes,4.8
+ED_3012,Pune,Data Analytics,Referral,14999,30,10499.3,70.3,9,Yes,4.9
+ED_3013,Mumbai,Data Analytics,Organic Search,14999,10,13499.1,65.3,9,No,5.0
+ED_3014,Pune,AI & Machine Learning,Referral,24999,10,22499.1,34.7,5,No,3.4
+ED_3015,Bengaluru,AI & Machine Learning,Organic Search,24999,0,24999.0,41.5,4,No,3.2
+ED_3016,Pune,AI & Machine Learning,YouTube,24999,30,17499.3,77.6,8,Yes,3.8
+ED_3017,Bengaluru,Cybersecurity,YouTube,18999,10,17099.1,84.2,11,Yes,4.3
+ED_3018,Pune,Data Analytics,YouTube,14999,10,13499.1,100.0,10,Yes,5.0
+ED_3019,Delhi NCR,Data Analytics,College Seminar,14999,0,14999.0,96.3,12,Yes,5.0
+ED_3020,Hyderabad,Data Analytics,Organic Search,14999,0,14999.0,100.0,12,Yes,5.0
+ED_3021,Hyderabad,Full Stack Web Dev,Organic Search,19999,0,19999.0,64.2,8,No,3.4
+ED_3022,Pune,Full Stack Web Dev,College Seminar,19999,0,19999.0,66.1,8,No,5.0
+ED_3023,Bengaluru,AI & Machine Learning,Organic Search,24999,0,24999.0,84.2,10,Yes,4.7
+ED_3024,Mumbai,Data Analytics,YouTube,14999,10,13499.1,86.0,11,Yes,4.4
+ED_3025,Mumbai,Data Analytics,YouTube,14999,0,14999.0,,8,No,3.1
+ED_3026,Delhi NCR,Data Analytics,YouTube,14999,0,14999.0,82.6,11,Yes,4.2
+ED_3027,Delhi NCR,Data Analytics,YouTube,14999,30,10499.3,58.6,8,No,3.3
+ED_3028,Pune,AI & Machine Learning,Referral,24999,0,24999.0,75.0,9,Yes,4.0
+ED_3029,Bengaluru,Full Stack Web Dev,YouTube,19999,10,17999.1,75.0,9,Yes,
+ED_3030,Delhi NCR,Data Analytics,Instagram Ads,14999,15,12749.15,96.1,12,Yes,5.0
+ED_3031,Pune,Data Analytics,YouTube,14999,15,12749.15,100.0,9,Yes,4.5
+ED_3032,Bengaluru,AI & Machine Learning,Referral,24999,0,24999.0,60.4,8,No,3.9
+ED_3033,Pune,Full Stack Web Dev,Instagram Ads,19999,20,15999.2,46.5,5,No,3.8
+ED_3034,Hyderabad,Full Stack Web Dev,Instagram Ads,19999,20,15999.2,88.0,12,Yes,4.3
+ED_3035,Pune,Cybersecurity,YouTube,18999,20,15199.2,59.8,7,No,3.3
+ED_3036,Bengaluru,Full Stack Web Dev,College Seminar,19999,15,16999.15,18.8,4,No,1.9
+ED_3037,Delhi NCR,Full Stack Web Dev,YouTube,19999,30,13999.3,35.6,3,No,2.3
+ED_3038,Mumbai,Data Analytics,Instagram Ads,14999,10,13499.1,100.0,12,Yes,4.5
+ED_3039,Delhi NCR,Full Stack Web Dev,College Seminar,19999,20,15999.2,84.7,10,Yes,5.0
+ED_3040,Hyderabad,Data Analytics,Referral,14999,15,12749.15,33.2,4,No,3.4
+ED_3041,Delhi NCR,Cloud & DevOps,Referral,21999,15,18699.15,42.7,7,No,3.2
+ED_3042,Delhi NCR,AI & Machine Learning,YouTube,24999,0,24999.0,95.8,10,Yes,4.8
+ED_3043,Bengaluru,AI & Machine Learning,College Seminar,24999,10,22499.1,59.1,10,No,3.5
+ED_3044,Pune,Full Stack Web Dev,Referral,19999,20,15999.2,97.1,12,Yes,4.7
+ED_3045,Bengaluru,Cloud & DevOps,YouTube,21999,30,15399.3,63.1,7,No,3.3
+ED_3046,Pune,Full Stack Web Dev,Instagram Ads,19999,0,19999.0,71.1,8,Yes,5.0
+ED_3047,Delhi NCR,Data Analytics,Instagram Ads,14999,10,13499.1,100.0,12,Yes,5.0
+ED_3048,Bengaluru,Cloud & DevOps,Instagram Ads,21999,10,19799.1,62.6,7,No,3.0
+ED_3049,Bengaluru,Full Stack Web Dev,YouTube,19999,10,17999.1,86.8,10,Yes,4.7
+ED_3050,Delhi NCR,AI & Machine Learning,YouTube,24999,30,17499.3,97.3,12,Yes,4.2
+ED_3051,Bengaluru,Data Analytics,Instagram Ads,14999,30,10499.3,79.9,10,Yes,3.5
+ED_3052,Delhi NCR,Cloud & DevOps,Organic Search,21999,15,18699.15,69.3,9,No,5.0
+ED_3053,Delhi NCR,Full Stack Web Dev,Referral,19999,0,19999.0,20.7,3,No,3.2
+ED_3054,Hyderabad,Cybersecurity,Referral,18999,0,18999.0,80.9,9,Yes,4.1
+ED_3055,Bengaluru,Cloud & DevOps,College Seminar,21999,15,18699.15,100.0,12,Yes,4.1
+ED_3056,Hyderabad,Cybersecurity,YouTube,18999,10,17099.1,,4,No,3.0
+ED_3057,Delhi NCR,Full Stack Web Dev,Referral,19999,10,17999.1,100.0,12,Yes,4.9
+ED_3058,Pune,Full Stack Web Dev,College Seminar,19999,15,16999.15,49.9,6,No,3.5
+ED_3059,Delhi NCR,Data Analytics,YouTube,14999,30,10499.3,88.0,12,Yes,3.9
+ED_3060,Bengaluru,AI & Machine Learning,Organic Search,24999,20,19999.2,,9,No,3.1
+ED_3061,Pune,Data Analytics,Instagram Ads,14999,10,13499.1,32.2,1,No,
+ED_3062,Bengaluru,Data Analytics,College Seminar,14999,0,14999.0,50.5,7,No,3.2
+ED_3063,Bengaluru,Cloud & DevOps,Organic Search,21999,0,21999.0,74.4,7,No,4.1
+ED_3064,Delhi NCR,Data Analytics,Referral,14999,10,13499.1,66.8,9,No,4.9
+ED_3065,Mumbai,Full Stack Web Dev,Instagram Ads,19999,15,16999.15,98.2,10,Yes,4.9
+ED_3066,Pune,AI & Machine Learning,Organic Search,24999,0,24999.0,92.9,9,Yes,4.3
+ED_3067,Pune,AI & Machine Learning,Organic Search,24999,20,19999.2,53.8,5,No,3.4
+ED_3068,Delhi NCR,Full Stack Web Dev,Organic Search,19999,15,16999.15,65.8,8,No,4.9
+ED_3069,Mumbai,Data Analytics,YouTube,14999,20,11999.2,68.7,12,No,4.9
+ED_3070,Bengaluru,Data Analytics,YouTube,14999,10,13499.1,100.0,9,Yes,4.3
+ED_3071,Bengaluru,AI & Machine Learning,College Seminar,24999,15,21249.15,63.4,9,No,3.2
+ED_3072,Delhi NCR,Cybersecurity,Referral,18999,0,18999.0,84.7,11,Yes,4.1
+ED_3073,Bengaluru,Full Stack Web Dev,College Seminar,19999,30,13999.3,89.9,12,Yes,
+ED_3074,Delhi NCR,Cybersecurity,Referral,18999,20,15199.2,75.9,9,Yes,4.2
+ED_3075,Bengaluru,Cybersecurity,Referral,18999,0,18999.0,42.5,5,No,3.8
+ED_3076,Bengaluru,Full Stack Web Dev,Instagram Ads,19999,10,17999.1,85.6,10,Yes,3.4
+ED_3077,Delhi NCR,Full Stack Web Dev,College Seminar,19999,10,17999.1,71.3,11,Yes,4.9
+ED_3078,Pune,AI & Machine Learning,Instagram Ads,24999,10,22499.1,57.0,6,No,3.0
+ED_3079,Hyderabad,AI & Machine Learning,YouTube,24999,20,19999.2,89.5,10,Yes,4.9
+ED_3080,Delhi NCR,Data Analytics,Referral,14999,20,11999.2,63.0,7,No,2.3
+ED_3081,Delhi NCR,Data Analytics,YouTube,14999,0,14999.0,71.0,8,Yes,5.0
+ED_3082,Delhi NCR,Cloud & DevOps,YouTube,21999,15,18699.15,83.1,7,No,3.7
+ED_3083,Pune,Full Stack Web Dev,College Seminar,19999,20,15999.2,94.0,12,Yes,4.3
+ED_3084,Delhi NCR,Full Stack Web Dev,Instagram Ads,19999,15,16999.15,61.1,9,No,2.9
+ED_3085,Delhi NCR,Cybersecurity,Instagram Ads,18999,0,18999.0,64.7,10,No,2.7
+ED_3086,Hyderabad,Full Stack Web Dev,Referral,19999,10,17999.1,100.0,12,Yes,4.4
+ED_3087,Mumbai,Cybersecurity,Referral,18999,15,16149.15,40.5,4,No,2.3
+ED_3088,Pune,Cloud & DevOps,Organic Search,21999,0,21999.0,38.1,3,No,3.4
+ED_3089,Delhi NCR,Cybersecurity,YouTube,18999,0,18999.0,49.5,6,No,3.3
+ED_3090,Bengaluru,Full Stack Web Dev,Referral,19999,15,16999.15,90.1,12,Yes,4.5
+ED_3091,Delhi NCR,Full Stack Web Dev,Instagram Ads,19999,0,19999.0,33.8,1,No,2.7
+ED_3092,Delhi NCR,Full Stack Web Dev,YouTube,19999,15,16999.15,28.8,2,No,2.9
+ED_3093,Pune,Data Analytics,YouTube,14999,0,14999.0,54.4,5,No,3.3
+ED_3094,Delhi NCR,Cybersecurity,Instagram Ads,18999,10,17099.1,57.2,6,No,3.6
+ED_3095,Bengaluru,Full Stack Web Dev,College Seminar,19999,10,17999.1,85.7,8,Yes,3.3
+ED_3096,Delhi NCR,Full Stack Web Dev,Instagram Ads,19999,20,15999.2,17.6,4,No,3.5
+ED_3097,Bengaluru,Full Stack Web Dev,Instagram Ads,19999,20,15999.2,76.4,10,Yes,4.1
+ED_3098,Pune,AI & Machine Learning,Referral,24999,15,21249.15,42.4,9,No,3.3
+ED_3099,Pune,Data Analytics,Instagram Ads,14999,20,11999.2,50.6,3,No,3.2
+ED_3100,Delhi NCR,Cybersecurity,College Seminar,18999,10,17099.1,66.5,8,No,4.8
+ED_3101,Bengaluru,Full Stack Web Dev,College Seminar,19999,30,13999.3,,7,No,2.5
+ED_3102,Pune,Full Stack Web Dev,Instagram Ads,19999,15,16999.15,70.5,7,No,3.8
+ED_3103,Hyderabad,Cloud & DevOps,Instagram Ads,21999,15,18699.15,100.0,12,Yes,5.0
+ED_3104,Hyderabad,Data Analytics,College Seminar,14999,0,14999.0,100.0,11,Yes,4.3
+ED_3105,Delhi NCR,Data Analytics,Instagram Ads,14999,20,11999.2,90.4,12,Yes,5.0
+ED_3106,Hyderabad,AI & Machine Learning,Referral,24999,15,21249.15,100.0,10,Yes,5.0
+ED_3107,Hyderabad,Full Stack Web Dev,Instagram Ads,19999,10,17999.1,84.6,10,Yes,5.0
+ED_3108,Hyderabad,AI & Machine Learning,YouTube,24999,10,22499.1,98.4,9,Yes,5.0
+ED_3109,Delhi NCR,Data Analytics,Instagram Ads,14999,30,10499.3,70.4,10,Yes,3.8
+ED_3110,Bengaluru,AI & Machine Learning,YouTube,24999,0,24999.0,70.0,12,Yes,5.0
+ED_3111,Hyderabad,Data Analytics,Organic Search,14999,10,13499.1,62.0,7,No,3.2
+ED_3112,Hyderabad,Full Stack Web Dev,Referral,19999,10,17999.1,,7,No,2.9
+ED_3113,Delhi NCR,Full Stack Web Dev,Instagram Ads,19999,30,13999.3,66.0,9,No,4.2
+ED_3114,Delhi NCR,Data Analytics,Instagram Ads,14999,0,14999.0,61.1,7,No,3.1
+ED_3115,Hyderabad,AI & Machine Learning,Instagram Ads,24999,15,21249.15,81.6,10,Yes,4.5
+ED_3116,Bengaluru,AI & Machine Learning,Organic Search,24999,10,22499.1,38.2,5,No,2.7
+ED_3117,Pune,AI & Machine Learning,Referral,24999,0,24999.0,27.3,3,No,3.4
+ED_3118,Bengaluru,Data Analytics,YouTube,14999,10,13499.1,71.0,9,Yes,4.7
+ED_3119,Delhi NCR,Full Stack Web Dev,College Seminar,19999,15,16999.15,70.2,9,Yes,4.8
+ED_3120,Bengaluru,Cloud & DevOps,Instagram Ads,21999,10,19799.1,100.0,12,Yes,4.3
+ED_3121,Hyderabad,Data Analytics,College Seminar,14999,10,13499.1,52.0,9,No,4.7
+ED_3122,Hyderabad,Data Analytics,Referral,14999,20,11999.2,56.7,8,No,2.4
+ED_3123,Hyderabad,Data Analytics,College Seminar,14999,20,11999.2,65.8,6,No,4.3
+ED_3124,Hyderabad,Full Stack Web Dev,College Seminar,19999,10,17999.1,100.0,12,Yes,4.0
+ED_3125,Bengaluru,AI & Machine Learning,YouTube,24999,0,24999.0,41.6,5,No,3.5
+ED_3126,Mumbai,AI & Machine Learning,Organic Search,24999,15,21249.15,68.7,10,No,4.4
+ED_3127,Bengaluru,Full Stack Web Dev,Instagram Ads,19999,10,17999.1,83.6,12,Yes,4.1
+ED_3128,Bengaluru,AI & Machine Learning,Organic Search,24999,15,21249.15,40.7,5,No,3.1
+ED_3129,Delhi NCR,Cloud & DevOps,Instagram Ads,21999,30,15399.3,58.3,5,No,3.2
+ED_3130,Delhi NCR,Cybersecurity,Referral,18999,10,17099.1,43.4,4,No,4.4
+ED_3131,Hyderabad,AI & Machine Learning,YouTube,24999,0,24999.0,80.4,7,No,4.4
+ED_3132,Pune,Full Stack Web Dev,YouTube,19999,10,17999.1,35.7,4,No,3.1
+ED_3133,Mumbai,Cloud & DevOps,College Seminar,21999,15,18699.15,41.6,4,No,2.2
+ED_3134,Bengaluru,AI & Machine Learning,YouTube,24999,0,24999.0,100.0,12,Yes,4.3
+ED_3135,Mumbai,AI & Machine Learning,Instagram Ads,24999,20,19999.2,83.3,8,Yes,4.2
+ED_3136,Bengaluru,Full Stack Web Dev,Instagram Ads,19999,0,19999.0,98.5,12,Yes,4.5
+ED_3137,Pune,AI & Machine Learning,Instagram Ads,24999,30,17499.3,74.5,11,Yes,4.3
+ED_3138,Bengaluru,Cybersecurity,Organic Search,18999,20,15199.2,8.2,4,No,4.0
+ED_3139,Delhi NCR,AI & Machine Learning,Referral,24999,15,21249.15,100.0,12,Yes,4.0
+ED_3140,Pune,Data Analytics,Instagram Ads,14999,15,12749.15,95.5,11,Yes,4.5
+ED_3141,Bengaluru,Data Analytics,Organic Search,14999,15,12749.15,65.6,5,No,4.6
+ED_3142,Mumbai,Full Stack Web Dev,Organic Search,19999,0,19999.0,100.0,12,Yes,5.0
+ED_3143,Delhi NCR,Data Analytics,Instagram Ads,14999,20,11999.2,93.8,11,Yes,4.0
+ED_3144,Mumbai,AI & Machine Learning,Referral,24999,15,21249.15,94.0,9,Yes,5.0
+ED_3145,Bengaluru,Data Analytics,Instagram Ads,14999,20,11999.2,70.2,8,Yes,5.0
+ED_3146,Delhi NCR,AI & Machine Learning,College Seminar,24999,30,17499.3,60.8,9,No,3.7
+ED_3147,Delhi NCR,Data Analytics,Instagram Ads,14999,30,10499.3,72.6,11,Yes,4.6
+ED_3148,Delhi NCR,Full Stack Web Dev,YouTube,19999,30,13999.3,43.3,6,No,2.2
+ED_3149,Hyderabad,AI & Machine Learning,Referral,24999,20,19999.2,71.2,10,Yes,4.8
+ED_3150,Delhi NCR,Data Analytics,Organic Search,14999,30,10499.3,90.1,9,Yes,4.8
+ED_3151,Pune,AI & Machine Learning,YouTube,24999,20,19999.2,36.4,7,No,2.7
+ED_3152,Pune,Cloud & DevOps,Instagram Ads,21999,10,19799.1,27.9,2,No,2.2
+ED_3153,Delhi NCR,Data Analytics,Referral,14999,10,13499.1,100.0,10,Yes,4.7
+ED_3154,Mumbai,Cybersecurity,Instagram Ads,18999,10,17099.1,66.1,6,No,3.7
+ED_3155,Delhi NCR,AI & Machine Learning,College Seminar,24999,10,22499.1,54.2,7,No,3.1
+ED_3156,Delhi NCR,AI & Machine Learning,Instagram Ads,24999,15,21249.15,66.0,8,No,4.2
+ED_3157,Delhi NCR,Data Analytics,College Seminar,14999,20,11999.2,55.5,4,No,3.7
+ED_3158,Bengaluru,Full Stack Web Dev,YouTube,19999,15,16999.15,45.3,8,No,3.1
+ED_3159,Pune,Data Analytics,Organic Search,14999,15,12749.15,100.0,11,Yes,4.5
+ED_3160,Delhi NCR,AI & Machine Learning,Instagram Ads,24999,10,22499.1,68.2,10,No,3.3
+ED_3161,Mumbai,Cloud & DevOps,College Seminar,21999,20,17599.2,69.8,7,No,5.0
+ED_3162,Delhi NCR,Cybersecurity,Instagram Ads,18999,10,17099.1,63.4,8,No,2.9
+ED_3163,Pune,AI & Machine Learning,Organic Search,24999,15,21249.15,78.1,7,No,5.0
+ED_3164,Pune,Cloud & DevOps,Organic Search,21999,10,19799.1,88.2,10,Yes,5.0
+ED_3165,Pune,Cloud & DevOps,YouTube,21999,10,19799.1,39.2,6,No,3.4
+ED_3166,Delhi NCR,Full Stack Web Dev,YouTube,19999,10,17999.1,50.6,8,No,4.0
+ED_3167,Hyderabad,Full Stack Web Dev,Instagram Ads,19999,10,17999.1,58.6,7,No,4.0
+ED_3168,Mumbai,AI & Machine Learning,Instagram Ads,24999,10,22499.1,53.1,7,No,1.6
+ED_3169,Pune,Full Stack Web Dev,Organic Search,19999,0,19999.0,46.9,7,No,2.6
+ED_3170,Hyderabad,AI & Machine Learning,YouTube,24999,0,24999.0,47.9,1,No,2.9
+ED_3171,Pune,Full Stack Web Dev,College Seminar,19999,10,17999.1,15.6,1,No,4.5
+ED_3172,Delhi NCR,Data Analytics,Organic Search,14999,0,14999.0,78.0,10,Yes,
+ED_3173,Hyderabad,Data Analytics,YouTube,14999,0,14999.0,79.6,9,Yes,5.0
+ED_3174,Delhi NCR,Full Stack Web Dev,Instagram Ads,19999,10,17999.1,29.2,2,No,3.6
+ED_3175,Delhi NCR,Full Stack Web Dev,Organic Search,19999,15,16999.15,58.7,8,No,3.0
+ED_3176,Mumbai,AI & Machine Learning,Organic Search,24999,10,22499.1,81.7,12,Yes,5.0
+ED_3177,Delhi NCR,AI & Machine Learning,Instagram Ads,24999,10,22499.1,85.2,10,Yes,3.9
+ED_3178,Delhi NCR,Data Analytics,YouTube,14999,10,13499.1,62.3,5,No,2.6
+ED_3179,Delhi NCR,AI & Machine Learning,YouTube,24999,10,22499.1,100.0,11,Yes,4.2
+ED_3180,Delhi NCR,Cloud & DevOps,Instagram Ads,21999,0,21999.0,95.5,12,Yes,5.0
+ED_3054,Hyderabad,Cybersecurity,Referral,18999,0,18999.0,80.9,9,Yes,4.1
+ED_3045,Bengaluru,Cloud & DevOps,YouTube,21999,30,15399.3,63.1,7,No,3.3
+ED_3018,Pune,Data Analytics,YouTube,14999,10,13499.1,100.0,10,Yes,5.0
+ED_3112,Hyderabad,Full Stack Web Dev,Referral,19999,10,17999.1,,7,No,2.9
