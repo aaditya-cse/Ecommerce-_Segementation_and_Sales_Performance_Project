@@ -2,16 +2,18 @@ import os
 import sys
 import base64
 import tempfile
+import traceback
+
+# Vercel read-only filesystem fix for Matplotlib & Temp files (MUST be before importing matplotlib)
+os.environ["MPLCONFIGDIR"] = os.path.join(tempfile.gettempdir(), "matplotlib")
+os.makedirs(os.environ["MPLCONFIGDIR"], exist_ok=True)
+
 from flask import Flask, request, render_template_string
 
-# multi_agent folder ko Python path mein add karo
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-sys.path.append(os.path.join(ROOT_DIR, "multi_agent"))
-
-from universal_analyst_agent import build_universal_graph
+sys.path.insert(0, os.path.join(ROOT_DIR, "multi_agent"))
 
 app = Flask(__name__)
-agent_graph = build_universal_graph()
 
 HTML_TEMPLATE = """
 <!DOCTYPE html>
@@ -30,7 +32,7 @@ HTML_TEMPLATE = """
         button:hover { background: #0369a1; }
         pre { white-space: pre-wrap; background: #0f172a; padding: 16px; border-radius: 8px; border: 1px solid #334155; line-height: 1.6; font-family: inherit; }
         img { max-width: 100%; border-radius: 8px; margin-top: 16px; border: 1px solid #334155; }
-        .error { color: #f87171; font-weight: 600; }
+        .error { color: #f87171; font-weight: 600; background: #450a0a; padding: 12px; border-radius: 8px; }
     </style>
 </head>
 <body>
@@ -56,7 +58,7 @@ HTML_TEMPLATE = """
     </div>
 
     {% if error %}
-    <div class="card"><p class="error">{{ error }}</p></div>
+    <div class="card"><pre class="error">{{ error }}</pre></div>
     {% endif %}
 
     {% if report %}
@@ -76,11 +78,22 @@ HTML_TEMPLATE = """
 @app.route("/", defaults={"path": ""}, methods=["GET", "POST"])
 @app.route("/<path:path>", methods=["GET", "POST"])
 def home(path):
+    report = ""
+    chart_b64 = ""
+    error = ""
+    goal = "Clean duplicates and missing values, summarize top KPIs, and plot the primary revenue driver."
+
     if request.method == "POST":
         goal = request.form.get("user_goal", "").strip() or goal
         uploaded = request.files.get("uploaded_csv")
 
         try:
+            if not os.getenv("GROQ_API_KEY"):
+                raise ValueError("GROQ_API_KEY is missing! Add it in Vercel Project Settings -> Environment Variables and Redeploy.")
+
+            from universal_analyst_agent import build_universal_graph
+            agent_graph = build_universal_graph()
+
             if uploaded and uploaded.filename:
                 tmp_csv = os.path.join(tempfile.gettempdir(), uploaded.filename)
                 uploaded.save(tmp_csv)
@@ -88,6 +101,8 @@ def home(path):
             else:
                 rel_path = request.form.get("sample_csv", "data/raw/ecommerce_sales_data.csv")
                 csv_path = os.path.join(ROOT_DIR, rel_path)
+                if not os.path.exists(csv_path):
+                    raise FileNotFoundError(f"Sample dataset not found at {csv_path}. Try uploading a CSV file directly.")
 
             result = agent_graph.invoke({
                 "csv_path": csv_path,
@@ -107,7 +122,7 @@ def home(path):
             if c_path and os.path.exists(c_path):
                 with open(c_path, "rb") as img_f:
                     chart_b64 = base64.b64encode(img_f.read()).decode("utf-8")
-        except Exception as e:
-            error = f"Pipeline Error: {str(e)}"
+        except Exception:
+            error = traceback.format_exc()
 
     return render_template_string(HTML_TEMPLATE, report=report, chart_b64=chart_b64, error=error, goal=goal)
