@@ -1,0 +1,251 @@
+Delivery_ID,City,Cuisine_Type,Customer_Tier,Distance_KM,Order_Value_INR,Weather_Condition,Delivery_Time_Mins,Is_Delayed,Customer_Rating
+DLV_2001,Bengaluru,Healthy Bowls,Regular,6.7,230.49,Rainy,49,Yes,3.0
+DLV_2002,Delhi NCR,Biryani,Regular,6.7,277.54,Rainy,48,Yes,2.2
+DLV_2003,Mumbai,Healthy Bowls,Pro Member,3.0,483.52,Clear,36,No,4.8
+DLV_2004,Mumbai,Pizza & Burgers,New User,3.6,536.64,Rainy,52,Yes,2.5
+DLV_2005,Pune,Chinese,New User,7.1,406.15,Rainy,45,No,4.7
+DLV_2006,Mumbai,North Indian,Pro Member,3.1,483.95,Clear,21,No,4.5
+DLV_2007,Bengaluru,Healthy Bowls,Regular,4.1,180.3,Clear,28,No,4.8
+DLV_2008,Bengaluru,Biryani,Regular,9.4,429.8,Rainy,66,Yes,2.2
+DLV_2009,Delhi NCR,Healthy Bowls,Pro Member,3.6,512.25,Rainy,45,No,5.0
+DLV_2010,Hyderabad,Biryani,Regular,12.1,544.75,Clear,51,Yes,1.4
+DLV_2011,Mumbai,Pizza & Burgers,Pro Member,2.2,232.84,Rainy,42,No,4.1
+DLV_2012,Delhi NCR,Chinese,Regular,6.2,391.01,Cloudy,35,No,4.3
+DLV_2013,Mumbai,Biryani,New User,3.2,557.03,Clear,29,No,4.7
+DLV_2014,Bengaluru,Pizza & Burgers,Regular,7.5,188.77,Clear,31,No,5.0
+DLV_2015,Bengaluru,Chinese,New User,4.9,302.45,Clear,31,No,3.9
+DLV_2016,Delhi NCR,North Indian,New User,2.1,486.34,Peak Traffic,41,No,4.2
+DLV_2017,Delhi NCR,Pizza & Burgers,Regular,3.7,442.46,Peak Traffic,44,No,4.9
+DLV_2018,Hyderabad,Biryani,Regular,3.2,656.48,Rainy,45,No,3.9
+DLV_2019,Pune,Biryani,Regular,2.7,387.87,Peak Traffic,43,No,4.5
+DLV_2020,Bengaluru,North Indian,Regular,6.0,387.48,Clear,25,No,4.1
+DLV_2021,Bengaluru,Chinese,Pro Member,6.2,391.73,Rainy,45,No,4.3
+DLV_2022,Mumbai,Healthy Bowls,New User,0.8,422.82,Clear,18,No,3.4
+DLV_2023,Hyderabad,Pizza & Burgers,Pro Member,2.7,470.89,Peak Traffic,47,Yes,2.4
+DLV_2024,Mumbai,Biryani,Pro Member,4.4,347.62,Clear,23,No,5.0
+DLV_2025,Bengaluru,Chinese,Pro Member,7.0,520.11,Clear,41,No,4.4
+DLV_2026,Delhi NCR,Pizza & Burgers,Regular,7.6,251.91,Clear,34,No,4.4
+DLV_2027,Mumbai,Biryani,Pro Member,3.9,628.78,Clear,30,No,4.6
+DLV_2028,Pune,Chinese,Regular,8.3,284.69,Peak Traffic,53,Yes,2.4
+DLV_2029,Hyderabad,Chinese,Pro Member,6.2,389.07,Peak Traffic,45,No,3.9
+DLV_2030,Mumbai,Biryani,New User,8.1,209.28,Clear,32,No,3.7
+DLV_2031,Pune,North Indian,Regular,2.5,584.39,Clear,19,No,4.6
+DLV_2032,Bengaluru,Chinese,Regular,1.5,481.93,Cloudy,25,No,4.7
+DLV_2033,Bengaluru,Chinese,Regular,15.8,182.59,Clear,63,Yes,2.8
+DLV_2034,Mumbai,Pizza & Burgers,New User,1.5,380.65,Rainy,40,No,4.0
+DLV_2035,Mumbai,Biryani,Pro Member,4.8,742.47,Clear,29,No,4.6
+DLV_2036,Bengaluru,North Indian,New User,9.1,392.12,Cloudy,29,No,3.8
+DLV_2037,Delhi NCR,Healthy Bowls,Regular,0.9,322.04,Clear,16,No,5.0
+DLV_2038,Pune,Pizza & Burgers,New User,4.2,660.21,Clear,26,No,4.8
+DLV_2039,Bengaluru,Pizza & Burgers,New User,5.2,387.76,Rainy,41,No,4.6
+DLV_2040,Pune,Chinese,Pro Member,1.5,525.03,Clear,23,No,4.8
+DLV_2041,Mumbai,Chinese,Regular,2.5,328.89,Peak Traffic,30,No,
+DLV_2042,Mumbai,Biryani,Regular,8.8,418.89,Peak Traffic,48,Yes,1.3
+DLV_2043,Bengaluru,Chinese,New User,10.9,368.54,Clear,42,No,3.4
+DLV_2044,Bengaluru,North Indian,Regular,11.5,384.46,Cloudy,45,No,4.8
+DLV_2045,Bengaluru,Chinese,Pro Member,10.1,333.23,Peak Traffic,46,Yes,3.5
+DLV_2046,Bengaluru,Chinese,Regular,5.3,363.66,Cloudy,32,No,4.7
+DLV_2047,Mumbai,North Indian,Pro Member,4.3,374.34,Peak Traffic,39,No,4.5
+DLV_2048,Hyderabad,Chinese,Regular,13.3,176.2,Rainy,66,Yes,2.2
+DLV_2049,Bengaluru,Biryani,Regular,1.4,195.19,Clear,21,No,3.5
+DLV_2050,Hyderabad,Healthy Bowls,Pro Member,6.6,236.51,Clear,28,No,5.0
+DLV_2051,Mumbai,North Indian,New User,3.0,385.47,Peak Traffic,38,No,4.8
+DLV_2052,Mumbai,Pizza & Burgers,Regular,4.8,120.0,Clear,30,No,4.2
+DLV_2053,Bengaluru,North Indian,Pro Member,15.2,439.14,Rainy,69,Yes,2.1
+DLV_2054,Bengaluru,Pizza & Burgers,New User,4.8,196.77,Clear,35,No,4.7
+DLV_2055,Delhi NCR,Pizza & Burgers,Regular,2.1,227.91,Clear,28,No,5.0
+DLV_2056,Delhi NCR,North Indian,Regular,7.7,419.82,Clear,37,No,4.0
+DLV_2057,Mumbai,Pizza & Burgers,Pro Member,3.6,134.84,Peak Traffic,40,No,5.0
+DLV_2058,Hyderabad,Healthy Bowls,Pro Member,9.3,336.43,Peak Traffic,63,Yes,2.1
+DLV_2059,Delhi NCR,Biryani,Regular,2.1,242.69,Clear,18,No,4.4
+DLV_2060,Hyderabad,North Indian,New User,8.5,354.06,Peak Traffic,53,Yes,2.5
+DLV_2061,Delhi NCR,Chinese,Pro Member,13.5,439.76,Clear,56,Yes,3.1
+DLV_2062,Hyderabad,Biryani,Regular,4.8,378.25,Clear,29,No,4.8
+DLV_2063,Bengaluru,Pizza & Burgers,Regular,7.6,403.21,Clear,32,No,5.0
+DLV_2064,Mumbai,North Indian,New User,4.7,547.52,Clear,28,No,4.8
+DLV_2065,Delhi NCR,Biryani,Regular,5.8,403.86,Rainy,52,Yes,1.4
+DLV_2066,Mumbai,Chinese,Regular,1.8,260.77,Clear,27,No,2.8
+DLV_2067,Mumbai,Pizza & Burgers,New User,2.5,126.06,Rainy,37,No,2.8
+DLV_2068,Pune,Healthy Bowls,New User,2.9,503.59,Peak Traffic,35,No,3.9
+DLV_2069,Pune,Chinese,Regular,1.7,359.4,Cloudy,28,No,4.6
+DLV_2070,Bengaluru,Biryani,Pro Member,15.4,405.65,Clear,60,Yes,2.4
+DLV_2071,Pune,Chinese,Pro Member,2.9,614.39,Clear,17,No,3.8
+DLV_2072,Delhi NCR,Healthy Bowls,Regular,5.4,542.66,Clear,29,No,4.8
+DLV_2073,Bengaluru,Pizza & Burgers,Pro Member,6.7,515.19,Clear,30,No,4.0
+DLV_2074,Delhi NCR,Biryani,Regular,1.9,157.27,Clear,25,No,3.7
+DLV_2075,Bengaluru,Healthy Bowls,Pro Member,3.5,340.36,Cloudy,33,No,4.8
+DLV_2076,Delhi NCR,North Indian,Pro Member,7.6,468.65,Peak Traffic,54,Yes,2.2
+DLV_2077,Bengaluru,North Indian,Regular,3.0,605.52,Clear,19,No,5.0
+DLV_2078,Bengaluru,North Indian,Regular,3.7,576.68,Peak Traffic,46,Yes,3.3
+DLV_2079,Delhi NCR,North Indian,New User,1.5,199.87,Cloudy,17,No,4.6
+DLV_2080,Hyderabad,Healthy Bowls,Pro Member,3.5,401.17,Peak Traffic,50,Yes,1.9
+DLV_2081,Mumbai,Pizza & Burgers,Regular,10.1,435.18,Clear,47,Yes,2.3
+DLV_2082,Mumbai,Healthy Bowls,New User,3.2,523.45,Clear,16,No,5.0
+DLV_2083,Mumbai,Chinese,Regular,2.7,303.03,Clear,27,No,4.8
+DLV_2084,Delhi NCR,North Indian,Regular,9.6,313.31,Clear,41,No,3.6
+DLV_2085,Mumbai,Healthy Bowls,Regular,2.9,453.58,Clear,26,No,4.1
+DLV_2086,Bengaluru,Healthy Bowls,Regular,6.1,405.05,Clear,27,No,4.5
+DLV_2087,Hyderabad,Chinese,Regular,2.0,120.0,Rainy,41,No,4.3
+DLV_2088,Hyderabad,Biryani,Regular,1.3,449.12,Clear,12,No,5.0
+DLV_2089,Hyderabad,Biryani,Pro Member,10.6,266.83,Peak Traffic,55,Yes,3.4
+DLV_2090,Delhi NCR,Biryani,New User,4.2,596.4,Clear,24,No,4.7
+DLV_2091,Delhi NCR,Healthy Bowls,Pro Member,4.6,502.69,Clear,27,No,5.0
+DLV_2092,Mumbai,Chinese,Regular,6.0,397.78,Cloudy,26,No,4.3
+DLV_2093,Pune,Biryani,Pro Member,3.9,425.88,Clear,26,No,4.1
+DLV_2094,Delhi NCR,North Indian,Regular,18.0,134.99,Rainy,69,Yes,3.0
+DLV_2095,Hyderabad,Biryani,Regular,2.4,714.08,Peak Traffic,33,No,4.3
+DLV_2096,Delhi NCR,Pizza & Burgers,Regular,14.4,278.39,Rainy,68,Yes,3.4
+DLV_2097,Hyderabad,Pizza & Burgers,Pro Member,3.6,300.0,Rainy,44,No,3.6
+DLV_2098,Bengaluru,Chinese,Regular,4.0,120.0,Peak Traffic,44,No,4.6
+DLV_2099,Bengaluru,North Indian,Pro Member,1.1,254.77,Rainy,42,No,4.4
+DLV_2100,Bengaluru,North Indian,Regular,1.4,166.29,Clear,12,No,5.0
+DLV_2101,Bengaluru,Healthy Bowls,Regular,7.3,646.45,Clear,32,No,4.8
+DLV_2102,Delhi NCR,Healthy Bowls,New User,1.1,310.32,Rainy,38,No,4.1
+DLV_2103,Delhi NCR,Pizza & Burgers,Pro Member,4.4,670.81,Peak Traffic,40,No,3.7
+DLV_2104,Bengaluru,Chinese,Pro Member,4.0,256.37,Rainy,47,Yes,2.7
+DLV_2105,Bengaluru,North Indian,Pro Member,3.5,555.91,Clear,25,No,5.0
+DLV_2106,Bengaluru,Biryani,New User,4.9,317.36,Clear,31,No,4.9
+DLV_2107,Bengaluru,Pizza & Burgers,New User,4.8,316.76,Clear,27,No,4.1
+DLV_2108,Bengaluru,Pizza & Burgers,New User,6.7,307.85,Clear,37,No,2.6
+DLV_2109,Hyderabad,North Indian,New User,3.5,431.11,Peak Traffic,34,No,4.7
+DLV_2110,Hyderabad,Pizza & Burgers,Regular,5.4,505.75,Peak Traffic,46,Yes,2.5
+DLV_2111,Bengaluru,Biryani,Regular,3.0,480.78,Peak Traffic,45,No,5.0
+DLV_2112,Bengaluru,Pizza & Burgers,Regular,9.6,505.61,Clear,40,No,3.5
+DLV_2113,Pune,Chinese,New User,4.9,274.42,Cloudy,21,No,4.3
+DLV_2114,Pune,Biryani,Regular,9.2,533.06,Peak Traffic,54,Yes,2.8
+DLV_2115,Mumbai,Chinese,Pro Member,2.8,627.1,Clear,32,No,
+DLV_2116,Delhi NCR,North Indian,Pro Member,7.6,520.91,Clear,42,No,3.6
+DLV_2117,Delhi NCR,Healthy Bowls,New User,1.5,136.07,Rainy,46,Yes,2.1
+DLV_2118,Delhi NCR,Pizza & Burgers,Regular,3.7,622.47,Rainy,41,No,5.0
+DLV_2119,Delhi NCR,Biryani,Regular,6.9,374.63,Clear,37,No,4.2
+DLV_2120,Delhi NCR,North Indian,Regular,10.5,317.87,Clear,41,No,
+DLV_2121,Mumbai,Pizza & Burgers,Regular,7.2,320.51,Clear,38,No,4.7
+DLV_2122,Pune,Biryani,Regular,4.8,581.32,Peak Traffic,46,Yes,4.0
+DLV_2123,Bengaluru,North Indian,Pro Member,5.4,348.35,Cloudy,34,No,4.0
+DLV_2124,Bengaluru,North Indian,Regular,7.0,393.33,Clear,39,No,4.3
+DLV_2125,Delhi NCR,Chinese,Pro Member,9.2,229.03,Peak Traffic,45,No,
+DLV_2126,Bengaluru,Healthy Bowls,Pro Member,5.5,337.81,Rainy,51,Yes,4.0
+DLV_2127,Bengaluru,Chinese,Regular,7.1,337.27,Clear,37,No,5.0
+DLV_2128,Mumbai,Healthy Bowls,Pro Member,10.4,551.36,Peak Traffic,52,Yes,2.7
+DLV_2129,Bengaluru,North Indian,Pro Member,4.3,652.16,Clear,33,No,5.0
+DLV_2130,Bengaluru,Pizza & Burgers,Pro Member,10.4,476.0,Clear,40,No,4.9
+DLV_2131,Hyderabad,Biryani,New User,2.9,247.91,Peak Traffic,33,No,4.5
+DLV_2132,Delhi NCR,Pizza & Burgers,Pro Member,5.7,523.26,Cloudy,34,No,4.5
+DLV_2133,Bengaluru,Chinese,Regular,13.8,468.74,Rainy,63,Yes,2.3
+DLV_2134,Bengaluru,Biryani,Regular,11.5,254.4,Clear,47,Yes,3.0
+DLV_2135,Delhi NCR,Healthy Bowls,Regular,5.0,332.7,Clear,28,No,4.3
+DLV_2136,Hyderabad,Healthy Bowls,Regular,8.9,427.18,Peak Traffic,51,Yes,2.1
+DLV_2137,Mumbai,Healthy Bowls,Regular,4.1,247.35,Rainy,44,No,4.2
+DLV_2138,Bengaluru,Pizza & Burgers,Regular,3.5,313.65,Clear,20,No,3.3
+DLV_2139,Delhi NCR,Pizza & Burgers,Pro Member,1.9,363.88,Rainy,36,No,
+DLV_2140,Bengaluru,North Indian,Regular,7.1,488.3,Rainy,45,No,5.0
+DLV_2141,Bengaluru,Biryani,Pro Member,4.5,519.81,Rainy,38,No,5.0
+DLV_2142,Pune,Pizza & Burgers,Pro Member,1.9,634.69,Clear,18,No,4.4
+DLV_2143,Bengaluru,Pizza & Burgers,Regular,10.0,511.31,Peak Traffic,58,Yes,2.7
+DLV_2144,Bengaluru,Pizza & Burgers,Regular,4.1,294.59,Clear,27,No,4.2
+DLV_2145,Bengaluru,Chinese,Pro Member,7.3,486.99,Clear,40,No,4.1
+DLV_2146,Delhi NCR,Chinese,Pro Member,2.5,453.05,Peak Traffic,31,No,4.1
+DLV_2147,Bengaluru,North Indian,New User,1.6,231.04,Peak Traffic,37,No,5.0
+DLV_2148,Bengaluru,Biryani,Pro Member,0.8,594.65,Clear,20,No,4.6
+DLV_2149,Mumbai,Healthy Bowls,Regular,4.0,257.36,Peak Traffic,32,No,
+DLV_2150,Hyderabad,North Indian,Regular,7.7,423.29,Cloudy,40,No,5.0
+DLV_2151,Bengaluru,Biryani,Regular,,479.29,Cloudy,35,No,5.0
+DLV_2152,Bengaluru,Biryani,Regular,4.4,250.7,Clear,21,No,4.6
+DLV_2153,Hyderabad,North Indian,Pro Member,9.4,433.05,Clear,43,No,3.8
+DLV_2154,Mumbai,Biryani,Pro Member,5.6,494.44,Peak Traffic,46,Yes,3.1
+DLV_2155,Hyderabad,Pizza & Burgers,Regular,8.5,522.42,Peak Traffic,47,Yes,
+DLV_2156,Delhi NCR,North Indian,Pro Member,,405.07,Rainy,49,Yes,2.2
+DLV_2157,Bengaluru,Pizza & Burgers,Pro Member,15.7,317.29,Peak Traffic,67,Yes,2.6
+DLV_2158,Delhi NCR,North Indian,New User,,481.42,Peak Traffic,56,Yes,3.4
+DLV_2159,Bengaluru,Chinese,New User,4.2,212.63,Clear,28,No,5.0
+DLV_2160,Bengaluru,Biryani,Regular,4.5,120.0,Peak Traffic,36,No,4.5
+DLV_2161,Mumbai,Pizza & Burgers,Regular,2.5,300.26,Cloudy,24,No,4.1
+DLV_2162,Bengaluru,Healthy Bowls,Regular,6.4,533.06,Peak Traffic,40,No,4.2
+DLV_2163,Delhi NCR,Healthy Bowls,Pro Member,5.5,520.31,Rainy,52,Yes,2.8
+DLV_2164,Hyderabad,Biryani,Regular,3.2,510.07,Clear,18,No,5.0
+DLV_2165,Delhi NCR,Biryani,Regular,2.4,456.67,Peak Traffic,37,No,5.0
+DLV_2166,Hyderabad,Chinese,Regular,7.2,247.7,Clear,41,No,4.3
+DLV_2167,Mumbai,Healthy Bowls,Regular,11.6,619.97,Rainy,57,Yes,2.6
+DLV_2168,Hyderabad,Healthy Bowls,Pro Member,,374.97,Rainy,37,No,4.4
+DLV_2169,Bengaluru,Pizza & Burgers,Pro Member,2.9,674.69,Rainy,39,No,3.2
+DLV_2170,Mumbai,Pizza & Burgers,Pro Member,1.6,527.56,Clear,21,No,5.0
+DLV_2171,Bengaluru,Pizza & Burgers,New User,4.1,426.88,Peak Traffic,44,No,4.2
+DLV_2172,Bengaluru,Pizza & Burgers,Pro Member,3.9,266.01,Rainy,49,Yes,3.6
+DLV_2173,Mumbai,Biryani,Regular,2.3,299.35,Clear,21,No,4.7
+DLV_2174,Hyderabad,Chinese,Regular,4.7,509.79,Clear,29,No,4.3
+DLV_2175,Mumbai,Biryani,Pro Member,3.8,262.63,Peak Traffic,41,No,5.0
+DLV_2176,Bengaluru,Chinese,Pro Member,18.0,380.52,Clear,61,Yes,3.3
+DLV_2177,Mumbai,Pizza & Burgers,Regular,4.6,469.45,Peak Traffic,39,No,4.3
+DLV_2178,Hyderabad,North Indian,Regular,4.4,288.32,Peak Traffic,55,Yes,2.4
+DLV_2179,Mumbai,Biryani,Regular,4.5,223.71,Peak Traffic,42,No,5.0
+DLV_2180,Delhi NCR,North Indian,Pro Member,7.3,427.7,Clear,35,No,4.2
+DLV_2181,Mumbai,Healthy Bowls,Regular,10.8,491.5,Peak Traffic,63,Yes,1.5
+DLV_2182,Hyderabad,Pizza & Burgers,Regular,3.4,497.88,Peak Traffic,35,No,4.3
+DLV_2183,Delhi NCR,Chinese,Regular,8.7,276.18,Clear,39,No,3.5
+DLV_2184,Delhi NCR,Chinese,Regular,9.3,151.89,Clear,36,No,3.7
+DLV_2185,Hyderabad,North Indian,Pro Member,5.4,381.83,Clear,28,No,4.7
+DLV_2186,Pune,Pizza & Burgers,Pro Member,2.2,614.33,Cloudy,20,No,4.1
+DLV_2187,Pune,Healthy Bowls,Pro Member,6.9,706.07,Clear,31,No,4.0
+DLV_2188,Hyderabad,Biryani,Regular,6.9,328.61,Cloudy,37,No,4.3
+DLV_2189,Delhi NCR,North Indian,Regular,0.8,325.15,Clear,11,No,3.8
+DLV_2190,Hyderabad,Chinese,Pro Member,3.2,436.24,Clear,20,No,4.5
+DLV_2191,Bengaluru,Healthy Bowls,New User,6.3,385.14,Peak Traffic,43,No,3.3
+DLV_2192,Hyderabad,North Indian,New User,2.5,269.79,Rainy,42,No,4.6
+DLV_2193,Delhi NCR,North Indian,Regular,4.4,366.33,Clear,20,No,4.3
+DLV_2194,Bengaluru,Chinese,New User,2.5,414.66,Clear,23,No,3.8
+DLV_2195,Mumbai,Chinese,Pro Member,0.8,416.09,Rainy,38,No,4.5
+DLV_2196,Mumbai,Pizza & Burgers,New User,7.7,421.36,Clear,34,No,4.7
+DLV_2197,Hyderabad,Healthy Bowls,Pro Member,3.9,530.01,Clear,28,No,4.4
+DLV_2198,Pune,Biryani,Pro Member,4.8,527.74,Clear,29,No,4.9
+DLV_2199,Mumbai,Chinese,New User,13.5,353.74,Peak Traffic,65,Yes,1.5
+DLV_2200,Mumbai,North Indian,Regular,3.5,288.3,Clear,22,No,5.0
+DLV_2201,Bengaluru,North Indian,Regular,7.4,521.0,Clear,38,No,
+DLV_2202,Delhi NCR,Pizza & Burgers,New User,4.7,449.9,Clear,32,No,4.8
+DLV_2203,Mumbai,Healthy Bowls,Regular,1.2,243.61,Clear,21,No,3.5
+DLV_2204,Delhi NCR,North Indian,Regular,2.8,477.15,Peak Traffic,48,Yes,2.3
+DLV_2205,Delhi NCR,North Indian,New User,2.0,373.62,Clear,21,No,4.4
+DLV_2206,Delhi NCR,Healthy Bowls,Pro Member,2.8,493.06,Rainy,44,No,5.0
+DLV_2207,Mumbai,Chinese,Pro Member,1.3,384.71,Clear,21,No,4.4
+DLV_2208,Mumbai,Pizza & Burgers,Regular,14.0,531.58,Rainy,60,Yes,3.0
+DLV_2209,Bengaluru,Healthy Bowls,New User,3.1,324.41,Rainy,40,No,4.4
+DLV_2210,Mumbai,North Indian,New User,3.2,375.58,Clear,21,No,5.0
+DLV_2211,Delhi NCR,Biryani,Regular,4.0,347.33,Rainy,42,No,4.8
+DLV_2212,Delhi NCR,Chinese,Regular,7.4,256.47,Clear,36,No,5.0
+DLV_2213,Pune,Chinese,Regular,6.6,490.7,Rainy,54,Yes,2.1
+DLV_2214,Hyderabad,North Indian,Regular,0.8,189.89,Clear,23,No,3.8
+DLV_2215,Delhi NCR,Pizza & Burgers,New User,6.2,135.99,Clear,23,No,5.0
+DLV_2216,Pune,North Indian,Pro Member,9.1,634.71,Peak Traffic,51,Yes,1.9
+DLV_2217,Delhi NCR,Biryani,Regular,6.8,225.39,Clear,39,No,4.1
+DLV_2218,Delhi NCR,Pizza & Burgers,Regular,2.5,496.12,Cloudy,28,No,5.0
+DLV_2219,Bengaluru,Biryani,Regular,4.8,631.43,Clear,30,No,4.4
+DLV_2220,Bengaluru,Healthy Bowls,Regular,2.8,279.22,Peak Traffic,35,No,5.0
+DLV_2221,Mumbai,North Indian,Pro Member,2.8,377.13,Clear,24,No,3.8
+DLV_2222,Pune,Biryani,Pro Member,5.5,376.98,Clear,30,No,4.1
+DLV_2223,Pune,Biryani,Regular,14.7,249.69,Peak Traffic,64,Yes,2.9
+DLV_2224,Mumbai,Biryani,Pro Member,3.1,370.45,Peak Traffic,44,No,4.4
+DLV_2225,Bengaluru,Biryani,Regular,3.1,473.48,Peak Traffic,38,No,4.8
+DLV_2226,Mumbai,Healthy Bowls,Regular,8.6,480.78,Clear,43,No,5.0
+DLV_2227,Hyderabad,Biryani,Pro Member,9.8,245.79,Clear,38,No,5.0
+DLV_2228,Bengaluru,Chinese,New User,8.1,465.46,Rainy,50,Yes,2.6
+DLV_2229,Bengaluru,Biryani,Pro Member,2.2,687.12,Clear,15,No,4.5
+DLV_2230,Bengaluru,North Indian,Pro Member,5.6,730.0,Peak Traffic,40,No,4.7
+DLV_2231,Pune,Biryani,Regular,4.7,308.8,Clear,36,No,4.0
+DLV_2232,Pune,Healthy Bowls,New User,9.9,624.28,Rainy,63,Yes,3.1
+DLV_2233,Delhi NCR,Healthy Bowls,Pro Member,6.2,597.79,Cloudy,31,No,4.7
+DLV_2234,Delhi NCR,Biryani,New User,10.0,500.01,Rainy,60,Yes,2.5
+DLV_2235,Mumbai,North Indian,Pro Member,7.3,401.33,Clear,44,No,4.9
+DLV_2236,Bengaluru,Healthy Bowls,Pro Member,4.6,637.31,Peak Traffic,41,No,3.0
+DLV_2237,Bengaluru,Healthy Bowls,Pro Member,10.6,645.49,Clear,41,No,4.9
+DLV_2238,Hyderabad,North Indian,Regular,6.7,411.39,Rainy,47,Yes,3.0
+DLV_2239,Delhi NCR,Pizza & Burgers,Regular,1.8,193.5,Clear,19,No,4.1
+DLV_2240,Pune,Healthy Bowls,Regular,,154.5,Peak Traffic,43,No,3.5
+DLV_2241,Bengaluru,Biryani,Regular,2.7,535.52,Rainy,42,No,4.3
+DLV_2242,Bengaluru,Healthy Bowls,New User,2.8,352.93,Clear,23,No,4.5
+DLV_2243,Bengaluru,Chinese,Pro Member,2.9,220.65,Clear,38,No,4.6
+DLV_2244,Hyderabad,Biryani,Regular,1.2,343.57,Clear,27,No,5.0
+DLV_2245,Bengaluru,North Indian,Regular,8.7,120.0,Rainy,52,Yes,1.9
+DLV_2004,Mumbai,Pizza & Burgers,New User,3.6,536.64,Rainy,52,Yes,2.5
+DLV_2083,Mumbai,Chinese,Regular,2.7,303.03,Clear,27,No,4.8
+DLV_2239,Delhi NCR,Pizza & Burgers,Regular,1.8,193.5,Clear,19,No,4.1
+DLV_2081,Mumbai,Pizza & Burgers,Regular,10.1,435.18,Clear,47,Yes,2.3
+DLV_2233,Delhi NCR,Healthy Bowls,Pro Member,6.2,597.79,Cloudy,31,No,4.7
