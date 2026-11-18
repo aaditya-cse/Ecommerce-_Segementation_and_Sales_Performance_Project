@@ -1,0 +1,10 @@
+﻿.env
+multi_agent/.env
+.venv/
+multi_agent/.venv/
+venv/
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.DS_Store
+Thumbs.db

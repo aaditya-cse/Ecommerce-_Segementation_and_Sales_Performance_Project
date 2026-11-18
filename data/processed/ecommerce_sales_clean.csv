@@ -1,0 +1,366 @@
+Order_ID,Order_Date,Customer_ID,Age,Gender,Region,Category,Product_Name,Quantity,Unit_Price,Discount_Pct,Total_Sales,Payment_Method,Order_Status,Customer_Rating,Order_Month
+ORD_5194,2026-08-27,CUST_1059,30,Male,West,Electronics,Bluetooth Speaker,1,1899,5.0,1804.05,Debit Card,Delivered,5.0,2026-08
+ORD_5034,2026-10-25,CUST_1011,33,Male,South,Electronics,Bluetooth Speaker,4,1899,10.0,6836.4,Debit Card,Returned,2.6,2026-10
+ORD_5016,2026-09-06,CUST_1006,18,Male,North,Fashion,Cotton T-Shirt,1,699,5.0,664.05,Debit Card,Delivered,2.8,2026-09
+ORD_5310,2026-09-25,CUST_1101,39,Male,South,Beauty & Care,Skincare Combo,1,1199,5.0,1139.05,Credit Card,Returned,2.0,2026-09
+ORD_5058,2026-10-19,CUST_1017,26,Male,West,Home & Kitchen,Coffee Maker,1,3499,20.0,2799.2,Debit Card,Delivered,4.3,2026-10
+ORD_5184,2026-09-16,CUST_1056,36,Female,South,Electronics,Bluetooth Speaker,1,1899,20.0,1519.2,Debit Card,Cancelled,2.8,2026-09
+ORD_5077,2026-09-15,CUST_1022,46,Female,East,Electronics,USB-C Hub,2,1299,5.0,2468.1,Debit Card,Returned,2.0,2026-09
+ORD_5120,2026-10-18,CUST_1033,31,Female,East,Electronics,Smartwatch,1,4999,10.0,4499.1,Credit Card,Delivered,4.9,2026-10
+ORD_5153,2026-08-12,CUST_1045,41,Female,South,Fashion,Cotton T-Shirt,1,699,0.0,699.0,UPI,Delivered,4.2,2026-08
+ORD_5127,2026-08-01,CUST_1035,18,Male,North,Fashion,Running Shoes,3,3299,15.0,8412.45,Credit Card,Delivered,3.9,2026-08
+ORD_5339,2026-08-31,CUST_1110,30,Female,East,Fashion,Backpack,1,1499,20.0,1199.2,UPI,Cancelled,2.1,2026-08
+ORD_5040,2026-09-24,CUST_1013,40,Male,North,Fashion,Denim Jacket,1,2199,0.0,2199.0,Credit Card,Delivered,4.7,2026-09
+ORD_5305,2026-01-15,CUST_1098,29,Male,South,Fashion,Cotton T-Shirt,2,699,0.0,1398.0,UPI,Delivered,3.5,2026-01
+ORD_5056,2026-02-20,CUST_1016,43,Female,North,Fashion,Cotton T-Shirt,1,699,0.0,699.0,Credit Card,Delivered,3.8,2026-02
+ORD_5138,2026-10-02,CUST_1040,23,Female,North,Electronics,Wireless Earbuds,1,2499,5.0,2374.05,Credit Card,Delivered,3.8,2026-10
+ORD_5301,2026-01-27,CUST_1097,39,Male,North,Books & Stationery,Data Analytics Handbook,1,899,0.0,899.0,Net Banking,Delivered,4.5,2026-01
+ORD_5001,2026-10-26,CUST_1001,37,Female,East,Home & Kitchen,Insulated Bottle,3,599,5.0,1707.15,Cash on Delivery,Cancelled,2.4,2026-10
+ORD_5276,2026-03-10,CUST_1087,48,Male,South,Electronics,Wireless Earbuds,1,2499,0.0,2499.0,UPI,Returned,1.9,2026-03
+ORD_5330,2026-08-30,CUST_1108,30,Female,North,Fashion,Running Shoes,1,3299,25.0,2474.25,UPI,Delivered,3.3,2026-08
+ORD_5102,2026-10-14,CUST_1028,27,Female,West,Beauty & Care,Hair Dryer,1,1599,10.0,1439.1,Cash on Delivery,Delivered,3.8,2026-10
+ORD_5010,2026-09-24,CUST_1004,40,Male,North,Electronics,USB-C Hub,2,1299,15.0,2208.3,UPI,Delivered,3.7,2026-09
+ORD_5166,2026-10-03,CUST_1051,51,Female,North,Electronics,Bluetooth Speaker,1,1899,25.0,1424.25,UPI,Delivered,5.0,2026-10
+ORD_5073,2026-09-27,CUST_1021,41,Female,South,Books & Stationery,Desk Organizer,2,499,0.0,998.0,UPI,Delivered,4.9,2026-09
+ORD_5254,2026-10-07,CUST_1080,43,Female,North,Fashion,Backpack,1,1499,0.0,1499.0,Credit Card,Delivered,4.3,2026-10
+ORD_5249,2026-10-10,CUST_1079,54,Male,North,Books & Stationery,Desk Organizer,4,499,0.0,1996.0,UPI,Delivered,4.5,2026-10
+ORD_5196,2026-10-17,CUST_1061,24,Female,South,Fashion,Running Shoes,2,3299,10.0,5938.2,UPI,Delivered,3.7,2026-10
+ORD_5221,2026-07-30,CUST_1070,30,Female,North,Home & Kitchen,Coffee Maker,2,3499,0.0,6998.0,Credit Card,Delivered,4.1,2026-07
+ORD_5293,2026-02-24,CUST_1094,39,Female,South,Electronics,USB-C Hub,1,1299,10.0,1169.1,UPI,Delivered,4.3,2026-02
+ORD_5350,2026-10-07,CUST_1115,54,Female,West,Electronics,Smartwatch,1,4999,20.0,3999.2,Credit Card,Cancelled,2.0,2026-10
+ORD_5362,2026-10-03,CUST_1119,36,Male,West,Beauty & Care,Skincare Combo,1,1199,20.0,959.2,UPI,Returned,2.4,2026-10
+ORD_5026,2026-10-06,CUST_1008,30,Male,East,Electronics,Wireless Earbuds,2,2499,0.0,4998.0,Credit Card,Delivered,3.0,2026-10
+ORD_5109,2026-09-06,CUST_1030,42,Male,North,Fashion,Denim Jacket,1,2199,25.0,1649.25,UPI,Delivered,3.9,2026-09
+ORD_5043,2026-10-09,CUST_1013,40,Male,North,Books & Stationery,Desk Organizer,1,499,15.0,424.15,Cash on Delivery,Cancelled,3.0,2026-10
+ORD_5353,2026-07-14,CUST_1117,54,Male,North,Home & Kitchen,Air Fryer,2,5499,5.0,10448.1,UPI,Delivered,4.3,2026-07
+ORD_5197,2026-10-05,CUST_1061,24,Female,South,Books & Stationery,Desk Organizer,4,499,15.0,1696.6,Cash on Delivery,Cancelled,2.6,2026-10
+ORD_5115,2026-09-05,CUST_1032,35,Male,North,Electronics,USB-C Hub,3,1299,10.0,3507.3,Cash on Delivery,Delivered,4.1,2026-09
+ORD_5064,2026-07-15,CUST_1019,24,Female,East,Electronics,Bluetooth Speaker,3,1899,0.0,5697.0,Credit Card,Delivered,4.0,2026-07
+ORD_5023,2026-09-26,CUST_1008,30,Male,East,Electronics,Smartwatch,1,4999,0.0,4999.0,UPI,Cancelled,4.2,2026-09
+ORD_5343,2026-08-16,CUST_1111,31,Male,West,Beauty & Care,Skincare Combo,1,1199,10.0,1079.1,Net Banking,Delivered,5.0,2026-08
+ORD_5332,2026-10-03,CUST_1108,33,Female,North,Fashion,Backpack,1,1499,25.0,1124.25,Debit Card,Delivered,4.8,2026-10
+ORD_5243,2026-08-06,CUST_1078,29,Female,East,Fashion,Denim Jacket,2,2199,15.0,3738.3,Debit Card,Delivered,4.2,2026-08
+ORD_5346,2026-10-17,CUST_1114,33,Female,East,Home & Kitchen,Air Fryer,2,5499,5.0,10448.1,UPI,Delivered,2.8,2026-10
+ORD_5031,2026-01-16,CUST_1010,30,Female,North,Beauty & Care,Skincare Combo,1,1199,20.0,959.2,UPI,Cancelled,2.1,2026-01
+ORD_5298,2026-09-28,CUST_1096,43,Female,South,Fashion,Denim Jacket,1,2199,0.0,2199.0,UPI,Returned,2.4,2026-09
+ORD_5110,2026-07-27,CUST_1030,42,Male,North,Electronics,USB-C Hub,2,1299,25.0,1948.5,UPI,Delivered,3.4,2026-07
+ORD_5235,2026-10-27,CUST_1075,26,Male,North,Home & Kitchen,Insulated Bottle,1,599,25.0,449.25,Credit Card,Cancelled,2.5,2026-10
+ORD_5091,2026-10-29,CUST_1026,18,Female,North,Electronics,Smartwatch,2,4999,15.0,8498.3,UPI,Returned,1.5,2026-10
+ORD_5057,2026-02-04,CUST_1016,43,Female,North,Home & Kitchen,Air Fryer,3,5499,0.0,16497.0,Credit Card,Delivered,5.0,2026-02
+ORD_5006,2026-02-11,CUST_1002,31,Male,North,Electronics,USB-C Hub,1,1299,10.0,1169.1,UPI,Delivered,4.4,2026-02
+ORD_5046,2026-10-17,CUST_1014,34,Male,South,Fashion,Cotton T-Shirt,3,699,10.0,1887.3,Credit Card,Cancelled,3.4,2026-10
+ORD_5234,2026-10-06,CUST_1075,26,Male,North,Home & Kitchen,Coffee Maker,2,3499,0.0,6998.0,Credit Card,Returned,2.4,2026-10
+ORD_5347,2026-10-18,CUST_1114,33,Female,East,Books & Stationery,Desk Organizer,1,499,20.0,399.2,UPI,Delivered,4.4,2026-10
+ORD_5284,2026-09-28,CUST_1091,36,Female,West,Books & Stationery,Desk Organizer,1,499,10.0,449.1,Debit Card,Returned,2.9,2026-09
+ORD_5263,2026-01-01,CUST_1084,18,Female,South,Home & Kitchen,Insulated Bottle,1,599,0.0,599.0,UPI,Delivered,4.3,2026-01
+ORD_5177,2026-08-08,CUST_1054,37,Male,North,Home & Kitchen,Coffee Maker,1,3499,10.0,3149.1,UPI,Delivered,4.1,2026-08
+ORD_5338,2026-10-11,CUST_1109,32,Male,North,Home & Kitchen,Insulated Bottle,2,599,10.0,1078.2,Debit Card,Delivered,4.8,2026-10
+ORD_5094,2026-10-11,CUST_1026,18,Female,North,Electronics,Wireless Earbuds,2,2499,15.0,4248.3,Cash on Delivery,Delivered,4.1,2026-10
+ORD_5004,2026-09-26,CUST_1001,33,Female,East,Books & Stationery,Desk Organizer,1,499,0.0,499.0,UPI,Returned,3.4,2026-09
+ORD_5360,2026-10-19,CUST_1118,24,Male,East,Home & Kitchen,Insulated Bottle,1,599,10.0,539.1,Credit Card,Delivered,4.8,2026-10
+ORD_5078,2026-09-13,CUST_1022,46,Female,East,Electronics,Smartwatch,1,4999,10.0,4499.1,Debit Card,Delivered,3.5,2026-09
+ORD_5238,2026-10-26,CUST_1075,26,Male,North,Books & Stationery,Desk Organizer,3,499,10.0,1347.3,UPI,Delivered,3.1,2026-10
+ORD_5348,2026-10-05,CUST_1115,54,Female,West,Home & Kitchen,Air Fryer,1,5499,5.0,5224.05,UPI,Delivered,4.4,2026-10
+ORD_5079,2026-10-12,CUST_1023,32,Female,South,Beauty & Care,Skincare Combo,1,1199,20.0,959.2,Credit Card,Delivered,4.6,2026-10
+ORD_5047,2026-08-29,CUST_1014,34,Male,South,Fashion,Backpack,1,1499,0.0,1499.0,Cash on Delivery,Delivered,4.8,2026-08
+ORD_5266,2026-10-10,CUST_1085,23,Male,East,Fashion,Backpack,4,1499,15.0,5096.6,Credit Card,Delivered,3.6,2026-10
+ORD_5074,2026-10-30,CUST_1021,41,Female,South,Fashion,Backpack,2,1499,5.0,2848.1,UPI,Delivered,5.0,2026-10
+ORD_5225,2026-09-29,CUST_1072,43,Male,East,Electronics,Bluetooth Speaker,1,1899,15.0,1614.15,Debit Card,Delivered,3.5,2026-09
+ORD_5125,2026-09-13,CUST_1034,37,Other,West,Electronics,Bluetooth Speaker,2,1899,0.0,3798.0,Cash on Delivery,Delivered,1.8,2026-09
+ORD_5204,2026-10-20,CUST_1063,24,Female,West,Beauty & Care,Hair Dryer,1,1599,10.0,1439.1,Debit Card,Cancelled,2.3,2026-10
+ORD_5083,2026-08-18,CUST_1024,48,Male,North,Fashion,Cotton T-Shirt,1,699,25.0,524.25,Credit Card,Delivered,4.2,2026-08
+ORD_5095,2026-07-14,CUST_1027,24,Female,West,Books & Stationery,Data Analytics Handbook,1,899,10.0,809.1,Credit Card,Delivered,3.3,2026-07
+ORD_5193,2026-08-09,CUST_1059,30,Male,West,Home & Kitchen,Air Fryer,3,5499,5.0,15672.15,UPI,Returned,1.6,2026-08
+ORD_5326,2026-03-19,CUST_1106,35,Male,West,Fashion,Running Shoes,1,3299,0.0,3299.0,UPI,Delivered,3.9,2026-03
+ORD_5212,2026-08-15,CUST_1068,68,Female,West,Books & Stationery,Data Analytics Handbook,1,899,10.0,809.1,Net Banking,Delivered,4.7,2026-08
+ORD_5341,2026-09-09,CUST_1111,31,Male,West,Electronics,Bluetooth Speaker,1,1899,10.0,1709.1,Credit Card,Returned,3.6,2026-09
+ORD_5203,2026-09-19,CUST_1063,24,Female,West,Electronics,Wireless Earbuds,3,2499,15.0,6372.45,UPI,Delivered,3.5,2026-09
+ORD_5076,2026-09-27,CUST_1022,46,Female,East,Electronics,USB-C Hub,2,1299,25.0,1948.5,Credit Card,Delivered,4.1,2026-09
+ORD_5085,2026-08-19,CUST_1025,33,Female,North,Beauty & Care,Hair Dryer,1,1599,15.0,1359.15,Net Banking,Cancelled,1.6,2026-08
+ORD_5354,2026-08-10,CUST_1117,54,Male,North,Beauty & Care,Hair Dryer,1,1599,10.0,1439.1,Debit Card,Returned,2.1,2026-08
+ORD_5017,2026-10-27,CUST_1006,18,Male,North,Fashion,Denim Jacket,1,2199,5.0,2089.05,Cash on Delivery,Delivered,5.0,2026-10
+ORD_5067,2026-09-12,CUST_1020,29,Male,South,Fashion,Running Shoes,1,3299,20.0,2639.2,Credit Card,Returned,2.1,2026-09
+ORD_5272,2026-07-25,CUST_1086,37,Female,West,Beauty & Care,Hair Dryer,1,1599,10.0,1439.1,Debit Card,Delivered,3.6,2026-07
+ORD_5008,2026-10-28,CUST_1004,40,Male,North,Electronics,Wireless Earbuds,1,2499,20.0,1999.2,Credit Card,Cancelled,2.2,2026-10
+ORD_5114,2026-09-24,CUST_1032,35,Male,North,Fashion,Running Shoes,2,3299,0.0,6598.0,UPI,Delivered,3.4,2026-09
+ORD_5117,2026-08-18,CUST_1032,35,Male,North,Electronics,Smartwatch,1,4999,5.0,4749.05,UPI,Delivered,4.6,2026-08
+ORD_5324,2025-11-23,CUST_1106,35,Male,West,Books & Stationery,Data Analytics Handbook,1,899,15.0,764.15,UPI,Delivered,4.5,2025-11
+ORD_5319,2026-10-25,CUST_1104,29,Male,North,Electronics,Wireless Earbuds,2,2499,5.0,4748.1,Credit Card,Delivered,4.1,2026-10
+ORD_5256,2026-07-16,CUST_1081,37,Male,North,Beauty & Care,Hair Dryer,1,1599,10.0,1439.1,Cash on Delivery,Cancelled,2.9,2026-07
+ORD_5302,2026-01-27,CUST_1097,39,Male,North,Fashion,Cotton T-Shirt,3,699,10.0,1887.3,Debit Card,Returned,3.1,2026-01
+ORD_5111,2026-07-10,CUST_1031,35,Male,South,Electronics,USB-C Hub,1,1299,10.0,1169.1,Credit Card,Returned,2.2,2026-07
+ORD_5322,2026-09-27,CUST_1105,28,Male,West,Electronics,Smartwatch,1,4999,10.0,4499.1,Debit Card,Cancelled,3.6,2026-09
+ORD_5061,2026-09-21,CUST_1018,39,Female,East,Books & Stationery,Desk Organizer,2,499,5.0,948.1,Debit Card,Delivered,4.6,2026-09
+ORD_5156,2026-01-06,CUST_1046,20,Male,North,Fashion,Denim Jacket,2,2199,25.0,3298.5,UPI,Delivered,4.6,2026-01
+ORD_5262,2026-09-21,CUST_1083,33,Female,North,Books & Stationery,Data Analytics Handbook,1,899,0.0,899.0,UPI,Delivered,4.1,2026-09
+ORD_5133,2026-09-26,CUST_1038,36,Male,East,Electronics,USB-C Hub,1,1299,5.0,1234.05,UPI,Delivered,5.0,2026-09
+ORD_5223,2026-10-15,CUST_1071,28,Male,South,Fashion,Denim Jacket,1,2199,0.0,2199.0,Net Banking,Delivered,3.7,2026-10
+ORD_5141,2026-08-14,CUST_1042,27,Male,South,Electronics,Bluetooth Speaker,1,1899,0.0,1899.0,Cash on Delivery,Delivered,4.5,2026-08
+ORD_5018,2026-09-11,CUST_1006,18,Male,North,Home & Kitchen,Air Fryer,2,5499,0.0,10998.0,Cash on Delivery,Delivered,4.0,2026-09
+ORD_5149,2026-10-09,CUST_1044,37,Male,South,Home & Kitchen,Air Fryer,1,5499,5.0,5224.05,Debit Card,Delivered,3.9,2026-10
+ORD_5025,2026-10-24,CUST_1008,30,Male,East,Home & Kitchen,Air Fryer,3,5499,15.0,14022.45,Debit Card,Delivered,3.4,2026-10
+ORD_5199,2026-10-25,CUST_1061,24,Female,South,Beauty & Care,Hair Dryer,2,1599,15.0,2718.3,Credit Card,Delivered,4.0,2026-10
+ORD_5321,2026-08-02,CUST_1105,28,Male,West,Home & Kitchen,Insulated Bottle,1,599,0.0,599.0,UPI,Delivered,3.8,2026-08
+ORD_5357,2026-10-21,CUST_1118,24,Male,East,Home & Kitchen,Coffee Maker,1,3499,10.0,3149.1,UPI,Delivered,4.7,2026-10
+ORD_5295,2026-10-20,CUST_1095,30,Female,East,Electronics,Smartwatch,5,4999,10.0,22495.5,Cash on Delivery,Delivered,4.1,2026-10
+ORD_5140,2026-10-02,CUST_1042,27,Male,South,Home & Kitchen,Coffee Maker,2,3499,0.0,6998.0,UPI,Returned,2.4,2026-10
+ORD_5159,2026-10-24,CUST_1048,40,Female,West,Electronics,Smartwatch,2,4999,10.0,8998.2,Credit Card,Delivered,4.1,2026-10
+ORD_5230,2026-10-01,CUST_1073,33,Female,East,Books & Stationery,Desk Organizer,2,499,0.0,998.0,UPI,Returned,2.3,2026-10
+ORD_5361,2026-10-05,CUST_1118,24,Male,East,Beauty & Care,Skincare Combo,4,1199,15.0,4076.6,UPI,Delivered,5.0,2026-10
+ORD_5210,2026-09-26,CUST_1067,38,Female,East,Books & Stationery,Data Analytics Handbook,3,899,10.0,2427.3,Credit Card,Delivered,4.4,2026-09
+ORD_5329,2026-10-08,CUST_1108,30,Female,North,Fashion,Denim Jacket,1,2199,5.0,2089.05,UPI,Delivered,3.8,2026-10
+ORD_5269,2026-09-17,CUST_1085,23,Male,East,Fashion,Cotton T-Shirt,2,699,10.0,1258.2,Credit Card,Delivered,2.9,2026-09
+ORD_5232,2026-08-26,CUST_1074,26,Other,South,Electronics,Wireless Earbuds,1,2499,20.0,1999.2,Cash on Delivery,Cancelled,2.6,2026-08
+ORD_5158,2026-10-03,CUST_1048,40,Female,West,Home & Kitchen,Air Fryer,2,5499,5.0,10448.1,Debit Card,Returned,2.4,2026-10
+ORD_5020,2026-09-15,CUST_1007,47,Male,South,Beauty & Care,Skincare Combo,1,1199,10.0,1079.1,Debit Card,Delivered,3.5,2026-09
+ORD_5148,2026-10-11,CUST_1044,37,Male,South,Home & Kitchen,Air Fryer,2,5499,0.0,10998.0,Credit Card,Cancelled,2.4,2026-10
+ORD_5080,2026-10-26,CUST_1023,32,Female,South,Beauty & Care,Hair Dryer,1,1599,5.0,1519.05,UPI,Delivered,4.1,2026-10
+ORD_5233,2026-10-17,CUST_1074,26,Other,South,Fashion,Cotton T-Shirt,1,699,20.0,559.2,Cash on Delivery,Delivered,4.4,2026-10
+ORD_5019,2026-08-10,CUST_1006,18,Male,North,Beauty & Care,Hair Dryer,1,1599,0.0,1599.0,UPI,Delivered,4.1,2026-08
+ORD_5281,2026-08-09,CUST_1090,26,Male,West,Home & Kitchen,Coffee Maker,1,3499,5.0,3324.05,Debit Card,Returned,3.2,2026-08
+ORD_5105,2026-09-02,CUST_1029,33,Female,West,Electronics,Wireless Earbuds,2,2499,10.0,4498.2,Credit Card,Cancelled,2.2,2026-09
+ORD_5283,2026-07-10,CUST_1090,26,Male,West,Home & Kitchen,Air Fryer,1,5499,0.0,5499.0,UPI,Cancelled,3.6,2026-07
+ORD_5119,2026-07-17,CUST_1033,31,Female,East,Books & Stationery,Data Analytics Handbook,1,899,10.0,809.1,Net Banking,Delivered,4.1,2026-07
+ORD_5032,2026-01-13,CUST_1010,30,Female,North,Home & Kitchen,Insulated Bottle,1,599,10.0,539.1,UPI,Delivered,3.3,2026-01
+ORD_5037,2026-10-11,CUST_1011,41,Male,South,Fashion,Cotton T-Shirt,1,699,0.0,699.0,Credit Card,Delivered,4.6,2026-10
+ORD_5286,2026-10-21,CUST_1092,26,Female,North,Fashion,Backpack,1,1499,0.0,1499.0,UPI,Cancelled,3.6,2026-10
+ORD_5182,2026-09-18,CUST_1056,36,Female,South,Fashion,Denim Jacket,1,2199,5.0,2089.05,Net Banking,Delivered,2.5,2026-09
+ORD_5323,2026-09-04,CUST_1105,28,Male,West,Fashion,Cotton T-Shirt,1,699,10.0,629.1,Debit Card,Delivered,4.5,2026-09
+ORD_5300,2025-11-17,CUST_1097,39,Male,North,Electronics,Wireless Earbuds,2,2499,10.0,4498.2,Credit Card,Delivered,3.2,2025-11
+ORD_5154,2026-07-18,CUST_1045,41,Female,South,Home & Kitchen,Insulated Bottle,1,599,0.0,599.0,UPI,Cancelled,2.0,2026-07
+ORD_5173,2026-10-06,CUST_1053,42,Female,South,Books & Stationery,Desk Organizer,5,499,5.0,2370.25,Credit Card,Returned,3.3,2026-10
+ORD_5174,2026-09-25,CUST_1053,42,Female,South,Electronics,Bluetooth Speaker,5,1899,10.0,8545.5,UPI,Returned,2.0,2026-09
+ORD_5060,2026-09-25,CUST_1018,39,Female,East,Home & Kitchen,Insulated Bottle,1,599,20.0,479.2,Cash on Delivery,Cancelled,2.4,2026-09
+ORD_5112,2026-07-20,CUST_1031,35,Male,South,Fashion,Backpack,1,1499,15.0,1274.15,UPI,Delivered,5.0,2026-07
+ORD_5146,2026-10-24,CUST_1044,37,Male,South,Fashion,Cotton T-Shirt,3,699,0.0,2097.0,UPI,Returned,1.7,2026-10
+ORD_5007,2026-10-18,CUST_1003,48,Male,West,Home & Kitchen,Coffee Maker,1,3499,20.0,2799.2,Debit Card,Returned,2.5,2026-10
+ORD_5317,2026-10-04,CUST_1103,24,Male,East,Books & Stationery,Desk Organizer,2,499,0.0,998.0,UPI,Delivered,3.8,2026-10
+ORD_5255,2026-09-30,CUST_1081,37,Male,North,Home & Kitchen,Coffee Maker,1,3499,5.0,3324.05,Debit Card,Delivered,3.5,2026-09
+ORD_5011,2026-09-23,CUST_1004,40,Male,North,Beauty & Care,Hair Dryer,2,1599,25.0,2398.5,Credit Card,Delivered,4.8,2026-09
+ORD_5169,2026-10-19,CUST_1052,37,Male,South,Home & Kitchen,Air Fryer,1,5499,10.0,4949.1,Cash on Delivery,Cancelled,3.0,2026-10
+ORD_5104,2026-10-02,CUST_1028,27,Female,West,Fashion,Cotton T-Shirt,1,699,20.0,559.2,Cash on Delivery,Cancelled,1.8,2026-10
+ORD_5082,2026-09-17,CUST_1023,32,Female,South,Electronics,Bluetooth Speaker,2,1899,25.0,2848.5,Debit Card,Returned,3.4,2026-09
+ORD_5181,2026-10-26,CUST_1055,32,Female,East,Electronics,Wireless Earbuds,1,2499,10.0,2249.1,Debit Card,Delivered,3.9,2026-10
+ORD_5209,2026-10-06,CUST_1067,38,Female,East,Books & Stationery,Data Analytics Handbook,1,899,10.0,809.1,Credit Card,Delivered,3.4,2026-10
+ORD_5183,2026-09-22,CUST_1056,36,Female,South,Home & Kitchen,Insulated Bottle,1,599,10.0,539.1,Credit Card,Delivered,3.6,2026-09
+ORD_5226,2026-10-29,CUST_1072,43,Male,East,Electronics,Wireless Earbuds,2,2499,5.0,4748.1,UPI,Delivered,3.6,2026-10
+ORD_5248,2026-07-24,CUST_1079,54,Male,North,Home & Kitchen,Insulated Bottle,1,599,5.0,569.05,Credit Card,Cancelled,1.6,2026-07
+ORD_5168,2026-10-25,CUST_1052,37,Male,South,Beauty & Care,Skincare Combo,2,1199,25.0,1798.5,UPI,Delivered,5.0,2026-10
+ORD_5200,2026-10-15,CUST_1061,24,Female,South,Home & Kitchen,Air Fryer,2,5499,10.0,9898.2,UPI,Delivered,5.0,2026-10
+ORD_5093,2026-09-22,CUST_1026,18,Female,North,Electronics,Wireless Earbuds,3,2499,20.0,5997.6,UPI,Cancelled,1.3,2026-09
+ORD_5070,2026-10-30,CUST_1021,41,Female,South,Fashion,Running Shoes,2,3299,10.0,5938.2,Credit Card,Returned,3.3,2026-10
+ORD_5246,2026-07-10,CUST_1079,54,Male,North,Electronics,USB-C Hub,1,1299,10.0,1169.1,Cash on Delivery,Delivered,4.6,2026-07
+ORD_5097,2026-09-22,CUST_1027,24,Female,West,Electronics,USB-C Hub,1,1299,10.0,1169.1,UPI,Delivered,4.0,2026-09
+ORD_5144,2026-04-10,CUST_1043,22,Female,South,Electronics,Smartwatch,2,4999,10.0,8998.2,Credit Card,Returned,2.9,2026-04
+ORD_5279,2026-10-15,CUST_1089,35,Male,South,Beauty & Care,Hair Dryer,1,1599,15.0,1359.15,UPI,Delivered,5.0,2026-10
+ORD_5098,2026-09-02,CUST_1027,24,Female,West,Home & Kitchen,Insulated Bottle,3,599,0.0,1797.0,Net Banking,Delivered,3.7,2026-09
+ORD_5299,2026-10-24,CUST_1096,43,Female,South,Fashion,Backpack,2,1499,10.0,2698.2,Net Banking,Delivered,3.9,2026-10
+ORD_5069,2026-09-29,CUST_1021,41,Female,South,Home & Kitchen,Coffee Maker,1,3499,10.0,3149.1,UPI,Cancelled,2.7,2026-09
+ORD_5024,2026-10-08,CUST_1008,30,Male,East,Home & Kitchen,Air Fryer,1,5499,10.0,4949.1,UPI,Delivered,4.0,2026-10
+ORD_5038,2026-10-18,CUST_1012,20,Male,West,Books & Stationery,Desk Organizer,1,499,0.0,499.0,UPI,Cancelled,1.3,2026-10
+ORD_5145,2026-10-23,CUST_1044,37,Male,South,Electronics,Smartwatch,1,4999,0.0,4999.0,UPI,Delivered,4.1,2026-10
+ORD_5123,2026-10-06,CUST_1034,37,Other,West,Electronics,USB-C Hub,1,1299,0.0,1299.0,UPI,Delivered,3.2,2026-10
+ORD_5068,2026-07-27,CUST_1020,29,Male,South,Beauty & Care,Hair Dryer,1,1599,15.0,1359.15,UPI,Delivered,3.6,2026-07
+ORD_5164,2026-09-26,CUST_1050,35,Male,North,Books & Stationery,Desk Organizer,1,499,5.0,474.05,UPI,Delivered,4.3,2026-09
+ORD_5288,2026-09-24,CUST_1092,26,Female,North,Beauty & Care,Hair Dryer,2,1599,5.0,3038.1,Cash on Delivery,Cancelled,1.6,2026-09
+ORD_5292,2026-10-21,CUST_1093,40,Other,South,Beauty & Care,Skincare Combo,1,1199,15.0,1019.15,Credit Card,Delivered,3.7,2026-10
+ORD_5345,2026-03-05,CUST_1113,35,Male,South,Fashion,Running Shoes,1,3299,0.0,3299.0,UPI,Delivered,4.0,2026-03
+ORD_5126,2026-07-08,CUST_1035,18,Male,North,Electronics,Wireless Earbuds,2,2499,5.0,4748.1,Debit Card,Delivered,3.6,2026-07
+ORD_5147,2026-10-28,CUST_1044,37,Male,South,Electronics,USB-C Hub,1,1299,10.0,1169.1,UPI,Delivered,5.0,2026-10
+ORD_5312,2026-10-24,CUST_1101,39,Male,South,Fashion,Running Shoes,2,3299,5.0,6268.1,Cash on Delivery,Delivered,4.7,2026-10
+ORD_5087,2026-09-19,CUST_1025,33,Female,North,Beauty & Care,Skincare Combo,1,1199,5.0,1139.05,Credit Card,Delivered,4.9,2026-09
+ORD_5308,2026-07-07,CUST_1099,33,Female,South,Books & Stationery,Data Analytics Handbook,2,899,5.0,1708.1,Credit Card,Delivered,4.8,2026-07
+ORD_5186,2026-09-14,CUST_1057,39,Male,North,Beauty & Care,Skincare Combo,2,1199,15.0,2038.3,Net Banking,Delivered,4.1,2026-09
+ORD_5364,2026-10-16,CUST_1120,51,Male,West,Home & Kitchen,Air Fryer,2,5499,0.0,10998.0,Cash on Delivery,Returned,2.4,2026-10
+ORD_5176,2026-10-26,CUST_1053,42,Female,South,Home & Kitchen,Insulated Bottle,1,599,10.0,539.1,Debit Card,Delivered,4.5,2026-10
+ORD_5278,2026-04-18,CUST_1088,20,Male,West,Fashion,Backpack,1,1499,10.0,1349.1,Credit Card,Delivered,3.4,2026-04
+ORD_5178,2026-07-03,CUST_1054,37,Male,North,Fashion,Running Shoes,2,3299,10.0,5938.2,Cash on Delivery,Delivered,4.3,2026-07
+ORD_5306,2026-10-04,CUST_1099,33,Female,South,Electronics,Wireless Earbuds,3,2499,10.0,6747.3,Debit Card,Delivered,4.5,2026-10
+ORD_5219,2026-10-29,CUST_1070,30,Female,North,Beauty & Care,Hair Dryer,4,1599,10.0,5756.4,Credit Card,Delivered,4.0,2026-10
+ORD_5259,2026-08-14,CUST_1082,40,Male,North,Home & Kitchen,Coffee Maker,1,3499,25.0,2624.25,Credit Card,Cancelled,2.3,2026-08
+ORD_5130,2026-07-16,CUST_1036,32,Female,North,Beauty & Care,Hair Dryer,1,1599,20.0,1279.2,UPI,Returned,2.6,2026-07
+ORD_5039,2026-10-26,CUST_1013,40,Male,North,Beauty & Care,Skincare Combo,1,1199,25.0,899.25,UPI,Cancelled,2.1,2026-10
+ORD_5012,2026-09-27,CUST_1004,40,Male,North,Beauty & Care,Skincare Combo,1,1199,10.0,1079.1,Debit Card,Delivered,5.0,2026-09
+ORD_5240,2026-10-27,CUST_1077,20,Male,North,Beauty & Care,Skincare Combo,2,1199,10.0,2158.2,UPI,Delivered,4.0,2026-10
+ORD_5195,2025-11-25,CUST_1060,40,Female,West,Electronics,Bluetooth Speaker,1,1899,5.0,1804.05,UPI,Delivered,4.3,2025-11
+ORD_5113,2026-09-16,CUST_1031,35,Male,South,Fashion,Cotton T-Shirt,1,699,5.0,664.05,UPI,Delivered,2.8,2026-09
+ORD_5180,2026-10-02,CUST_1055,32,Female,East,Fashion,Cotton T-Shirt,2,699,0.0,1398.0,UPI,Delivered,3.9,2026-10
+ORD_5239,2026-09-30,CUST_1076,41,Female,West,Home & Kitchen,Insulated Bottle,2,599,25.0,898.5,UPI,Delivered,3.8,2026-09
+ORD_5228,2026-09-26,CUST_1072,43,Male,East,Fashion,Cotton T-Shirt,2,699,10.0,1258.2,Credit Card,Returned,4.2,2026-09
+ORD_5118,2026-09-12,CUST_1033,31,Female,East,Home & Kitchen,Insulated Bottle,1,599,10.0,539.1,Credit Card,Returned,3.3,2026-09
+ORD_5337,2026-10-01,CUST_1109,32,Male,North,Electronics,Bluetooth Speaker,2,1899,5.0,3608.1,Debit Card,Delivered,5.0,2026-10
+ORD_5352,2025-11-18,CUST_1116,25,Male,West,Books & Stationery,Data Analytics Handbook,1,899,5.0,854.05,Cash on Delivery,Cancelled,2.0,2025-11
+ORD_5342,2026-10-27,CUST_1111,31,Male,West,Home & Kitchen,Air Fryer,2,5499,0.0,10998.0,UPI,Cancelled,3.0,2026-10
+ORD_5355,2026-10-13,CUST_1118,24,Male,East,Beauty & Care,Hair Dryer,2,1599,10.0,2878.2,Credit Card,Returned,2.4,2026-10
+ORD_5165,2026-10-24,CUST_1050,35,Male,North,Fashion,Denim Jacket,1,2199,20.0,1759.2,Debit Card,Delivered,3.9,2026-10
+ORD_5220,2026-10-23,CUST_1070,30,Female,North,Fashion,Denim Jacket,1,2199,0.0,2199.0,Net Banking,Cancelled,3.7,2026-10
+ORD_5251,2026-09-21,CUST_1080,43,Female,North,Home & Kitchen,Coffee Maker,1,3499,10.0,3149.1,Credit Card,Delivered,4.4,2026-09
+ORD_5155,2026-01-22,CUST_1046,20,Male,North,Fashion,Running Shoes,1,3299,10.0,2969.1,Debit Card,Delivered,3.8,2026-01
+ORD_5198,2026-10-16,CUST_1061,24,Female,South,Electronics,USB-C Hub,1,1299,10.0,1169.1,Debit Card,Delivered,3.4,2026-10
+ORD_5340,2026-09-07,CUST_1110,30,Female,East,Fashion,Running Shoes,1,3299,15.0,2804.15,Credit Card,Delivered,4.4,2026-09
+ORD_5003,2026-10-05,CUST_1001,37,Female,East,Beauty & Care,Skincare Combo,2,1199,25.0,1798.5,UPI,Cancelled,2.4,2026-10
+ORD_5116,2026-07-30,CUST_1032,35,Male,North,Fashion,Backpack,2,1499,10.0,2698.2,Credit Card,Returned,2.0,2026-07
+ORD_5245,2026-08-05,CUST_1078,29,Female,East,Home & Kitchen,Coffee Maker,1,3499,10.0,3149.1,UPI,Delivered,4.2,2026-08
+ORD_5250,2026-10-02,CUST_1080,43,Female,North,Home & Kitchen,Air Fryer,1,5499,20.0,4399.2,UPI,Delivered,4.3,2026-10
+ORD_5289,2026-09-25,CUST_1092,26,Female,North,Fashion,Running Shoes,1,3299,0.0,3299.0,Debit Card,Returned,1.0,2026-09
+ORD_5121,2026-10-17,CUST_1033,33,Female,East,Electronics,Bluetooth Speaker,3,1899,10.0,5127.3,UPI,Delivered,4.1,2026-10
+ORD_5282,2026-08-28,CUST_1090,26,Male,West,Fashion,Denim Jacket,1,2199,5.0,2089.05,UPI,Delivered,4.7,2026-08
+ORD_5211,2026-09-13,CUST_1068,68,Female,West,Electronics,USB-C Hub,1,1299,0.0,1299.0,UPI,Delivered,3.3,2026-09
+ORD_5315,2026-03-20,CUST_1102,39,Female,South,Beauty & Care,Skincare Combo,1,1199,25.0,899.25,Credit Card,Delivered,4.5,2026-03
+ORD_5128,2026-09-02,CUST_1036,32,Female,North,Fashion,Running Shoes,1,3299,5.0,3134.05,UPI,Delivered,4.6,2026-09
+ORD_5075,2026-08-20,CUST_1022,46,Female,East,Books & Stationery,Desk Organizer,1,499,15.0,424.15,UPI,Delivered,3.3,2026-08
+ORD_5296,2026-10-17,CUST_1095,30,Female,East,Fashion,Cotton T-Shirt,2,699,25.0,1048.5,UPI,Cancelled,2.4,2026-10
+ORD_5030,2026-10-25,CUST_1009,26,Female,South,Fashion,Denim Jacket,4,2199,10.0,7916.4,UPI,Delivered,3.7,2026-10
+ORD_5084,2026-08-11,CUST_1024,48,Male,North,Books & Stationery,Desk Organizer,1,499,10.0,449.1,Credit Card,Returned,1.6,2026-08
+ORD_5303,2025-11-18,CUST_1098,29,Male,South,Beauty & Care,Skincare Combo,1,1199,5.0,1139.05,Net Banking,Delivered,4.2,2025-11
+ORD_5108,2026-09-28,CUST_1030,42,Male,North,Fashion,Cotton T-Shirt,3,699,10.0,1887.3,UPI,Cancelled,3.2,2026-09
+ORD_5290,2026-09-25,CUST_1092,26,Female,North,Fashion,Backpack,2,1499,0.0,2998.0,Credit Card,Delivered,4.1,2026-09
+ORD_5224,2026-10-10,CUST_1072,43,Male,East,Electronics,Smartwatch,1,4999,5.0,4749.05,Debit Card,Delivered,4.8,2026-10
+ORD_5134,2026-07-29,CUST_1039,40,Male,East,Electronics,USB-C Hub,2,1299,15.0,2208.3,UPI,Delivered,4.0,2026-07
+ORD_5185,2026-10-23,CUST_1056,36,Female,South,Fashion,Backpack,4,1499,0.0,5996.0,Debit Card,Returned,3.3,2026-10
+ORD_5267,2026-10-08,CUST_1085,23,Male,East,Fashion,Backpack,2,1499,0.0,2998.0,Credit Card,Cancelled,2.8,2026-10
+ORD_5045,2026-08-30,CUST_1014,34,Male,South,Home & Kitchen,Insulated Bottle,1,599,20.0,479.2,UPI,Delivered,4.0,2026-08
+ORD_5336,2026-09-20,CUST_1109,32,Male,North,Electronics,USB-C Hub,4,1299,10.0,4676.4,Credit Card,Returned,3.7,2026-09
+ORD_5066,2026-10-03,CUST_1019,24,Female,East,Books & Stationery,Desk Organizer,1,499,10.0,449.1,Net Banking,Cancelled,2.4,2026-10
+ORD_5273,2026-07-20,CUST_1086,37,Female,West,Electronics,USB-C Hub,2,1299,10.0,2338.2,UPI,Delivered,5.0,2026-07
+ORD_5086,2026-08-05,CUST_1025,33,Female,North,Beauty & Care,Skincare Combo,2,1199,15.0,2038.3,UPI,Delivered,4.3,2026-08
+ORD_5187,2026-08-18,CUST_1057,33,Male,North,Home & Kitchen,Coffee Maker,1,3499,0.0,3499.0,Cash on Delivery,Delivered,4.5,2026-08
+ORD_5071,2026-10-03,CUST_1021,41,Female,South,Home & Kitchen,Air Fryer,2,5499,10.0,9898.2,Debit Card,Delivered,4.0,2026-10
+ORD_5160,2026-09-20,CUST_1049,26,Male,West,Home & Kitchen,Coffee Maker,1,3499,5.0,3324.05,Debit Card,Delivered,5.0,2026-09
+ORD_5013,2026-07-04,CUST_1005,35,Male,North,Electronics,Bluetooth Speaker,1,1899,10.0,1709.1,Debit Card,Delivered,5.0,2026-07
+ORD_5036,2026-08-22,CUST_1011,41,Male,South,Electronics,Bluetooth Speaker,4,1899,15.0,6456.6,UPI,Delivered,3.7,2026-08
+ORD_5029,2026-10-09,CUST_1009,26,Female,South,Books & Stationery,Data Analytics Handbook,1,899,15.0,764.15,Credit Card,Delivered,3.9,2026-10
+ORD_5171,2026-09-24,CUST_1053,42,Female,South,Fashion,Running Shoes,3,3299,10.0,8907.3,UPI,Delivered,4.1,2026-09
+ORD_5143,2026-10-28,CUST_1042,27,Male,South,Books & Stationery,Data Analytics Handbook,1,899,5.0,854.05,Debit Card,Delivered,3.7,2026-10
+ORD_5241,2026-09-09,CUST_1077,20,Male,North,Home & Kitchen,Coffee Maker,1,3499,10.0,3149.1,Cash on Delivery,Delivered,4.8,2026-09
+ORD_5151,2026-07-28,CUST_1045,41,Female,South,Beauty & Care,Skincare Combo,2,1199,10.0,2158.2,Debit Card,Delivered,4.9,2026-07
+ORD_5229,2026-10-19,CUST_1073,33,Female,East,Electronics,Smartwatch,3,4999,0.0,14997.0,Debit Card,Delivered,4.8,2026-10
+ORD_5222,2026-10-19,CUST_1071,28,Male,South,Home & Kitchen,Insulated Bottle,1,599,10.0,539.1,Debit Card,Returned,1.9,2026-10
+ORD_5132,2026-04-18,CUST_1037,31,Male,South,Fashion,Backpack,1,1499,5.0,1424.05,UPI,Delivered,3.2,2026-04
+ORD_5318,2026-10-26,CUST_1103,24,Male,East,Home & Kitchen,Air Fryer,4,5499,5.0,20896.2,UPI,Returned,2.9,2026-10
+ORD_5052,2026-10-26,CUST_1015,28,Male,South,Home & Kitchen,Coffee Maker,3,3499,5.0,9972.15,Cash on Delivery,Delivered,3.6,2026-10
+ORD_5275,2026-01-04,CUST_1087,48,Male,South,Home & Kitchen,Coffee Maker,4,3499,5.0,13296.2,UPI,Delivered,3.9,2026-01
+ORD_5096,2026-10-30,CUST_1027,24,Female,West,Electronics,Smartwatch,1,4999,10.0,4499.1,Credit Card,Returned,1.6,2026-10
+ORD_5291,2026-09-30,CUST_1093,40,Other,South,Fashion,Backpack,3,1499,10.0,4047.3,UPI,Delivered,4.8,2026-09
+ORD_5179,2026-07-15,CUST_1054,37,Male,North,Electronics,Smartwatch,1,4999,0.0,4999.0,Net Banking,Cancelled,2.3,2026-07
+ORD_5205,2026-09-30,CUST_1063,24,Female,West,Books & Stationery,Data Analytics Handbook,2,899,0.0,1798.0,Credit Card,Delivered,5.0,2026-09
+ORD_5124,2026-10-26,CUST_1034,37,Other,West,Books & Stationery,Desk Organizer,1,499,10.0,449.1,Net Banking,Delivered,3.7,2026-10
+ORD_5042,2026-10-22,CUST_1013,40,Male,North,Fashion,Cotton T-Shirt,2,699,5.0,1328.1,Cash on Delivery,Delivered,3.8,2026-10
+ORD_5090,2026-10-14,CUST_1026,18,Female,North,Fashion,Backpack,2,1499,5.0,2848.1,Credit Card,Delivered,4.0,2026-10
+ORD_5285,2026-10-16,CUST_1092,26,Female,North,Fashion,Cotton T-Shirt,1,699,15.0,594.15,UPI,Returned,3.8,2026-10
+ORD_5207,2026-10-05,CUST_1065,43,Male,North,Beauty & Care,Hair Dryer,1,1599,10.0,1439.1,UPI,Cancelled,1.6,2026-10
+ORD_5137,2026-10-17,CUST_1039,40,Male,East,Beauty & Care,Skincare Combo,4,1199,25.0,3597.0,Debit Card,Delivered,4.5,2026-10
+ORD_5027,2026-09-22,CUST_1009,26,Female,South,Electronics,Smartwatch,1,4999,10.0,4499.1,UPI,Delivered,4.0,2026-09
+ORD_5358,2026-09-22,CUST_1118,24,Male,East,Books & Stationery,Data Analytics Handbook,3,899,15.0,2292.45,UPI,Delivered,4.4,2026-09
+ORD_5142,2026-07-22,CUST_1042,27,Male,South,Home & Kitchen,Coffee Maker,2,3499,5.0,6648.1,UPI,Delivered,4.4,2026-07
+ORD_5247,2026-09-06,CUST_1079,54,Male,North,Home & Kitchen,Insulated Bottle,2,599,0.0,1198.0,Cash on Delivery,Delivered,4.7,2026-09
+ORD_5304,2026-04-03,CUST_1098,29,Male,South,Books & Stationery,Data Analytics Handbook,1,899,0.0,899.0,UPI,Returned,3.5,2026-04
+ORD_5005,2026-10-03,CUST_1001,37,Female,East,Fashion,Cotton T-Shirt,3,699,25.0,1572.75,Net Banking,Delivered,5.0,2026-10
+ORD_5257,2026-10-23,CUST_1081,37,Male,North,Electronics,Bluetooth Speaker,1,1899,0.0,1899.0,UPI,Cancelled,2.9,2026-10
+ORD_5327,2026-09-08,CUST_1107,25,Female,South,Fashion,Denim Jacket,2,2199,20.0,3518.4,Cash on Delivery,Delivered,4.7,2026-09
+ORD_5101,2026-10-16,CUST_1028,27,Female,West,Fashion,Backpack,3,1499,0.0,4497.0,Debit Card,Delivered,4.3,2026-10
+ORD_5227,2026-10-30,CUST_1072,43,Male,East,Fashion,Denim Jacket,1,2199,5.0,2089.05,Credit Card,Delivered,4.5,2026-10
+ORD_5313,2026-09-18,CUST_1101,39,Male,South,Fashion,Cotton T-Shirt,5,699,0.0,3495.0,UPI,Cancelled,1.8,2026-09
+ORD_5214,2026-07-20,CUST_1069,25,Female,North,Books & Stationery,Data Analytics Handbook,1,899,15.0,764.15,Credit Card,Delivered,3.9,2026-07
+ORD_5172,2026-09-22,CUST_1053,42,Female,South,Books & Stationery,Desk Organizer,2,499,10.0,898.2,UPI,Delivered,4.9,2026-09
+ORD_5099,2026-10-19,CUST_1028,27,Female,West,Electronics,USB-C Hub,1,1299,20.0,1039.2,Debit Card,Cancelled,2.9,2026-10
+ORD_5216,2026-08-22,CUST_1069,25,Female,North,Home & Kitchen,Insulated Bottle,1,599,0.0,599.0,Credit Card,Delivered,3.5,2026-08
+ORD_5062,2026-10-05,CUST_1018,39,Female,East,Beauty & Care,Hair Dryer,1,1599,5.0,1519.05,Credit Card,Delivered,3.8,2026-10
+ORD_5048,2026-09-21,CUST_1015,28,Male,South,Fashion,Running Shoes,3,3299,0.0,9897.0,Cash on Delivery,Cancelled,1.0,2026-09
+ORD_5033,2026-01-30,CUST_1010,30,Female,North,Home & Kitchen,Air Fryer,1,5499,15.0,4674.15,UPI,Cancelled,3.1,2026-01
+ORD_5268,2026-10-04,CUST_1085,23,Male,East,Home & Kitchen,Air Fryer,5,5499,10.0,24745.5,UPI,Cancelled,2.0,2026-10
+ORD_5201,2026-10-16,CUST_1062,33,Female,West,Books & Stationery,Data Analytics Handbook,1,899,10.0,809.1,UPI,Delivered,4.5,2026-10
+ORD_5325,2025-11-18,CUST_1106,35,Male,West,Electronics,Bluetooth Speaker,1,1899,10.0,1709.1,UPI,Delivered,4.8,2025-11
+ORD_5028,2026-10-21,CUST_1009,26,Female,South,Fashion,Cotton T-Shirt,3,699,10.0,1887.3,UPI,Cancelled,1.0,2026-10
+ORD_5287,2026-09-16,CUST_1092,26,Female,North,Books & Stationery,Data Analytics Handbook,2,899,20.0,1438.4,Debit Card,Delivered,3.8,2026-09
+ORD_5231,2026-08-19,CUST_1074,26,Other,South,Electronics,USB-C Hub,1,1299,0.0,1299.0,UPI,Delivered,4.7,2026-08
+ORD_5261,2026-09-29,CUST_1083,49,Female,North,Fashion,Denim Jacket,2,2199,15.0,3738.3,Credit Card,Delivered,3.9,2026-09
+ORD_5163,2026-08-22,CUST_1049,26,Male,West,Books & Stationery,Desk Organizer,2,499,0.0,998.0,Net Banking,Delivered,4.1,2026-08
+ORD_5311,2026-10-16,CUST_1101,39,Male,South,Books & Stationery,Desk Organizer,4,499,10.0,1796.4,UPI,Delivered,4.9,2026-10
+ORD_5139,2026-10-20,CUST_1041,23,Male,East,Home & Kitchen,Air Fryer,2,5499,5.0,10448.1,UPI,Delivered,3.3,2026-10
+ORD_5063,2026-09-23,CUST_1019,24,Female,East,Fashion,Running Shoes,1,3299,5.0,3134.05,Debit Card,Delivered,3.1,2026-09
+ORD_5136,2026-08-27,CUST_1039,33,Male,East,Home & Kitchen,Coffee Maker,1,3499,0.0,3499.0,Cash on Delivery,Delivered,3.7,2026-08
+ORD_5129,2026-09-08,CUST_1036,32,Female,North,Beauty & Care,Skincare Combo,2,1199,10.0,2158.2,Debit Card,Cancelled,2.4,2026-09
+ORD_5009,2026-10-26,CUST_1004,40,Male,North,Home & Kitchen,Insulated Bottle,1,599,15.0,509.15,Credit Card,Delivered,2.4,2026-10
+ORD_5065,2026-09-09,CUST_1019,24,Female,East,Electronics,Wireless Earbuds,1,2499,20.0,1999.2,UPI,Cancelled,3.8,2026-09
+ORD_5015,2026-09-08,CUST_1005,35,Male,North,Electronics,Smartwatch,1,4999,0.0,4999.0,Credit Card,Delivered,4.5,2026-09
+ORD_5157,2026-10-25,CUST_1047,35,Male,South,Electronics,Wireless Earbuds,1,2499,10.0,2249.1,Credit Card,Delivered,4.5,2026-10
+ORD_5041,2026-09-23,CUST_1013,40,Male,North,Electronics,USB-C Hub,1,1299,5.0,1234.05,Cash on Delivery,Delivered,4.5,2026-09
+ORD_5335,2026-10-17,CUST_1109,32,Male,North,Electronics,Wireless Earbuds,1,2499,5.0,2374.05,UPI,Delivered,4.9,2026-10
+ORD_5297,2026-10-28,CUST_1095,30,Female,East,Electronics,USB-C Hub,3,1299,0.0,3897.0,UPI,Delivered,4.4,2026-10
+ORD_5217,2026-10-29,CUST_1069,25,Female,North,Fashion,Cotton T-Shirt,2,699,0.0,1398.0,Credit Card,Delivered,4.6,2026-10
+ORD_5280,2026-10-12,CUST_1089,35,Male,South,Home & Kitchen,Insulated Bottle,1,599,15.0,509.15,Credit Card,Returned,2.3,2026-10
+ORD_5328,2026-08-15,CUST_1107,25,Female,South,Fashion,Backpack,3,1499,10.0,4047.3,Cash on Delivery,Delivered,4.7,2026-08
+ORD_5237,2026-10-25,CUST_1075,26,Male,North,Fashion,Cotton T-Shirt,2,699,0.0,1398.0,Credit Card,Cancelled,1.6,2026-10
+ORD_5208,2026-02-26,CUST_1066,43,Female,West,Electronics,Smartwatch,1,4999,15.0,4249.15,Credit Card,Delivered,3.7,2026-02
+ORD_5213,2026-09-26,CUST_1068,68,Female,West,Fashion,Denim Jacket,1,2199,10.0,1979.1,Credit Card,Delivered,5.0,2026-09
+ORD_5333,2026-10-12,CUST_1109,32,Male,North,Beauty & Care,Skincare Combo,3,1199,0.0,3597.0,Debit Card,Delivered,3.6,2026-10
+ORD_5252,2026-10-16,CUST_1080,33,Female,North,Fashion,Running Shoes,4,3299,10.0,11876.4,Cash on Delivery,Returned,3.1,2026-10
+ORD_5356,2026-10-16,CUST_1118,24,Male,East,Fashion,Cotton T-Shirt,2,699,5.0,1328.1,Credit Card,Delivered,4.8,2026-10
+ORD_5334,2026-10-01,CUST_1109,32,Male,North,Electronics,USB-C Hub,1,1299,10.0,1169.1,UPI,Cancelled,2.6,2026-10
+ORD_5270,2026-10-12,CUST_1085,23,Male,East,Electronics,Bluetooth Speaker,1,1899,0.0,1899.0,Credit Card,Delivered,4.3,2026-10
+ORD_5202,2026-10-04,CUST_1063,24,Female,West,Beauty & Care,Hair Dryer,3,1599,10.0,4317.3,Credit Card,Delivered,3.4,2026-10
+ORD_5162,2026-07-04,CUST_1049,26,Male,West,Electronics,Bluetooth Speaker,1,1899,0.0,1899.0,UPI,Delivered,3.8,2026-07
+ORD_5044,2026-08-07,CUST_1014,34,Male,South,Fashion,Denim Jacket,1,2199,0.0,2199.0,Credit Card,Delivered,4.6,2026-08
+ORD_5218,2026-07-05,CUST_1070,30,Female,North,Fashion,Running Shoes,1,3299,10.0,2969.1,UPI,Delivered,3.1,2026-07
+ORD_5191,2026-02-21,CUST_1058,24,Male,West,Home & Kitchen,Coffee Maker,1,3499,5.0,3324.05,UPI,Delivered,5.0,2026-02
+ORD_5260,2026-09-25,CUST_1082,40,Male,North,Home & Kitchen,Insulated Bottle,1,599,25.0,449.25,Credit Card,Returned,3.0,2026-09
+ORD_5106,2026-07-25,CUST_1029,33,Female,West,Home & Kitchen,Insulated Bottle,3,599,10.0,1617.3,Credit Card,Cancelled,2.3,2026-07
+ORD_5054,2026-10-02,CUST_1015,28,Male,South,Electronics,Bluetooth Speaker,1,1899,15.0,1614.15,Debit Card,Delivered,4.3,2026-10
+ORD_5002,2026-10-30,CUST_1001,37,Female,East,Fashion,Running Shoes,2,3299,25.0,4948.5,UPI,Delivered,4.0,2026-10
+ORD_5050,2026-10-01,CUST_1015,28,Male,South,Home & Kitchen,Air Fryer,3,5499,15.0,14022.45,UPI,Returned,3.2,2026-10
+ORD_5081,2026-10-08,CUST_1023,32,Female,South,Electronics,Bluetooth Speaker,1,1899,15.0,1614.15,UPI,Returned,2.1,2026-10
+ORD_5206,2026-10-18,CUST_1064,34,Female,West,Fashion,Running Shoes,2,3299,15.0,5608.3,Cash on Delivery,Delivered,4.1,2026-10
+ORD_5035,2026-08-30,CUST_1011,41,Male,South,Beauty & Care,Skincare Combo,3,1199,10.0,3237.3,Credit Card,Delivered,4.9,2026-08
+ORD_5264,2025-11-07,CUST_1084,18,Female,South,Electronics,USB-C Hub,3,1299,10.0,3507.3,UPI,Delivered,4.6,2025-11
+ORD_5092,2026-10-10,CUST_1026,18,Female,North,Home & Kitchen,Coffee Maker,3,3499,5.0,9972.15,Cash on Delivery,Delivered,4.6,2026-10
+ORD_5053,2026-09-30,CUST_1015,28,Male,South,Books & Stationery,Data Analytics Handbook,2,899,10.0,1618.2,Credit Card,Cancelled,4.7,2026-09
+ORD_5265,2026-10-01,CUST_1085,23,Male,East,Electronics,Bluetooth Speaker,4,1899,15.0,6456.6,Cash on Delivery,Delivered,4.8,2026-10
+ORD_5242,2026-08-30,CUST_1078,29,Female,East,Home & Kitchen,Insulated Bottle,2,599,5.0,1138.1,Credit Card,Delivered,4.7,2026-08
+ORD_5014,2026-10-14,CUST_1005,35,Male,North,Beauty & Care,Hair Dryer,1,1599,10.0,1439.1,Net Banking,Delivered,4.1,2026-10
+ORD_5316,2026-10-27,CUST_1103,24,Male,East,Books & Stationery,Data Analytics Handbook,4,899,25.0,2697.0,Credit Card,Delivered,3.8,2026-10
+ORD_5089,2026-10-25,CUST_1026,18,Female,North,Home & Kitchen,Insulated Bottle,2,599,5.0,1138.1,Credit Card,Returned,4.4,2026-10
+ORD_5274,2026-07-17,CUST_1086,37,Female,West,Beauty & Care,Hair Dryer,2,1599,0.0,3198.0,Debit Card,Cancelled,4.3,2026-07
+ORD_5167,2026-09-29,CUST_1051,51,Female,North,Books & Stationery,Data Analytics Handbook,1,899,0.0,899.0,UPI,Returned,3.6,2026-09
+ORD_5359,2026-10-29,CUST_1118,24,Male,East,Electronics,Smartwatch,1,4999,15.0,4249.15,Net Banking,Delivered,4.6,2026-10
+ORD_5135,2026-07-23,CUST_1039,40,Male,East,Home & Kitchen,Air Fryer,1,5499,5.0,5224.05,Debit Card,Cancelled,2.6,2026-07
+ORD_5307,2026-07-10,CUST_1099,33,Female,South,Fashion,Running Shoes,1,3299,0.0,3299.0,Credit Card,Delivered,4.3,2026-07
+ORD_5351,2026-09-22,CUST_1115,54,Female,West,Electronics,USB-C Hub,2,1299,15.0,2208.3,Net Banking,Delivered,3.9,2026-09
+ORD_5320,2026-10-10,CUST_1104,29,Male,North,Home & Kitchen,Air Fryer,1,5499,15.0,4674.15,Cash on Delivery,Returned,3.4,2026-10
+ORD_5244,2026-08-01,CUST_1078,29,Female,East,Beauty & Care,Skincare Combo,1,1199,15.0,1019.15,Credit Card,Delivered,4.1,2026-08
+ORD_5055,2026-01-10,CUST_1016,43,Female,North,Home & Kitchen,Air Fryer,2,5499,10.0,9898.2,UPI,Delivered,3.5,2026-01
+ORD_5051,2026-09-28,CUST_1015,28,Male,South,Fashion,Cotton T-Shirt,2,699,15.0,1188.3,UPI,Delivered,4.7,2026-09
+ORD_5175,2026-10-28,CUST_1053,42,Female,South,Electronics,USB-C Hub,1,1299,5.0,1234.05,Credit Card,Delivered,3.6,2026-10
+ORD_5190,2026-03-03,CUST_1058,24,Male,West,Books & Stationery,Desk Organizer,4,499,5.0,1896.2,Cash on Delivery,Delivered,3.7,2026-03
+ORD_5363,2026-10-22,CUST_1119,36,Male,West,Home & Kitchen,Insulated Bottle,1,599,15.0,509.15,Credit Card,Delivered,4.1,2026-10
+ORD_5188,2026-08-01,CUST_1057,39,Male,North,Electronics,Smartwatch,3,4999,10.0,13497.3,Debit Card,Delivered,4.6,2026-08
+ORD_5170,2026-10-01,CUST_1053,42,Female,South,Home & Kitchen,Coffee Maker,2,3499,0.0,6998.0,Net Banking,Returned,2.0,2026-10
+ORD_5059,2026-10-23,CUST_1018,39,Female,East,Home & Kitchen,Coffee Maker,2,3499,15.0,5948.3,UPI,Delivered,3.8,2026-10
+ORD_5049,2026-10-24,CUST_1015,28,Male,South,Home & Kitchen,Coffee Maker,2,3499,10.0,6298.2,UPI,Cancelled,2.5,2026-10
+ORD_5236,2026-10-18,CUST_1075,26,Male,North,Beauty & Care,Skincare Combo,3,1199,20.0,2877.6,UPI,Delivered,4.5,2026-10
+ORD_5253,2026-10-26,CUST_1080,33,Female,North,Home & Kitchen,Air Fryer,2,5499,10.0,9898.2,Debit Card,Delivered,3.9,2026-10
+ORD_5022,2026-09-13,CUST_1007,47,Male,South,Books & Stationery,Desk Organizer,1,499,5.0,474.05,Debit Card,Delivered,4.2,2026-09
+ORD_5314,2026-01-15,CUST_1102,39,Female,South,Beauty & Care,Hair Dryer,1,1599,20.0,1279.2,Debit Card,Delivered,4.5,2026-01
+ORD_5161,2026-10-19,CUST_1049,26,Male,West,Home & Kitchen,Coffee Maker,1,3499,0.0,3499.0,Cash on Delivery,Delivered,3.5,2026-10
+ORD_5277,2026-04-11,CUST_1088,20,Male,West,Electronics,USB-C Hub,1,1299,0.0,1299.0,Debit Card,Delivered,3.9,2026-04
+ORD_5192,2026-10-12,CUST_1059,30,Male,West,Books & Stationery,Data Analytics Handbook,2,899,15.0,1528.3,Debit Card,Delivered,4.7,2026-10
+ORD_5294,2026-10-04,CUST_1095,33,Female,East,Fashion,Denim Jacket,2,2199,20.0,3518.4,UPI,Returned,1.7,2026-10
+ORD_5344,2026-02-22,CUST_1112,37,Female,North,Beauty & Care,Hair Dryer,2,1599,0.0,3198.0,UPI,Delivered,4.6,2026-02
+ORD_5258,2026-08-13,CUST_1082,40,Male,North,Electronics,Smartwatch,1,4999,0.0,4999.0,Credit Card,Delivered,5.0,2026-08
+ORD_5309,2026-10-12,CUST_1100,38,Male,East,Home & Kitchen,Coffee Maker,1,3499,0.0,3499.0,UPI,Cancelled,2.3,2026-10
+ORD_5150,2026-10-23,CUST_1044,37,Male,South,Books & Stationery,Desk Organizer,2,499,10.0,898.2,UPI,Cancelled,1.2,2026-10
+ORD_5131,2026-10-29,CUST_1036,32,Female,North,Home & Kitchen,Insulated Bottle,2,599,10.0,1078.2,UPI,Cancelled,3.1,2026-10
+ORD_5152,2026-09-20,CUST_1045,41,Female,South,Electronics,USB-C Hub,1,1299,25.0,974.25,UPI,Delivered,4.8,2026-09
+ORD_5100,2026-10-15,CUST_1028,27,Female,West,Books & Stationery,Desk Organizer,2,499,0.0,998.0,Credit Card,Returned,3.3,2026-10
+ORD_5088,2026-08-05,CUST_1025,33,Female,North,Fashion,Cotton T-Shirt,1,699,0.0,699.0,UPI,Cancelled,2.4,2026-08
+ORD_5331,2026-08-08,CUST_1108,30,Female,North,Fashion,Running Shoes,1,3299,5.0,3134.05,UPI,Delivered,4.6,2026-08
+ORD_5215,2026-07-21,CUST_1069,25,Female,North,Electronics,USB-C Hub,1,1299,5.0,1234.05,UPI,Delivered,4.1,2026-07
+ORD_5122,2026-10-06,CUST_1034,37,Other,West,Fashion,Backpack,3,1499,0.0,4497.0,UPI,Delivered,3.0,2026-10
+ORD_5365,2026-09-29,CUST_1120,51,Male,West,Beauty & Care,Hair Dryer,1,1599,10.0,1439.1,Debit Card,Delivered,3.5,2026-09
+ORD_5021,2026-08-19,CUST_1007,47,Male,South,Home & Kitchen,Coffee Maker,1,3499,10.0,3149.1,Debit Card,Delivered,3.3,2026-08
+ORD_5189,2026-04-04,CUST_1058,24,Male,West,Books & Stationery,Desk Organizer,2,499,5.0,948.1,Credit Card,Cancelled,2.7,2026-04
+ORD_5072,2026-09-22,CUST_1021,41,Female,South,Beauty & Care,Hair Dryer,3,1599,5.0,4557.15,Cash on Delivery,Returned,2.0,2026-09
+ORD_5107,2026-08-05,CUST_1029,33,Female,West,Electronics,Smartwatch,1,4999,5.0,4749.05,Credit Card,Delivered,3.7,2026-08
+ORD_5271,2026-10-06,CUST_1085,23,Male,East,Books & Stationery,Desk Organizer,2,499,0.0,998.0,Credit Card,Delivered,4.1,2026-10
+ORD_5349,2026-09-19,CUST_1115,54,Female,West,Fashion,Cotton T-Shirt,1,699,20.0,559.2,UPI,Delivered,4.3,2026-09
+ORD_5103,2026-10-17,CUST_1028,27,Female,West,Electronics,Smartwatch,1,4999,15.0,4249.15,UPI,Delivered,4.1,2026-10
