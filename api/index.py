@@ -1,8 +1,11 @@
 ﻿import os
+import re
 import sys
+import html
 import base64
 import tempfile
 import logging
+import pandas as pd
 from werkzeug.utils import secure_filename
 
 os.environ["MPLCONFIGDIR"] = os.path.join(tempfile.gettempdir(), "matplotlib")
@@ -27,6 +30,80 @@ ALLOWED_SAMPLES = {
     "data/raw/food_delivery_operations.csv",
 }
 
+
+def format_inline_md(text: str) -> str:
+    escaped = html.escape(text)
+    escaped = re.sub(r"\*\*(.+?)\*\*", r"<strong>\1</strong>", escaped)
+    escaped = re.sub(r"\*(.+?)\*", r"<em>\1</em>", escaped)
+    escaped = re.sub(r"`(.+?)`", r"<code>\1</code>", escaped)
+    return escaped
+
+
+def render_markdown_to_html(md_text: str) -> str:
+    """Server-side Markdown to HTML renderer ensuring clean styled tables and lists."""
+    lines = md_text.splitlines()
+    out = []
+    table_rows = []
+    in_list = False
+
+    def flush_table():
+        nonlocal table_rows
+        if not table_rows:
+            return
+        out.append('<div class="table-wrap"><table class="styled-table">')
+        for idx, row in enumerate(table_rows):
+            if idx == 1 and re.match(r"^[\s|:-]+$", row):
+                continue
+            cells = [c.strip() for c in row.strip("|").split("|")]
+            if idx == 0:
+                out.append("<thead><tr>" + "".join(f"<th>{format_inline_md(c)}</th>" for c in cells) + "</tr></thead><tbody>")
+            else:
+                out.append("<tr>" + "".join(f"<td>{format_inline_md(c)}</td>" for c in cells) + "</tr>")
+        out.append("</tbody></table></div>")
+        table_rows = []
+
+    def flush_list():
+        nonlocal in_list
+        if in_list:
+            out.append("</ul>")
+            in_list = False
+
+    for raw in lines:
+        line = raw.strip()
+        if "|" in line and (line.startswith("|") or line.count("|") >= 2):
+            flush_list()
+            table_rows.append(line)
+            continue
+        elif table_rows:
+            flush_table()
+
+        if not line or line == "---":
+            flush_list()
+            continue
+        if line.startswith("### "):
+            flush_list()
+            out.append(f"<h3>{format_inline_md(line[4:])}</h3>")
+        elif line.startswith("## "):
+            flush_list()
+            out.append(f"<h2>{format_inline_md(line[3:])}</h2>")
+        elif line.startswith("# "):
+            flush_list()
+            out.append(f"<h2>{format_inline_md(line[2:])}</h2>")
+        elif re.match(r"^([-*]|\d+\.)\s+", line):
+            if not in_list:
+                out.append("<ul>")
+                in_list = True
+            item = re.sub(r"^([-*]|\d+\.)\s+", "", line)
+            out.append(f"<li>{format_inline_md(item)}</li>")
+        else:
+            flush_list()
+            out.append(f"<p>{format_inline_md(line)}</p>")
+
+    flush_table()
+    flush_list()
+    return "\n".join(out)
+
+
 HTML_TEMPLATE = r"""
 <!DOCTYPE html>
 <html lang="en">
@@ -42,10 +119,11 @@ HTML_TEMPLATE = r"""
             --border: #334155;
             --accent: #38bdf8;
             --accent-btn: #0284c7;
+            --green-btn: #059669;
             --text: #f8fafc;
             --muted: #94a3b8;
         }
-        body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); max-width: 1020px; margin: 28px auto; padding: 0 20px; line-height: 1.65; }
+        body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); max-width: 1060px; margin: 28px auto; padding: 0 20px; line-height: 1.65; }
         .skip-link { position: absolute; left: -999px; background: var(--accent); color: #0f172a; padding: 8px 12px; font-weight: 700; }
         .skip-link:focus { left: 16px; top: 16px; z-index: 100; }
         .card { background: var(--card); padding: 26px; border-radius: 14px; border: 1px solid var(--border); margin-bottom: 24px; box-shadow: 0 10px 25px rgba(0,0,0,0.35); }
@@ -54,35 +132,37 @@ HTML_TEMPLATE = r"""
         h2 { color: #e2e8f0; font-size: 1.35rem; margin-top: 0; }
         label { display: block; margin: 14px 0 6px; font-weight: 600; color: #f1f5f9; }
         select, input[type="file"], textarea { width: 100%; padding: 11px 14px; border-radius: 8px; border: 1px solid #475569; background: #0f172a; color: var(--text); box-sizing: border-box; font-size: 1rem; }
-        select:focus, input[type="file"]:focus, textarea:focus, button:focus { outline: 3px solid var(--accent); outline-offset: 2px; }
-        .btn-primary { margin-top: 18px; background: var(--accent-btn); color: #ffffff; border: none; padding: 12px 26px; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: background 0.2s; }
+        select:focus, input[type="file"]:focus, textarea:focus, button:focus, a.download-csv-btn:focus { outline: 3px solid var(--accent); outline-offset: 2px; }
+        .btn-primary { margin-top: 18px; background: var(--accent-btn); color: #ffffff; border: none; padding: 12px 26px; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; }
         .btn-primary:hover { background: #0369a1; }
         .hint { font-size: 0.875rem; color: var(--muted); margin-top: 4px; }
         .error { color: #fecaca; font-weight: 600; background: #7f1d1d; padding: 14px; border-radius: 8px; border: 1px solid #f87171; }
 
-        /* Interactive Report Toolbar & Tabs */
+        /* Toolbar & Action Buttons */
         .toolbar { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px; padding-bottom: 16px; border-bottom: 1px solid var(--border); margin-bottom: 20px; }
-        .tab-group, .action-group { display: flex; gap: 8px; flex-wrap: wrap; }
-        .tab-btn, .action-btn { background: var(--card-alt); color: #e2e8f0; border: 1px solid var(--border); padding: 8px 14px; border-radius: 8px; font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: all 0.15s; }
+        .tab-group, .action-group { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+        .tab-btn, .action-btn { background: var(--card-alt); color: #e2e8f0; border: 1px solid var(--border); padding: 8px 14px; border-radius: 8px; font-size: 0.9rem; font-weight: 600; cursor: pointer; text-decoration: none; }
         .tab-btn.active { background: var(--accent-btn); color: #ffffff; border-color: var(--accent); }
         .action-btn:hover, .tab-btn:hover { border-color: var(--accent); color: #ffffff; }
+        .download-csv-btn { background: var(--green-btn); color: #ffffff; border: 1px solid #34d399; padding: 8px 16px; border-radius: 8px; font-size: 0.9rem; font-weight: 700; text-decoration: none; display: inline-block; }
+        .download-csv-btn:hover { background: #047857; }
 
-        /* Rendered Markdown Dashboard Styles */
+        /* Styled HTML Tables & Report Typography */
         .report-body h2 { color: var(--accent); border-bottom: 1px solid var(--border); padding-bottom: 6px; margin-top: 24px; }
         .report-body h3 { color: #7dd3fc; margin-top: 22px; font-size: 1.15rem; }
         .report-body p { color: #e2e8f0; margin: 10px 0; }
-        .report-body ul, .report-body ol { padding-left: 22px; color: #e2e8f0; }
+        .report-body ul { padding-left: 22px; color: #e2e8f0; }
         .report-body li { margin-bottom: 8px; }
-        .report-body strong { color: #ffffff; }
         .table-wrap { overflow-x: auto; margin: 16px 0; border-radius: 10px; border: 1px solid var(--border); }
-        table.styled-table { width: 100%; border-collapse: collapse; font-size: 0.95rem; text-align: left; }
-        table.styled-table th { background: #1e293b; color: var(--accent); padding: 12px 14px; font-weight: 700; border-bottom: 2px solid var(--border); }
+        table.styled-table { width: 100%; border-collapse: collapse; font-size: 0.94rem; text-align: left; }
+        table.styled-table th { background: #1e293b; color: var(--accent); padding: 12px 14px; font-weight: 700; border-bottom: 2px solid var(--border); white-space: nowrap; }
         table.styled-table td { padding: 11px 14px; border-bottom: 1px solid #1e293b; color: #f1f5f9; }
-        table.styled-table tr:nth-child(even) { background: rgba(30, 41, 59, 0.45); }
-        table.styled-table tr:hover { background: rgba(56, 189, 248, 0.12); }
+        table.styled-table tbody tr:nth-child(even) { background: rgba(30, 41, 59, 0.45); }
+        table.styled-table tbody tr:hover { background: rgba(56, 189, 248, 0.14); }
 
-        .chart-box { background: #0f172a; padding: 16px; border-radius: 10px; border: 1px solid var(--border); margin-top: 20px; text-align: center; }
+        .chart-box { background: #0f172a; padding: 18px; border-radius: 10px; border: 1px solid var(--border); margin-top: 22px; text-align: center; }
         .chart-box img { max-width: 100%; height: auto; border-radius: 8px; }
+        .badge { background: #064e3b; color: #6ee7b7; padding: 3px 10px; border-radius: 999px; font-size: 0.82rem; font-weight: 600; border: 1px solid #10b981; }
         .hidden { display: none; }
     </style>
 </head>
@@ -90,7 +170,7 @@ HTML_TEMPLATE = r"""
     <a href="#main-content" class="skip-link">Skip to main content</a>
     <header class="card" role="banner">
         <h1>Autonomous Multi-Agent CSV Analyst</h1>
-        <p style="margin:0; color:#cbd5e1;">LangGraph 3-Agent Pipeline: Schema Profiler &rarr; AST-Sandboxed Pandas Analyst &rarr; Executive Strategist</p>
+        <p style="margin:0; color:#cbd5e1;">LangGraph 3-Agent Pipeline: Schema Profiler &rarr; AST-Sandboxed Pandas Cleaner &amp; Analyst &rarr; Executive Strategist</p>
     </header>
 
     <main id="main-content" role="main">
@@ -123,25 +203,48 @@ HTML_TEMPLATE = r"""
             </section>
             {% endif %}
 
-            {% if report %}
+            {% if report_html %}
             <section class="card" aria-labelledby="report-heading">
                 <div class="toolbar">
-                    <div class="tab-group" role="tablist" aria-label="Report View Switcher">
+                    <div class="tab-group" role="tablist" aria-label="Dashboard View Switcher">
                         <button type="button" class="tab-btn active" onclick="switchView('all', this)">Full Dashboard</button>
-                        <button type="button" class="tab-btn" onclick="switchView('report', this)">Tables &amp; Insights</button>
+                        <button type="button" class="tab-btn" onclick="switchView('report', this)">Report &amp; Tables</button>
+                        {% if cleaned_preview_html %}
+                        <button type="button" class="tab-btn" onclick="switchView('data', this)">Cleaned CSV Data</button>
+                        {% endif %}
                         {% if chart_b64 %}
                         <button type="button" class="tab-btn" onclick="switchView('chart', this)">Visual Chart</button>
                         {% endif %}
                     </div>
                     <div class="action-group">
+                        {% if cleaned_csv_b64 %}
+                        <a class="download-csv-btn" href="data:text/csv;base64,{{ cleaned_csv_b64 }}" download="cleaned_dataset.csv">Download Cleaned CSV</a>
+                        {% endif %}
                         <button type="button" class="action-btn" id="copy-btn" onclick="copyReport()">Copy Report</button>
                         <button type="button" class="action-btn" onclick="downloadReport()">Download .MD</button>
                     </div>
                 </div>
 
-                <h2 id="report-heading" class="sr-only" style="position:absolute;left:-9999px;">Executive Analysis Report</h2>
-                <textarea id="raw-markdown" class="hidden" aria-hidden="true">{{ report }}</textarea>
-                <div id="rendered-report" class="report-body"></div>
+                <h2 id="report-heading" style="position:absolute;left:-9999px;">Executive Analysis Report</h2>
+                <textarea id="raw-markdown" class="hidden" aria-hidden="true">{{ report_raw }}</textarea>
+
+                <div id="report-section" class="report-body">
+                    {{ report_html | safe }}
+                </div>
+
+                {% if cleaned_preview_html %}
+                <div id="data-section" style="margin-top: 26px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+                        <h3 style="color:#34d399; margin:0;">Cleaned Dataset Preview (Top 5 Rows) <span class="badge">{{ cleaned_shape }}</span></h3>
+                        {% if cleaned_csv_b64 %}
+                        <a class="download-csv-btn" href="data:text/csv;base64,{{ cleaned_csv_b64 }}" download="cleaned_dataset.csv">Download Full Cleaned CSV</a>
+                        {% endif %}
+                    </div>
+                    <div class="table-wrap">
+                        {{ cleaned_preview_html | safe }}
+                    </div>
+                </div>
+                {% endif %}
 
                 {% if chart_b64 %}
                 <div id="chart-section" class="chart-box">
@@ -155,104 +258,22 @@ HTML_TEMPLATE = r"""
     </main>
 
     <script>
-        function escapeHtml(str) {
-            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-        }
-
-        function formatInline(text) {
-            return escapeHtml(text)
-                .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
-                .replace(/\*(.+?)\*/g, "<em>$1</em>")
-                .replace(/`(.+?)`/g, "<code style='background:#1e293b;padding:2px 6px;border-radius:4px;'>$1</code>");
-        }
-
-        function renderMarkdownDashboard(md) {
-            const lines = md.split(/\r?\n/);
-            let html = "";
-            let inTable = false;
-            let tableRows = [];
-            let inList = false;
-
-            function flushTable() {
-                if (!tableRows.length) return;
-                html += '<div class="table-wrap"><table class="styled-table">';
-                tableRows.forEach((row, idx) => {
-                    if (idx === 1 && /^[\s|:-]+$/.test(row)) return;
-                    const cells = row.replace(/^\||\|$/g, "").split("|").map(c => c.trim());
-                    const tag = idx === 0 ? "th" : "td";
-                    html += "<tr>" + cells.map(c => `<${tag}>${formatInline(c)}</${tag}>`).join("") + "</tr>";
-                });
-                html += "</table></div>";
-                tableRows = [];
-                inTable = false;
-            }
-
-            function flushList() {
-                if (inList) { html += "</ul>"; inList = false; }
-            }
-
-            for (let rawLine of lines) {
-                const line = rawLine.trim();
-                if (line.startsWith("|") && line.endsWith("|")) {
-                    flushList();
-                    inTable = true;
-                    tableRows.push(line);
-                    continue;
-                } else if (inTable) {
-                    flushTable();
-                }
-
-                if (!line) {
-                    flushList();
-                    continue;
-                }
-                if (line.startsWith("### ")) {
-                    flushList();
-                    html += `<h3>${formatInline(line.slice(4))}</h3>`;
-                } else if (line.startsWith("## ")) {
-                    flushList();
-                    html += `<h2>${formatInline(line.slice(3))}</h2>`;
-                } else if (line.startsWith("# ")) {
-                    flushList();
-                    html += `<h2>${formatInline(line.slice(2))}</h2>`;
-                } else if (/^[-*]\s+/.test(line) || /^\d+\.\s+/.test(line)) {
-                    if (!inList) { html += "<ul>"; inList = true; }
-                    const itemText = line.replace(/^[-*]\s+|^\d+\.\s+/, "");
-                    html += `<li>${formatInline(itemText)}</li>`;
-                } else {
-                    flushList();
-                    html += `<p>${formatInline(line)}</p>`;
-                }
-            }
-            flushTable();
-            flushList();
-            return html;
-        }
-
-        const rawBox = document.getElementById("raw-markdown");
-        const targetBox = document.getElementById("rendered-report");
-        if (rawBox && targetBox) {
-            targetBox.innerHTML = renderMarkdownDashboard(rawBox.value);
-        }
-
         function switchView(mode, btn) {
             document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
             btn.classList.add("active");
-            const rep = document.getElementById("rendered-report");
+            const rep = document.getElementById("report-section");
+            const dat = document.getElementById("data-section");
             const ch = document.getElementById("chart-section");
-            if (mode === "all") {
-                if (rep) rep.classList.remove("hidden");
-                if (ch) ch.classList.remove("hidden");
-            } else if (mode === "report") {
-                if (rep) rep.classList.remove("hidden");
-                if (ch) ch.classList.add("hidden");
-            } else if (mode === "chart") {
-                if (rep) rep.classList.add("hidden");
-                if (ch) ch.classList.remove("hidden");
-            }
+            const show = (el, flag) => { if (el) el.classList.toggle("hidden", !flag); };
+
+            if (mode === "all") { show(rep, true); show(dat, true); show(ch, true); }
+            else if (mode === "report") { show(rep, true); show(dat, false); show(ch, false); }
+            else if (mode === "data") { show(rep, false); show(dat, true); show(ch, false); }
+            else if (mode === "chart") { show(rep, false); show(dat, false); show(ch, true); }
         }
 
         function copyReport() {
+            const rawBox = document.getElementById("raw-markdown");
             if (!rawBox) return;
             navigator.clipboard.writeText(rawBox.value).then(() => {
                 const btn = document.getElementById("copy-btn");
@@ -262,6 +283,7 @@ HTML_TEMPLATE = r"""
         }
 
         function downloadReport() {
+            const rawBox = document.getElementById("raw-markdown");
             if (!rawBox) return;
             const blob = new Blob([rawBox.value], { type: "text/markdown;charset=utf-8" });
             const url = URL.createObjectURL(blob);
@@ -288,8 +310,12 @@ def add_security_headers(response):
 @app.route("/", defaults={"path": ""}, methods=["GET", "POST"])
 @app.route("/<path:path>", methods=["GET", "POST"])
 def home(path):
-    report = ""
+    report_raw = ""
+    report_html = ""
     chart_b64 = ""
+    cleaned_csv_b64 = ""
+    cleaned_preview_html = ""
+    cleaned_shape = ""
     error = ""
     goal = "Clean duplicates and missing values, summarize top KPIs, and plot the primary revenue driver."
 
@@ -320,6 +346,7 @@ def home(path):
                 "dataset_profile": "",
                 "chat_history": [],
                 "chart_path": "",
+                "cleaned_csv_path": "",
                 "generated_code": "",
                 "analysis_output": "",
                 "error_log": "",
@@ -327,16 +354,36 @@ def home(path):
                 "final_report": "",
             })
 
-            report = result.get("final_report", "")
+            report_raw = result.get("final_report", "")
+            report_html = render_markdown_to_html(report_raw)
+
             c_path = result.get("chart_path", "")
             if c_path and os.path.exists(c_path):
                 with open(c_path, "rb") as img_f:
                     chart_b64 = base64.b64encode(img_f.read()).decode("utf-8")
+
+            clean_csv_path = result.get("cleaned_csv_path", "")
+            if clean_csv_path and os.path.exists(clean_csv_path):
+                with open(clean_csv_path, "rb") as csv_f:
+                    cleaned_csv_b64 = base64.b64encode(csv_f.read()).decode("utf-8")
+                df_clean = pd.read_csv(clean_csv_path)
+                cleaned_shape = f"{df_clean.shape[0]} rows x {df_clean.shape[1]} cols"
+                cleaned_preview_html = df_clean.head(5).to_html(index=False, classes="styled-table", border=0)
+
         except ValueError as ve:
             error = str(ve)
         except Exception as exc:
             logging.exception("Agent pipeline error")
             error = f"Unable to complete analysis: {type(exc).__name__}. Please verify your CSV format and try again."
 
-    return render_template_string(HTML_TEMPLATE, report=report, chart_b64=chart_b64, error=error, goal=goal)
-
+    return render_template_string(
+        HTML_TEMPLATE,
+        report_raw=report_raw,
+        report_html=report_html,
+        chart_b64=chart_b64,
+        cleaned_csv_b64=cleaned_csv_b64,
+        cleaned_preview_html=cleaned_preview_html,
+        cleaned_shape=cleaned_shape,
+        error=error,
+        goal=goal,
+    )

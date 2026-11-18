@@ -1,4 +1,4 @@
-import os
+﻿import os
 import io
 import re
 import ast
@@ -66,6 +66,7 @@ class UniversalAgentState(TypedDict):
     dataset_profile: str
     chat_history: List[str]
     chart_path: str
+    cleaned_csv_path: str
     generated_code: str
     analysis_output: str
     error_log: str
@@ -79,7 +80,6 @@ def clean_llm_text(text: str) -> str:
 
 @lru_cache(maxsize=1)
 def get_active_groq_model() -> str:
-    """Cached model lookup so Groq API is not queried repeatedly on every turn."""
     api_key = os.getenv("GROQ_API_KEY")
     preferred = [
         "llama-3.1-8b-instant",
@@ -132,16 +132,17 @@ def schema_profiler_agent(state: UniversalAgentState) -> Dict[str, Any]:
 
 
 # ==========================================
-# 3. AGENT 2: AST-SANDBOXED CODE & CHART ANALYST
+# 3. AGENT 2: AST-SANDBOXED CODE, CLEANER & CHART ANALYST
 # ==========================================
 def pandas_analyst_agent(state: UniversalAgentState) -> Dict[str, Any]:
     attempt = state.get("retry_count", 0) + 1
     llm = ChatGroq(model=get_active_groq_model(), temperature=0.1)
 
-    charts_dir = os.path.join(tempfile.gettempdir(), "generated_charts")
-    os.makedirs(charts_dir, exist_ok=True)
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    chart_file = os.path.join(charts_dir, f"chart_{timestamp}.png")
+    work_dir = os.path.join(tempfile.gettempdir(), "generated_charts")
+    os.makedirs(work_dir, exist_ok=True)
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S_%f")
+    chart_file = os.path.join(work_dir, f"chart_{timestamp}.png")
+    cleaned_csv_file = os.path.join(work_dir, f"cleaned_{timestamp}.csv")
 
     history_context = "\n".join(state.get("chat_history", [])[-4:]) or "None (First question)"
 
@@ -150,14 +151,15 @@ def pandas_analyst_agent(state: UniversalAgentState) -> Dict[str, Any]:
         "pandas, numpy, matplotlib.pyplot (as plt), and seaborn (as sns) to clean the dataset and "
         "answer the user's goal.\n"
         "STRICT RULES:\n"
-        "1. Load the CSV from `CSV_PATH` (already defined in scope). Do NOT import os, sys, or pathlib.\n"
+        "1. Load the CSV into `df` from `CSV_PATH` (already defined in scope). Do NOT import os, sys, or pathlib.\n"
         "2. NEVER use `inplace=True`. Always use direct assignment like `df[col] = df[col].fillna(...)`, "
         "drop duplicates (`df = df.drop_duplicates().copy()`), strip whitespace on text columns, and fix outliers.\n"
-        "3. If an `Order_Status` column exists, exclude 'Returned' and 'Cancelled' orders when computing Net Revenue or AOV.\n"
-        "4. Print clear, labeled summary tables and exact KPIs using `print()`.\n"
-        "5. Create ONE clean matplotlib/seaborn figure, call `plt.tight_layout()`, save to `CHART_PATH` "
+        "3. Save the cleaned DataFrame `df` to `CLEANED_CSV_PATH` (already defined in scope) using `df.to_csv(CLEANED_CSV_PATH, index=False)`.\n"
+        "4. If an `Order_Status` column exists, exclude 'Returned' and 'Cancelled' orders when computing Net Revenue or AOV.\n"
+        "5. Print clear, labeled summary tables and exact KPIs using `print()`.\n"
+        "6. Create ONE clean matplotlib/seaborn figure, call `plt.tight_layout()`, save to `CHART_PATH` "
         "(already defined in scope) with `dpi=150`, and call `plt.close()`. NEVER call `plt.show()`.\n"
-        "6. Return ONLY raw Python code—no markdown backticks (```) and no explanations."
+        "7. Return ONLY raw Python code—no markdown backticks (```) and no explanations."
     )
 
     prompt = (
@@ -179,6 +181,7 @@ def pandas_analyst_agent(state: UniversalAgentState) -> Dict[str, Any]:
         "sns": sns,
         "CSV_PATH": state["csv_path"],
         "CHART_PATH": chart_file,
+        "CLEANED_CSV_PATH": cleaned_csv_file,
     }
 
     try:
@@ -187,12 +190,21 @@ def pandas_analyst_agent(state: UniversalAgentState) -> Dict[str, Any]:
             warnings.simplefilter("ignore")
             with contextlib.redirect_stdout(stdout_buffer):
                 exec(clean_code, {"__builtins__": __builtins__, **exec_globals})
+
+        # Fallback: if LLM forgot to call df.to_csv(CLEANED_CSV_PATH), save the cleaned df automatically
+        if not os.path.exists(cleaned_csv_file):
+            cleaned_df = exec_globals.get("df")
+            if isinstance(cleaned_df, pd.DataFrame) and not cleaned_df.empty:
+                cleaned_df.to_csv(cleaned_csv_file, index=False)
+
         output_text = stdout_buffer.getvalue() or "Code executed successfully."
         saved_chart = chart_file if os.path.exists(chart_file) else ""
+        saved_csv = cleaned_csv_file if os.path.exists(cleaned_csv_file) else ""
         return {
             "generated_code": clean_code,
             "analysis_output": output_text,
             "chart_path": saved_chart,
+            "cleaned_csv_path": saved_csv,
             "error_log": "",
             "retry_count": attempt,
         }
@@ -218,11 +230,11 @@ def executive_strategist_agent(state: UniversalAgentState) -> Dict[str, Any]:
     llm = ChatGroq(model=get_active_groq_model(), temperature=0.2)
 
     system_prompt = (
-        "You are a Principal Data Consultant writing a business report in plain English and Markdown. "
+        "You are a Principal Data Consultant writing a business report in clean Markdown. "
         "NEVER output Python code. Based ONLY on the verified dataset profile and Python execution output "
         "provided, write a crisp executive summary with:\n"
-        "1. Data Cleaning & Quality Summary\n"
-        "2. Key Quantitative Findings (cite exact numbers from the execution output)\n"
+        "1. Data Cleaning & Quality Summary (as a Markdown table)\n"
+        "2. Key Quantitative Findings (as a Markdown table citing exact numbers)\n"
         "3. Top 3-4 Actionable Business Recommendations"
     )
 
