@@ -88,7 +88,7 @@ def analyze(path: str):
                 DASHBOARD_HTML,
                 report_raw="",
                 report_html="",
-                chart_b64="",
+                charts_b64=[],
                 cleaned_csv_b64="",
                 cleaned_preview_html="",
                 cleaned_shape="",
@@ -109,7 +109,7 @@ def analyze(path: str):
     )
     report_raw = ""
     report_html = ""
-    chart_b64 = ""
+    charts_b64 = []
     cleaned_csv_b64 = ""
     cleaned_preview_html = ""
     cleaned_shape = ""
@@ -136,6 +136,7 @@ def analyze(path: str):
             "dataset_profile": "",
             "chat_history": [],
             "chart_path": "",
+            "chart_paths": [],
             "cleaned_csv_path": "",
             "generated_code": "",
             "analysis_output": "",
@@ -151,10 +152,11 @@ def analyze(path: str):
         kpi_cards = extract_kpi_cards(analysis_output)
         retry_count = result.get("retry_count", 1)
 
-        chart_path = result.get("chart_path", "")
-        if chart_path and os.path.exists(chart_path):
-            with open(chart_path, "rb") as img_f:
-                chart_b64 = base64.b64encode(img_f.read()).decode("utf-8")
+        charts_b64 = []
+        raw_paths = result.get("chart_paths") or ([result.get("chart_path")] if result.get("chart_path") else [])
+        for c_path in [p for p in raw_paths if p and os.path.exists(p)][:3]:
+            with open(c_path, "rb") as img_f:
+                charts_b64.append(base64.b64encode(img_f.read()).decode("utf-8"))
 
         clean_csv_path = result.get("cleaned_csv_path", "")
         if clean_csv_path and os.path.exists(clean_csv_path):
@@ -183,7 +185,7 @@ def analyze(path: str):
         DASHBOARD_HTML,
         report_raw=report_raw,
         report_html=report_html,
-        chart_b64=chart_b64,
+        charts_b64=charts_b64,
         cleaned_csv_b64=cleaned_csv_b64,
         cleaned_preview_html=cleaned_preview_html,
         cleaned_shape=cleaned_shape,

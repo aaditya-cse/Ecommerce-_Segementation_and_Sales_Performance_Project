@@ -306,7 +306,7 @@ DASHBOARD_HTML = r"""
                     {% if cleaned_preview_html %}
                     <button type="button" class="tab-btn" id="tab-data" onclick="switchView('data', this)">Cleaned Dataset</button>
                     {% endif %}
-                    {% if chart_b64 %}
+                    {% if charts_b64 %}
                     <button type="button" class="tab-btn" id="tab-chart" onclick="switchView('chart', this)">Visual Chart</button>
                     {% endif %}
                     {% if generated_code %}
@@ -334,10 +334,19 @@ DASHBOARD_HTML = r"""
             </div>
             {% endif %}
 
-            {% if chart_b64 %}
+            {% if charts_b64 %}
             <div id="chart-section" class="chart-box">
-                <h3 style="margin-top:0; color:#38bdf8;">Generated Statistical Visualization</h3>
-                <img src="data:image/png;base64,{{ chart_b64 }}" alt="Automated statistical visualization generated for: {{ goal }}">
+                <h3 style="margin-top:0; color:#38bdf8;">Generated Statistical Visualizations ({{ charts_b64|length }})</h3>
+                <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(420px, 1fr)); gap:18px; margin-top:14px;">
+                    {% for img_b64 in charts_b64 %}
+                    <div style="background:#0b1324; border:1px solid #263348; border-radius:10px; padding:14px;">
+                        <img src="data:image/png;base64,{{ img_b64 }}" alt="Chart {{ loop.index }} generated for: {{ goal }}">
+                        <div style="margin-top:12px;">
+                            <a class="download-csv-btn" href="data:image/png;base64,{{ img_b64 }}" download="analysis_chart_{{ loop.index }}.png">Download Chart {{ loop.index }} (PNG)</a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
             </div>
             {% endif %}
 
