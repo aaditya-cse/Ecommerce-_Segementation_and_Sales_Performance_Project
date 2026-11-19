@@ -168,8 +168,7 @@ def pandas_analyst_agent(state: UniversalAgentState) -> Dict[str, Any]:
         "   - Generate 1 focused chart for a single-question prompt, OR 2 to 3 distinct charts (maximum 3) when the user asks "
         "for multiple charts, multi-dimensional comparisons, or a full breakdown.\n"
         "   - Save chart 1 to `CHART_PATHS[0]` (or `CHART_PATH`), chart 2 (if needed) to `CHART_PATHS[1]`, and chart 3 (if needed) to `CHART_PATHS[2]`. "
-        "For EACH chart: create a fresh `plt.figure(figsize=(8, 4.8))`, add clear title and axis labels, call `plt.margins(y=0.15); plt.tight_layout()
-    - NEVER plot a bar chart with only 1 bar; always compare ALL categories or Top 5-8 items (at least 2+ bars/points) using figsize=(8, 4.5), clear title, axis labels, and sns.despine().`, "
+        "For EACH chart: create a fresh `plt.figure(figsize=(8, 4.8))`, add clear title and axis labels, call `plt.margins(y=0.15); plt.tight_layout()` (NEVER plot a single-bar chart; always compare at least 2-6 categories/items), "
         "save with `dpi=150`, and call `plt.close()`. NEVER call `plt.show()`.\n"
         "7. Return ONLY raw Python code—no markdown backticks (```) and no explanations."
     )
