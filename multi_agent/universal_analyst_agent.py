@@ -105,6 +105,35 @@ def get_active_groq_model() -> str:
 # ==========================================
 # 2. AGENT 1: DYNAMIC SCHEMA & QUALITY PROFILER
 # ==========================================
+
+def _ensure_chart_fallback(df, out_path):
+    try:
+        num_cols = [c for c in df.select_dtypes(include=[np.number]).columns if "id" not in c.lower()]
+        cat_cols = [c for c in df.select_dtypes(exclude=[np.number]).columns if "id" not in c.lower() and "date" not in c.lower()]
+        if not num_cols:
+            return False
+        plt.figure(figsize=(8, 4.5))
+        if cat_cols:
+            grouped = df.groupby(cat_cols[0])[num_cols[0]].sum().sort_values(ascending=False).head(6)
+            if len(grouped) >= 2:
+                sns.barplot(x=grouped.index.astype(str), y=grouped.values, hue=grouped.index.astype(str), palette="viridis", legend=False)
+                plt.title(f"Total {num_cols[0]} by {cat_cols[0]}", fontweight="bold")
+                plt.xticks(rotation=20, ha="right")
+            else:
+                sns.histplot(df[num_cols[0]].dropna(), kde=True)
+                plt.title(f"Distribution of {num_cols[0]}", fontweight="bold")
+        else:
+            sns.histplot(df[num_cols[0]].dropna(), kde=True)
+            plt.title(f"Distribution of {num_cols[0]}", fontweight="bold")
+        plt.tight_layout()
+        plt.savefig(out_path, dpi=150, bbox_inches="tight")
+        plt.close("all")
+        return os.path.exists(out_path)
+    except Exception:
+        plt.close("all")
+        return False
+
+
 def schema_profiler_agent(state: UniversalAgentState) -> Dict[str, Any]:
     if state.get("dataset_profile"):
         return {"retry_count": 0}

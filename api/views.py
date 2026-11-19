@@ -373,6 +373,13 @@ DASHBOARD_HTML = r"""
             {% endif %}
         </section>
         {% endif %}
+
+        {% if not report_html and not error %}
+        <section class="card">
+            <h2 style="margin-top:0; color:#38bdf8;">Verified Analysis Output</h2>
+            <pre class="code-block"><code>{{ analysis_output or "Analysis completed. Click Run New Analysis to try another query." }}</code></pre>
+        </section>
+        {% endif %}
     </main>
 
     <script>
