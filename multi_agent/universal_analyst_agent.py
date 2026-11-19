@@ -118,11 +118,23 @@ def schema_profiler_agent(state: UniversalAgentState) -> Dict[str, Any]:
         for col in cat_cols[:8]
     }
 
+    iqr_outliers = {}
+    for col in num_cols:
+        s = df[col].dropna()
+        if len(s) >= 4:
+            q1, q3 = s.quantile(0.25), s.quantile(0.75)
+            iqr = q3 - q1
+            if iqr > 0:
+                count = int(((s < (q1 - 1.5 * iqr)) | (s > (q3 + 1.5 * iqr))).sum())
+                if count > 0:
+                    iqr_outliers[col] = count
+
     profile = {
         "shape": {"rows": len(df), "columns": len(df.columns)},
         "columns_and_dtypes": df.dtypes.astype(str).to_dict(),
         "duplicate_rows": int(df.duplicated().sum()),
         "missing_values": df.isnull().sum()[df.isnull().sum() > 0].to_dict(),
+        "iqr_outliers": iqr_outliers,
         "numeric_summary": df[num_cols].describe().round(2).to_dict() if num_cols else {},
         "top_categorical_values": cat_samples,
         "sample_rows": df.head(3).to_dict(orient="records"),
