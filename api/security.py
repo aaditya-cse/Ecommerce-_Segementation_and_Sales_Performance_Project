@@ -57,20 +57,18 @@ def sanitize_csv_cell(value: str) -> str:
     return value
 
 
-def apply_hardened_headers(response: Response) -> Response:
-    """Attach strict OWASP security headers to every HTTP response."""
+def apply_hardened_headers(response):
+    """Attach hardened OWASP security headers including CSP and HSTS."""
     response.headers["X-Content-Type-Options"] = "nosniff"
     response.headers["X-Frame-Options"] = "DENY"
     response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
-    response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
-    response.headers["Permissions-Policy"] = "camera=(), microphone=(), geolocation=()"
     response.headers["Content-Security-Policy"] = (
         "default-src 'self'; "
-        "img-src 'self' data:; "
-        "style-src 'self' 'unsafe-inline'; "
+        "img-src 'self' data: blob:; "
         "script-src 'self' 'unsafe-inline'; "
-        "form-action 'self'; "
-        "frame-ancestors 'none'; "
-        "base-uri 'self'"
+        "style-src 'self' 'unsafe-inline'; "
+        "connect-src 'self'; "
+        "frame-ancestors 'none';"
     )
+    response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
     return response
