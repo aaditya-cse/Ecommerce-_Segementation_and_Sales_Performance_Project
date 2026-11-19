@@ -150,12 +150,12 @@ def schema_profiler_agent(state: UniversalAgentState) -> Dict[str, Any]:
         "sample_rows": df.head(3).to_dict(orient="records"),
     }
 
-    return {"dataset_profile": json.dumps(profile, indent=2, default=str), "retry_count": 0}
+    return {"dataset_profile": json.dumps(profile, separators=(",", ":"), default=str), "retry_count": 0}
 
 
 def pandas_analyst_agent(state: UniversalAgentState) -> Dict[str, Any]:
     attempt = state.get("retry_count", 0) + 1
-    llm = ChatGroq(model=get_active_groq_model(), temperature=0.1, max_tokens=950, timeout=20)
+    llm = ChatGroq(model=get_active_groq_model(), temperature=0.1, max_tokens=750, timeout=15, max_retries=1)
 
     work_dir = os.path.join(tempfile.gettempdir(), "generated_charts")
     os.makedirs(work_dir, exist_ok=True)
@@ -173,7 +173,7 @@ def pandas_analyst_agent(state: UniversalAgentState) -> Dict[str, Any]:
         "pandas, numpy, matplotlib.pyplot (as plt), and seaborn (as sns) to clean the dataset and answer the user's goal.\n"
         "STRICT RULES:\n"
         "1. Load CSV into `df` from `CSV_PATH` (already defined). NEVER import os, sys, or pathlib.\n"
-        "2. NEVER use `inplace=True`. Use `df = df.drop_duplicates().copy()`, fill nulls safely, strip/title text columns, "
+        "2. NEVER use `inplace=True`. Always coerce numeric columns with `pd.to_numeric(df[c], errors="coerce")` before math/grouping, and never assume column names not listed in DATASET PROFILE. Use `df = df.drop_duplicates().copy()`, fill nulls safely, strip/title text columns, "
         "and fix invalid values (e.g., Quantity <= 0, Age > 100, Discount_Pct > 100).\n"
         "3. Save cleaned `df` via `df.to_csv(CLEANED_CSV_PATH, index=False)`.\n"
         "4. If `Order_Status` exists, exclude 'Returned' and 'Cancelled' orders for Net Revenue/AOV.\n"
@@ -251,13 +251,13 @@ def pandas_analyst_agent(state: UniversalAgentState) -> Dict[str, Any]:
 
 
 def route_after_execution(state: UniversalAgentState) -> str:
-    if state.get("error_log") and state.get("retry_count", 0) < 3:
+    if state.get("error_log") and state.get("retry_count", 0) < 2:
         return "retry_analyst"
     return "strategist"
 
 
 def executive_strategist_agent(state: UniversalAgentState) -> Dict[str, Any]:
-    llm = ChatGroq(model=get_active_groq_model(), temperature=0.2, max_tokens=850, timeout=20)
+    llm = ChatGroq(model=get_active_groq_model(), temperature=0.2, max_tokens=650, timeout=15, max_retries=1)
 
     system_prompt = (
         "You are a Principal Data Consultant writing a concise business report in clean Markdown. "
