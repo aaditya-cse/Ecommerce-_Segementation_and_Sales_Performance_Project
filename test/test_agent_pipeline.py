@@ -54,3 +54,66 @@ def test_flask_home_page_accessibility_and_headers():
     assert 'for="sample-csv"' in html
     assert 'aria-live="polite"' in html
     assert resp.headers.get("X-Content-Type-Options") == "nosniff"
+
+def test_security_headers_csp_and_hsts():
+    from api.index import app
+
+    client = app.test_client()
+    res = client.get("/")
+    assert res.status_code == 200
+    assert "Content-Security-Policy" in res.headers
+    assert "Strict-Transport-Security" in res.headers
+    assert res.headers.get("X-Frame-Options") == "DENY"
+
+
+def test_csv_formula_injection_sanitization():
+    from api.security import sanitize_csv_cell
+
+    assert sanitize_csv_cell("=CMD|' /C calc'!A0").startswith("'")
+    assert sanitize_csv_cell("+SUM(A1:A5)").startswith("'")
+    assert sanitize_csv_cell("@IMPORTXML()").startswith("'")
+    assert sanitize_csv_cell("Electronics") == "Electronics"
+
+
+def test_csv_bytes_validation_rejects_binary_and_empty():
+    import pytest
+    from api.security import validate_csv_bytes
+
+    with pytest.raises(ValueError):
+        validate_csv_bytes(b"")
+    with pytest.raises(ValueError):
+        validate_csv_bytes(b"col1,col2\x00\x01\n1,2")
+    valid = validate_csv_bytes(b"Category,Sales\nElectronics,500\n")
+    assert "Electronics" in valid
+
+
+def test_rate_limiter_enforces_threshold():
+    from api.security import SlidingWindowRateLimiter
+
+    limiter = SlidingWindowRateLimiter(max_requests=2, window_seconds=60)
+    assert limiter.is_allowed("10.0.0.1")[0] is True
+    assert limiter.is_allowed("10.0.0.1")[0] is True
+    allowed, retry_after = limiter.is_allowed("10.0.0.1")
+    assert allowed is False
+    assert retry_after >= 1
+
+
+def test_post_rejects_invalid_sample_path_traversal():
+    from api.index import app
+
+    client = app.test_client()
+    res = client.post("/analyze", data={"sample_csv": "../../etc/passwd", "user_goal": "Test"})
+    assert res.status_code == 200
+    assert b"Invalid sample dataset" in res.data or b"GROQ_API_KEY" in res.data
+
+
+def test_kpi_extractor_and_markdown_table_renderer():
+    from api.renderer import extract_kpi_cards, render_markdown_to_html
+
+    sample_stdout = "Total Orders: 365\nNet Revenue: $786,127.15\n"
+    cards = extract_kpi_cards(sample_stdout)
+    assert len(cards) == 2
+    assert cards[0]["label"] == "Total Orders"
+
+    html_out = render_markdown_to_html("| ColA | ColB |\n| --- | --- |\n| 1 | 2 |")
+    assert '<table class="styled-table">' in html_out
