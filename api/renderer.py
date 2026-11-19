@@ -34,6 +34,22 @@ def format_inline_md(text: str) -> str:
     return escaped
 
 
+
+def _format_cell_items(cell_html: str) -> str:
+    """Splits semicolon-separated breakdown lists in table cells into clean stacked lines."""
+    if ";" not in cell_html or "<" in cell_html:
+        return cell_html
+    parts = [p.strip() for p in cell_html.split(";") if p.strip()]
+    if len(parts) < 2:
+        return cell_html
+    formatted = []
+    for p in parts:
+        # Add clean ': ' between label and currency/number if missing (e.g. 'North ?367,834' -> 'North: ?367,834')
+        p = re.sub(r"^([A-Za-z &/()-]+?)\s+((?:?|\$|INR|USD)?[0-9][0-9,.%]*)$", r"<strong>\1:</strong> \2", p)
+        formatted.append(f"<div style='padding:2px 0;'>&bull; {p}</div>")
+    return "".join(formatted)
+
+
 def render_markdown_to_html(md_text: str) -> str:
     """Convert structured Markdown into accessible, styled HTML elements."""
     lines = md_text.splitlines()
