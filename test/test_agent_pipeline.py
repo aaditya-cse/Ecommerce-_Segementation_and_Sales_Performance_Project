@@ -1,3 +1,9 @@
+import os as _os
+import sys as _sys
+
+_CI_ROOT = _os.path.dirname(_os.path.dirname(_os.path.abspath(__file__)))
+if _CI_ROOT not in _sys.path:
+    _sys.path.insert(0, _CI_ROOT)
 import os
 import sys
 import pytest
