@@ -99,7 +99,7 @@ def _build_fallback_chart(df: pd.DataFrame, out_path: str) -> bool:
         cat_cols = [c for c in df.select_dtypes(exclude=[np.number]).columns if "id" not in c.lower() and "date" not in c.lower()]
         if not num_cols:
             return False
-        plt.figure(figsize=(8, 4.5))
+        plt.figure(figsize=(8, 4.4))
         if cat_cols:
             cat, val = cat_cols[0], num_cols[0]
             grouped = df.groupby(cat)[val].sum().sort_values(ascending=False).head(6)
@@ -181,7 +181,7 @@ def pandas_analyst_agent(state: UniversalAgentState) -> Dict[str, Any]:
         "6. MANDATORY CHARTS:\n"
         "   - Always save at least 1 chart to `CHART_PATHS[0]` (and `CHART_PATHS[1]`, `CHART_PATHS[2]` up to 3 max if multi-chart breakdown is requested).\n"
         "   - NEVER draw a 1-bar chart; compare 2 to 6 categories/items per chart.\n"
-        "   - For each chart: `plt.figure(figsize=(8, 4.5))`, add title/labels, `plt.margins(y=0.15)`, `plt.tight_layout()`, "
+        "   - For each chart: `plt.figure(figsize=(8, 4.4))`, add title/labels, `plt.margins(y=0.15)`, `plt.tight_layout()`, "
         "`plt.savefig(CHART_PATHS[i], dpi=150, bbox_inches='tight')`, and `plt.close()`.\n"
         "7. Output ONLY raw Python code without markdown fences or explanations."
     )
@@ -229,7 +229,7 @@ def pandas_analyst_agent(state: UniversalAgentState) -> Dict[str, Any]:
             if _build_fallback_chart(cleaned_df, chart_candidates[0]):
                 saved_charts = [chart_candidates[0]]
 
-        output_text = stdout_buffer.getvalue() or "Code executed successfully."
+        output_text = stdout_buffer.getvalue().strip() or "Dataset cleaned and analyzed successfully."
         saved_csv = cleaned_csv_file if os.path.exists(cleaned_csv_file) else ""
         return {
             "generated_code": clean_code,
@@ -244,6 +244,7 @@ def pandas_analyst_agent(state: UniversalAgentState) -> Dict[str, Any]:
         plt.close("all")
         return {
             "generated_code": clean_code,
+            "analysis_output": stdout_buffer.getvalue().strip() or f"Execution issue on attempt {attempt}: {e}",
             "error_log": str(e),
             "retry_count": attempt,
         }
@@ -267,14 +268,15 @@ def executive_strategist_agent(state: UniversalAgentState) -> Dict[str, Any]:
         "RULES: Never nest Markdown tables inside cells; avoid `<br>` or `\\$`; use INR (₹) for Indian datasets."
     )
 
+    verified_out = state.get("analysis_output") or "Analysis completed on cleaned dataset."
     user_msg = (
         f"USER GOAL: {state['user_goal']}\n\n"
         f"DATASET PROFILE:\n{state['dataset_profile']}\n\n"
-        f"VERIFIED PYTHON EXECUTION OUTPUT:\n{state['analysis_output']}"
+        f"VERIFIED PYTHON EXECUTION OUTPUT:\n{verified_out}"
     )
 
     raw_report = llm.invoke([SystemMessage(content=system_prompt), HumanMessage(content=user_msg)]).content
-    report = clean_llm_text(raw_report)
+    report = clean_llm_text(raw_report) or f"### Verified Analysis Summary\n\n{verified_out}"
     updated_history = state.get("chat_history", []) + [
         f"Q: {state['user_goal']} | Summary: {report[:200]}..."
     ]

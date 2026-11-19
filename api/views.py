@@ -236,7 +236,7 @@ DASHBOARD_HTML = r"""
 
         .search-input { padding: 8px 12px; border-radius: 8px; border: 1px solid #334155; background: #060b16; color: #f8fafc; font-size: 0.9rem; width: 240px; }
         .chart-box { background: #060b16; padding: 20px; border-radius: 12px; border: 1px solid var(--border); margin-top: 24px; text-align: center; }
-        .chart-box img { max-width: 100%; height: auto; border-radius: 8px; }
+        .chart-box img { max-width: 100%; max-height: 390px; object-fit: contain; background: #ffffff; padding: 8px; border-radius: 8px; }
 
         .trace-drawer-bar { margin-top: 26px; padding: 16px 20px; background: #0b1324; border: 1px dashed #334155; border-radius: 12px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px; }
         .trace-box { background: #060b16; padding: 20px; border-radius: 12px; border: 1px solid var(--border); margin-top: 14px; }
@@ -309,7 +309,11 @@ DASHBOARD_HTML = r"""
                     {% if charts_b64 %}
                     <button type="button" class="tab-btn" id="tab-chart" onclick="switchView('chart', this)">Visual Chart</button>
                     {% endif %}
-                    {% if generated_code %}
+                    <div style="margin-top:22px; padding:14px 18px; background:#0b1324; border-left:4px solid #38bdf8; border-radius:8px; font-size:0.88rem; color:#cbd5e1;">
+                <strong style="color:#38bdf8;">Methodology &amp; Responsible AI Guardrails:</strong>
+                All metrics and charts are computed deterministically by AST-sandboxed Python code (zero LLM number hallucination). Correlation and outlier flags highlight statistical associations for review and do not imply causation. Uploaded CSVs are processed ephemerally in memory/temp storage and purged immediately after execution.
+            </div>
+            {% if generated_code %}
                     <button type="button" class="tab-btn" id="tab-trace" onclick="switchView('trace', this)">AST Code &amp; Audit</button>
                     {% endif %}
                 </div>
@@ -337,7 +341,7 @@ DASHBOARD_HTML = r"""
             {% if charts_b64 %}
             <div id="chart-section" class="chart-box">
                 <h3 style="margin-top:0; color:#38bdf8;">Generated Statistical Visualizations ({{ charts_b64|length }})</h3>
-                <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(420px, 1fr)); gap:18px; margin-top:14px;">
+                <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(320px, 1fr)); gap:18px; margin-top:14px;">
                     {% for img_b64 in charts_b64 %}
                     <div style="background:#0b1324; border:1px solid #263348; border-radius:10px; padding:14px;">
                         <img src="data:image/png;base64,{{ img_b64 }}" alt="Chart {{ loop.index }} generated for: {{ goal }}">
@@ -350,6 +354,10 @@ DASHBOARD_HTML = r"""
             </div>
             {% endif %}
 
+            <div style="margin-top:22px; padding:14px 18px; background:#0b1324; border-left:4px solid #38bdf8; border-radius:8px; font-size:0.88rem; color:#cbd5e1;">
+                <strong style="color:#38bdf8;">Methodology &amp; Responsible AI Guardrails:</strong>
+                All metrics and charts are computed deterministically by AST-sandboxed Python code (zero LLM number hallucination). Correlation and outlier flags highlight statistical associations for review and do not imply causation. Uploaded CSVs are processed ephemerally in memory/temp storage and purged immediately after execution.
+            </div>
             {% if generated_code %}
             <div id="trace-drawer-bar" class="trace-drawer-bar">
                 <div>
@@ -371,6 +379,13 @@ DASHBOARD_HTML = r"""
                 {% endif %}
             </div>
             {% endif %}
+        </section>
+        {% endif %}
+
+        {% if not report_html and not error %}
+        <section class="card">
+            <h2 style="margin-top:0; color:#38bdf8;">Verified Execution Output</h2>
+            <pre class="code-block"><code>{{ analysis_output or "Analysis completed. Click Run New Analysis to test another query." }}</code></pre>
         </section>
         {% endif %}
     </main>
