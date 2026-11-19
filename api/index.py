@@ -9,7 +9,7 @@ import uuid
 from typing import Tuple
 
 import pandas as pd
-from flask import Flask, Response, render_template, request
+from flask import Flask, Response, render_template_string, request
 from werkzeug.utils import secure_filename
 
 os.environ["MPLCONFIGDIR"] = os.path.join(tempfile.gettempdir(), "matplotlib")
@@ -17,8 +17,10 @@ os.makedirs(os.environ["MPLCONFIGDIR"], exist_ok=True)
 
 API_DIR = os.path.dirname(os.path.abspath(__file__))
 ROOT_DIR = os.path.dirname(API_DIR)
-sys.path.insert(0, API_DIR)
-sys.path.insert(0, os.path.join(ROOT_DIR, "multi_agent"))
+if API_DIR not in sys.path:
+    sys.path.insert(0, API_DIR)
+if os.path.join(ROOT_DIR, "multi_agent") not in sys.path:
+    sys.path.insert(0, os.path.join(ROOT_DIR, "multi_agent"))
 
 from renderer import extract_kpi_cards, render_markdown_to_html  # noqa: E402
 from security import (  # noqa: E402
@@ -28,8 +30,9 @@ from security import (  # noqa: E402
     validate_csv_bytes,
 )
 from universal_analyst_agent import build_universal_graph  # noqa: E402
+from views import DASHBOARD_HTML, STUDIO_HTML  # noqa: E402
 
-app = Flask(__name__, template_folder="templates")
+app = Flask(__name__)
 app.config["MAX_CONTENT_LENGTH"] = 5 * 1024 * 1024
 logging.basicConfig(level=logging.INFO)
 
@@ -75,14 +78,14 @@ def add_security_headers(response: Response) -> Response:
 def analyze(path: str):
     """Render the Studio landing page on GET or execute the 3-agent pipeline on POST."""
     if request.method == "GET":
-        return render_template("index.html")
+        return render_template_string(STUDIO_HTML)
 
     client_ip = request.headers.get("X-Forwarded-For", request.remote_addr or "local").split(",")[0].strip()
     allowed, retry_after = RATE_LIMITER.is_allowed(client_ip)
     if not allowed:
         return (
-            render_template(
-                "dashboard.html",
+            render_template_string(
+                DASHBOARD_HTML,
                 report_raw="",
                 report_html="",
                 chart_b64="",
@@ -176,8 +179,8 @@ def analyze(path: str):
             except OSError:
                 pass
 
-    return render_template(
-        "dashboard.html",
+    return render_template_string(
+        DASHBOARD_HTML,
         report_raw=report_raw,
         report_html=report_html,
         chart_b64=chart_b64,
