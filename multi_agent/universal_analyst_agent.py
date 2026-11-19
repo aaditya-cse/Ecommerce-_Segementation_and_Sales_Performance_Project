@@ -66,7 +66,6 @@ class UniversalAgentState(TypedDict):
     dataset_profile: str
     chat_history: List[str]
     chart_path: str
-    chart_paths: List[str]
     cleaned_csv_path: str
     generated_code: str
     analysis_output: str
@@ -83,6 +82,7 @@ def clean_llm_text(text: str) -> str:
 def get_active_groq_model() -> str:
     api_key = os.getenv("GROQ_API_KEY")
     preferred = [
+        "llama-3.1-8b-instant",
         "llama-3.1-8b-instant",
         "openai/gpt-oss-20b",
         "qwen/qwen3-32b",
@@ -136,16 +136,12 @@ def schema_profiler_agent(state: UniversalAgentState) -> Dict[str, Any]:
 # ==========================================
 def pandas_analyst_agent(state: UniversalAgentState) -> Dict[str, Any]:
     attempt = state.get("retry_count", 0) + 1
-    llm = ChatGroq(model=get_active_groq_model(), temperature=0.1, max_tokens=1600)
+    llm = ChatGroq(model=get_active_groq_model(), temperature=0.1)
 
     work_dir = os.path.join(tempfile.gettempdir(), "generated_charts")
     os.makedirs(work_dir, exist_ok=True)
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S_%f")
-    chart_candidates = [
-        os.path.join(work_dir, f"chart_{timestamp}_1.png"),
-        os.path.join(work_dir, f"chart_{timestamp}_2.png"),
-        os.path.join(work_dir, f"chart_{timestamp}_3.png"),
-    ]
+    chart_file = os.path.join(work_dir, f"chart_{timestamp}.png")
     cleaned_csv_file = os.path.join(work_dir, f"cleaned_{timestamp}.csv")
 
     history_context = "\n".join(state.get("chat_history", [])[-4:]) or "None (First question)"
@@ -157,19 +153,12 @@ def pandas_analyst_agent(state: UniversalAgentState) -> Dict[str, Any]:
         "STRICT RULES:\n"
         "1. Load the CSV into `df` from `CSV_PATH` (already defined in scope). Do NOT import os, sys, or pathlib.\n"
         "2. NEVER use `inplace=True`. Always use direct assignment like `df[col] = df[col].fillna(...)`, "
-        "drop duplicates (`df = df.drop_duplicates().copy()`), normalize text columns with `.str.strip().str.title()`, "
-        "and fix outliers (e.g., Quantity <= 0, Age > 100, Discount_Pct > 100).\n"
-        "3. Save the cleaned DataFrame `df` to `CLEANED_CSV_PATH` using `df.to_csv(CLEANED_CSV_PATH, index=False)`.\n"
+        "drop duplicates (`df = df.drop_duplicates().copy()`), normalize all text columns with `.str.strip().str.title()` so case variants like FASHION/fashion merge cleanly, and fix outliers (e.g., Quantity <= 0, Age > 100, Discount_Pct > 100).\n"
+        "3. Save the cleaned DataFrame `df` to `CLEANED_CSV_PATH` (already defined in scope) using `df.to_csv(CLEANED_CSV_PATH, index=False)`.\n"
         "4. If an `Order_Status` column exists, exclude 'Returned' and 'Cancelled' orders when computing Net Revenue or AOV.\n"
         "5. Print clear, labeled summary tables and exact KPIs using `print()`.\n"
-        "6. VISUALIZATIONS TAILORED TO USER GOAL & DATA:\n"
-        "   - Choose chart types matching the user's prompt and data columns (bar/horizontal bar for category comparisons, "
-        "line chart for time/date trends, scatter/heatmap for correlations, box/hist for distributions).\n"
-        "   - Generate 1 focused chart for a single-question prompt, OR 2 to 3 distinct charts (maximum 3) when the user asks "
-        "for multiple charts, multi-dimensional comparisons, or a full breakdown.\n"
-        "   - Save chart 1 to `CHART_PATHS[0]` (or `CHART_PATH`), chart 2 (if needed) to `CHART_PATHS[1]`, and chart 3 (if needed) to `CHART_PATHS[2]`. "
-        "For EACH chart: create a fresh `plt.figure(figsize=(8, 4.8))`, add clear title and axis labels, call `plt.tight_layout()`, "
-        "save with `dpi=150`, and call `plt.close()`. NEVER call `plt.show()`.\n"
+        "6. Create ONE clean matplotlib/seaborn figure, call `plt.tight_layout()`, save to `CHART_PATH` "
+        "(already defined in scope) with `dpi=150`, and call `plt.close()`. NEVER call `plt.show()`.\n"
         "7. Return ONLY raw Python code—no markdown backticks (```) and no explanations."
     )
 
@@ -191,8 +180,7 @@ def pandas_analyst_agent(state: UniversalAgentState) -> Dict[str, Any]:
         "plt": plt,
         "sns": sns,
         "CSV_PATH": state["csv_path"],
-        "CHART_PATH": chart_candidates[0],
-        "CHART_PATHS": chart_candidates,
+        "CHART_PATH": chart_file,
         "CLEANED_CSV_PATH": cleaned_csv_file,
     }
 
@@ -203,19 +191,19 @@ def pandas_analyst_agent(state: UniversalAgentState) -> Dict[str, Any]:
             with contextlib.redirect_stdout(stdout_buffer):
                 exec(clean_code, {"__builtins__": __builtins__, **exec_globals})
 
+        # Fallback: if LLM forgot to call df.to_csv(CLEANED_CSV_PATH), save the cleaned df automatically
         if not os.path.exists(cleaned_csv_file):
             cleaned_df = exec_globals.get("df")
             if isinstance(cleaned_df, pd.DataFrame) and not cleaned_df.empty:
                 cleaned_df.to_csv(cleaned_csv_file, index=False)
 
         output_text = stdout_buffer.getvalue() or "Code executed successfully."
-        saved_charts = [p for p in chart_candidates if os.path.exists(p)]
+        saved_chart = chart_file if os.path.exists(chart_file) else ""
         saved_csv = cleaned_csv_file if os.path.exists(cleaned_csv_file) else ""
         return {
             "generated_code": clean_code,
             "analysis_output": output_text,
-            "chart_path": saved_charts[0] if saved_charts else "",
-            "chart_paths": saved_charts,
+            "chart_path": saved_chart,
             "cleaned_csv_path": saved_csv,
             "error_log": "",
             "retry_count": attempt,
@@ -239,7 +227,7 @@ def route_after_execution(state: UniversalAgentState) -> str:
 # 4. AGENT 3: EXECUTIVE STRATEGIST
 # ==========================================
 def executive_strategist_agent(state: UniversalAgentState) -> Dict[str, Any]:
-    llm = ChatGroq(model=get_active_groq_model(), temperature=0.2, max_tokens=1400)
+    llm = ChatGroq(model=get_active_groq_model(), temperature=0.2)
 
     system_prompt = (
         "You are a Principal Data Consultant writing a business report in clean Markdown. "
@@ -247,11 +235,7 @@ def executive_strategist_agent(state: UniversalAgentState) -> Dict[str, Any]:
         "provided, write a crisp executive summary with:\n"
         "1. Data Cleaning & Quality Summary (as a Markdown table)\n"
         "2. Key Quantitative Findings (as a Markdown table citing exact numbers)\n"
-        "3. Top 3-4 Actionable Business Recommendations\n"
-        "STRICT FORMATTING RULES:\n"
-        "- NEVER put a Markdown table inside another table cell.\n"
-        "- NEVER use `<br>` HTML tags or escaped `\\$` backslashes; separate multiple items in a cell with semicolons (;).\n"
-        "- Use INR (₹) for Indian datasets (like prices 699, 1899) unless another currency is explicitly specified."
+        "3. Top 3-4 Actionable Business Recommendations\nSTRICT FORMATTING RULES:\n- NEVER put a Markdown table inside another table cell.\n- NEVER use `<br>` HTML tags or escaped `\\$` backslashes; separate multiple items in a cell with semicolons (;).\n- Use INR (₹) for Indian datasets (like prices 699, 1899) unless another currency is explicitly specified."
     )
 
     user_msg = (
@@ -291,3 +275,5 @@ def build_universal_graph():
 if __name__ == "__main__":
     app = build_universal_graph()
     print("UNIVERSAL MULTI-AGENT CSV ANALYST READY")
+
+
