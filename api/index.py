@@ -590,6 +590,7 @@ def add_security_headers(response):
 @app.route("/", defaults={"path": ""}, methods=["GET", "POST"])
 @app.route("/<path:path>", methods=["GET", "POST"])
 def analyze(path):
+    charts_b64 = []
     if request.method == "GET":
         return render_template_string(HOME_TEMPLATE)
 
