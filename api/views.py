@@ -301,16 +301,16 @@ DASHBOARD_HTML = r"""
         <section class="card" aria-labelledby="report-heading">
             <div class="toolbar">
                 <div class="tab-group" role="tablist" aria-label="Dashboard View Switcher">
-                    <button type="button" class="tab-btn active" id="tab-all" onclick="switchView('all', this)">Executive Overview</button>
-                    <button type="button" class="tab-btn" id="tab-report" onclick="switchView('report', this)">KPI Report &amp; Tables</button>
+                    <button type="button" class="tab-btn active" id="tab-all" data-view="all" onclick="switchView('all', this)">Executive Overview</button>
+                    <button type="button" class="tab-btn" id="tab-report" data-view="report" onclick="switchView('report', this)">KPI Report &amp; Tables</button>
                     {% if cleaned_preview_html %}
-                    <button type="button" class="tab-btn" id="tab-data" onclick="switchView('data', this)">Cleaned Dataset</button>
+                    <button type="button" class="tab-btn" id="tab-data" data-view="data" onclick="switchView('data', this)">Cleaned Dataset</button>
                     {% endif %}
                     {% if charts_b64 %}
-                    <button type="button" class="tab-btn" id="tab-chart" onclick="switchView('chart', this)">Visual Chart</button>
+                    <button type="button" class="tab-btn" id="tab-chart" data-view="chart" onclick="switchView('chart', this)">Visual Chart</button>
                     {% endif %}
                     {% if generated_code %}
-                    <button type="button" class="tab-btn" id="tab-trace" onclick="switchView('trace', this)">AST Code &amp; Audit</button>
+                    <button type="button" class="tab-btn" id="tab-trace" data-view="trace" onclick="switchView('trace', this)">AST Code &amp; Audit</button>
                     {% endif %}
                 </div>
             </div>
@@ -385,7 +385,7 @@ DASHBOARD_HTML = r"""
     <script>
         function switchView(mode, btn) {
             document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
-            btn.classList.add("active");
+            if (btn) btn.classList.add("active");
             const rep = document.getElementById("report-section");
             const dat = document.getElementById("data-section");
             const ch = document.getElementById("chart-section");
@@ -402,6 +402,31 @@ DASHBOARD_HTML = r"""
             else if (mode === "chart") { show(rep, false); show(dat, false); show(ch, true); show(bar, false); show(tr, false); }
             else if (mode === "trace") { show(rep, false); show(dat, false); show(ch, false); show(bar, false); show(tr, true); }
         }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            document.querySelectorAll(".tab-btn").forEach(function(btn) {
+                btn.addEventListener("click", function() {
+                    const mode = this.getAttribute("data-view") || this.id.replace("tab-", "");
+                    switchView(mode, this);
+                });
+            });
+            const toggleTrace = document.getElementById("toggle-trace-btn");
+            if (toggleTrace) {
+                toggleTrace.addEventListener("click", toggleTraceDrawer);
+            }
+            const copyBtn = document.getElementById("copy-btn");
+            if (copyBtn) {
+                copyBtn.addEventListener("click", copyReport);
+            }
+            const copyCodeBtn = document.getElementById("copy-code-btn");
+            if (copyCodeBtn) {
+                copyCodeBtn.addEventListener("click", copyCode);
+            }
+            const searchInput = document.getElementById("table-search");
+            if (searchInput) {
+                searchInput.addEventListener("input", filterCleanTable);
+            }
+        });
 
         function toggleTraceDrawer() {
             const tr = document.getElementById("trace-section");

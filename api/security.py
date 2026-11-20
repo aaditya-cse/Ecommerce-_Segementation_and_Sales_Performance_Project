@@ -121,7 +121,6 @@ def apply_hardened_headers(response: Response) -> Response:
         "default-src 'self'; "
         "img-src 'self' data: blob:; "
         "script-src 'self' 'unsafe-inline'; "
-        "script-src-attr 'none'; "
         "style-src 'self' 'unsafe-inline'; "
         "connect-src 'self'; "
         "frame-ancestors 'none'; "
