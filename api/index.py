@@ -789,25 +789,25 @@ HOME_TEMPLATE = r"""
                 const s2 = document.getElementById("st-2");
                 if (s1) s1.classList.remove("active-step");
                 if (s2) s2.classList.add("active-step");
-            }, 1200);
+            }, 600);
             setTimeout(() => {
                 const s2 = document.getElementById("st-2");
                 const s3 = document.getElementById("st-3");
                 if (s2) s2.classList.remove("active-step");
                 if (s3) s3.classList.add("active-step");
-            }, 2600);
+            }, 1300);
             setTimeout(() => {
                 const s3 = document.getElementById("st-3");
                 const s4 = document.getElementById("st-4");
                 if (s3) s3.classList.remove("active-step");
                 if (s4) s4.classList.add("active-step");
-            }, 4000);
+            }, 2000);
             setTimeout(() => {
                 const s4 = document.getElementById("st-4");
                 const s5 = document.getElementById("st-5");
                 if (s4) s4.classList.remove("active-step");
                 if (s5) s5.classList.add("active-step");
-            }, 5400);
+            }, 2700);
         });
     </script>
 </body>

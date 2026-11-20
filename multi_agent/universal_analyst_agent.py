@@ -128,33 +128,10 @@ def clean_llm_text(text: str) -> str:
 
 @lru_cache(maxsize=1)
 def get_active_groq_model() -> str:
-    api_key = os.getenv("GROQ_API_KEY", "")
-    preferred = [
-        "llama-3.1-8b-instant",
-        "llama-3.3-70b-versatile",
-        "openai/gpt-oss-20b",
-        "meta-llama/llama-4-scout-17b-16e-instruct",
-        "qwen/qwen3-32b",
-    ]
-    blocked_keywords = ("whisper", "guard", "tts", "orpheus", "safeguard", "prompt-guard")
-    try:
-        req = urllib.request.Request(
-            "https://api.groq.com/openai/v1/models",
-            headers={"Authorization": f"Bearer {api_key}", "User-Agent": "Mozilla/5.0"},
-        )
-        with urllib.request.urlopen(req, timeout=5) as resp:
-            data = json.loads(resp.read().decode()).get("data", [])
-            ids = [
-                m["id"] for m in data
-                if m.get("id") and not any(b in m["id"].lower() for b in blocked_keywords)
-            ]
-            for m in preferred:
-                if m in ids:
-                    return m
-            if ids:
-                return ids[0]
-    except Exception:
-        pass
+    """Returns the highest-throughput Groq model (llama-3.1-8b-instant @ ~850 t/s) with zero network latency."""
+    custom_model = os.getenv("GROQ_MODEL")
+    if custom_model:
+        return custom_model.strip()
     return "llama-3.1-8b-instant"
 
 
@@ -355,7 +332,13 @@ def schema_profiler_agent(state: UniversalAgentState) -> Dict[str, Any]:
 def pandas_analyst_agent(state: UniversalAgentState) -> Dict[str, Any]:
     """Agent 2: AST-sandboxed code generator and runner that executes pandas/seaborn analytics."""
     attempt = state.get("retry_count", 0) + 1
-    llm = ChatGroq(model=get_active_groq_model(), temperature=_LLM_TEMPERATURE_ANALYST)
+    llm = ChatGroq(
+        model=get_active_groq_model(),
+        temperature=_LLM_TEMPERATURE_ANALYST,
+        max_tokens=650,
+        timeout=12,
+        max_retries=1,
+    )
 
     work_dir = os.path.join(tempfile.gettempdir(), "generated_charts")
     os.makedirs(work_dir, exist_ok=True)
@@ -377,7 +360,7 @@ def pandas_analyst_agent(state: UniversalAgentState) -> Dict[str, Any]:
         "4. If an `Order_Status` column exists, exclude 'Returned' and 'Cancelled' orders when computing Net Revenue or AOV.\n"
         "5. Print clear, labeled summary tables and exact KPIs using `print()`.\n"
         "6. Create ONE clean matplotlib/seaborn figure, call `plt.tight_layout()`, save to `CHART_PATH` "
-        "(already defined in scope) with `dpi=150`, and call `plt.close()`. NEVER call `plt.show()`.\n"
+        "(already defined in scope) with `dpi=100`, and call `plt.close()`. NEVER call `plt.show()`.\n"
         "7. Return ONLY raw Python code—no markdown backticks (```) and no explanations."
     )
 
@@ -605,7 +588,7 @@ def ml_predictor_agent(state: UniversalAgentState) -> Dict[str, Any]:
                 spine.set_color("#334155")
 
             plt.tight_layout()
-            fig.savefig(chart_file, dpi=130, bbox_inches="tight", facecolor=fig.get_facecolor())
+            fig.savefig(chart_file, dpi=100, bbox_inches="tight", facecolor=fig.get_facecolor())
             plt.close(fig)
             if os.path.exists(chart_file):
                 chart_path = chart_file
@@ -681,7 +664,13 @@ def financial_modeler_agent(state: UniversalAgentState) -> Dict[str, Any]:
 # ==========================================
 def executive_strategist_agent(state: UniversalAgentState) -> Dict[str, Any]:
     """Agent 5: Synthesize verified Python output into a polished executive business report."""
-    llm = ChatGroq(model=get_active_groq_model(), temperature=_LLM_TEMPERATURE_STRATEGIST)
+    llm = ChatGroq(
+        model=get_active_groq_model(),
+        temperature=_LLM_TEMPERATURE_STRATEGIST,
+        max_tokens=750,
+        timeout=12,
+        max_retries=1,
+    )
 
     system_prompt = (
         "You are a Principal Data Consultant writing a business report in clean Markdown. "
@@ -700,9 +689,9 @@ def executive_strategist_agent(state: UniversalAgentState) -> Dict[str, Any]:
             for c in clusters
         )
 
+    # Lightweight high-signal context without redundant 2KB raw JSON dump
     user_msg = (
         f"USER GOAL: {state['user_goal']}\n\n"
-        f"DATASET PROFILE:\n{state['dataset_profile']}\n\n"
         f"VERIFIED PYTHON EXECUTION OUTPUT:\n{state['analysis_output']}"
         f"{ml_context}"
     )
