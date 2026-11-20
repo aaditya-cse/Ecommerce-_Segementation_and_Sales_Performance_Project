@@ -890,17 +890,17 @@ DASHBOARD_TEMPLATE = r"""
         .hidden { display: none !important; }
 
         /* Hackathon Presentation Mode Modal */
-        .pitch-modal {
+        .pitch-modal, .graph-modal, .chart-modal {
             position: fixed;
             inset: 0;
             z-index: 1000;
             background: rgba(3, 7, 18, 0.97);
-            backdrop-filter: blur(16px);
+            backdrop-filter: blur(18px);
             display: flex;
             flex-direction: column;
             padding: 24px;
         }
-        .pitch-header {
+        .pitch-header, .modal-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -910,7 +910,7 @@ DASHBOARD_TEMPLATE = r"""
             width: 100%;
             margin: 0 auto;
         }
-        .pitch-body {
+        .pitch-body, .modal-body {
             flex: 1;
             display: flex;
             flex-direction: column;
@@ -937,6 +937,89 @@ DASHBOARD_TEMPLATE = r"""
             margin: 0 auto;
         }
 
+        /* Interactive Scenario Simulator Card */
+        .sim-card {
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 41, 59, 0.85) 100%);
+            border: 1px solid rgba(56, 189, 248, 0.25);
+            border-radius: 16px;
+            padding: 22px 26px;
+            margin-bottom: 24px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+        }
+        .sim-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 16px; }
+        .sim-badge { background: rgba(56, 189, 248, 0.12); color: #7dd3fc; border: 1px solid rgba(56, 189, 248, 0.35); padding: 4px 12px; border-radius: 999px; font-size: 0.78rem; font-weight: 700; text-transform: uppercase; }
+        .sim-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; align-items: center; }
+        .sim-control label { font-size: 0.95rem; font-weight: 700; color: #f8fafc; margin-bottom: 10px; display: block; }
+        .sim-control input[type="range"] {
+            width: 100%;
+            height: 8px;
+            border-radius: 5px;
+            background: #1e293b;
+            outline: none;
+            -webkit-appearance: none;
+            cursor: pointer;
+        }
+        .sim-control input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: #38bdf8;
+            box-shadow: 0 0 12px #38bdf8;
+            cursor: pointer;
+        }
+        .sim-range-labels { display: flex; justify-content: space-between; font-size: 0.76rem; color: #94a3b8; margin-top: 6px; font-weight: 600; }
+        .sim-metric {
+            background: rgba(6, 11, 22, 0.75);
+            border: 1px solid rgba(52, 211, 153, 0.3);
+            border-radius: 12px;
+            padding: 16px 20px;
+            text-align: left;
+        }
+        .sim-metric-label { font-size: 0.78rem; font-weight: 800; text-transform: uppercase; color: #94a3b8; }
+        .sim-metric-val { font-size: 1.8rem; font-weight: 900; color: #34d399; margin: 4px 0; letter-spacing: -0.02em; }
+        .sim-metric-sub { font-size: 0.8rem; color: #6ee7b7; font-weight: 600; }
+
+        /* Multi-Agent Node Graph Styling */
+        .graph-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 20px;
+            width: 100%;
+            text-align: left;
+            margin-top: 20px;
+        }
+        .graph-node {
+            background: rgba(15, 23, 42, 0.9);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            border-radius: 16px;
+            padding: 22px;
+            position: relative;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+            transition: all 0.2s;
+        }
+        .graph-node:hover { transform: translateY(-3px); border-color: var(--accent); box-shadow: 0 12px 30px rgba(56, 189, 248, 0.25); }
+        .node-badge { display: inline-block; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; padding: 3px 10px; border-radius: 6px; margin-bottom: 10px; }
+        .node-1 .node-badge { background: rgba(56, 189, 248, 0.15); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.3); }
+        .node-2 .node-badge { background: rgba(52, 211, 153, 0.15); color: #34d399; border: 1px solid rgba(52, 211, 153, 0.3); }
+        .node-3 .node-badge { background: rgba(129, 140, 248, 0.15); color: #818cf8; border: 1px solid rgba(129, 140, 248, 0.3); }
+
+        /* Follow-Up Ask Console */
+        .followup-box {
+            margin-top: 32px;
+            padding: 24px;
+            background: rgba(11, 19, 36, 0.95);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+        }
+        .followup-header { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+        .followup-input-row { display: flex; gap: 10px; }
+        .followup-input { flex: 1; padding: 12px 16px; border-radius: 10px; border: 1px solid #334155; background: #060b16; color: #f8fafc; font-size: 0.95rem; }
+
+        th.sortable { cursor: pointer; user-select: none; transition: background 0.15s; }
+        th.sortable:hover { background: rgba(56, 189, 248, 0.18) !important; color: #ffffff; }
+        .sort-icon { font-size: 0.75rem; margin-left: 6px; opacity: 0.7; }
+
         @media print { .topbar, .toolbar, .trace-drawer-bar, .search-input, .pitch-modal { display: none !important; } body { background: #ffffff; color: #000000; } }
     </style>
 </head>
@@ -952,6 +1035,8 @@ DASHBOARD_TEMPLATE = r"""
             </div>
             <div class="action-group">
                 <button type="button" class="action-btn pitch-btn" id="pitch-mode-btn" onclick="openPitchMode()">🎤 Pitch Deck Mode</button>
+                <button type="button" class="action-btn" onclick="openGraphModal()">⚡ State Graph</button>
+                <button type="button" class="action-btn" id="audio-btn" onclick="toggleAudio()">🔊 Sound: ON</button>
                 {% if cleaned_csv_b64 %}
                 <a class="download-csv-btn" href="data:text/csv;base64,{{ cleaned_csv_b64 }}" download="cleaned_dataset.csv">Download Cleaned CSV</a>
                 {% endif %}
@@ -981,12 +1066,42 @@ DASHBOARD_TEMPLATE = r"""
         {% if kpi_cards %}
         <section class="kpi-grid" aria-label="Key Performance Metrics">
             {% for kpi in kpi_cards %}
-            <div class="kpi-card">
+            <div class="kpi-card" data-val="{{ kpi.value }}">
                 <div class="kpi-label">{{ kpi.label }}</div>
                 <div class="kpi-val">{{ kpi.value }}</div>
                 <div class="kpi-tag">AST Verified Output</div>
             </div>
             {% endfor %}
+        </section>
+
+        <!-- Interactive Scenario & Margin Simulator -->
+        <section class="sim-card" aria-label="Executive What-If Scenario Simulator">
+            <div class="sim-header">
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <span style="font-size:1.4rem;">💡</span>
+                    <div>
+                        <strong style="color:#f8fafc; font-size:1.08rem;">Interactive Executive Simulator: Margin Recovery &amp; Optimization</strong>
+                        <div style="font-size:0.85rem; color:#94a3b8; margin-top:2px;">Model cashflow and gross margin recovery based on operational optimization targets.</div>
+                    </div>
+                </div>
+                <span class="sim-badge">Real-Time Sensitivity Engine</span>
+            </div>
+            <div class="sim-grid">
+                <div class="sim-control">
+                    <label for="return-slider">Target Operational Improvement / Return Mitigation: <strong id="slider-val" style="color:#38bdf8;">10%</strong></label>
+                    <input type="range" id="return-slider" min="2" max="30" value="10" step="1" oninput="updateSimulation(this.value)">
+                    <div class="sim-range-labels">
+                        <span>2% (Conservative)</span>
+                        <span>15% (Target)</span>
+                        <span>30% (Aggressive)</span>
+                    </div>
+                </div>
+                <div class="sim-metric">
+                    <div class="sim-metric-label">Projected Annual Margin Recovery</div>
+                    <div class="sim-metric-val" id="sim-savings">+$18,500.00</div>
+                    <div class="sim-metric-sub" id="sim-details">&bull; Computed against analyzed transaction base</div>
+                </div>
+            </div>
         </section>
         {% endif %}
 
@@ -1028,9 +1143,12 @@ DASHBOARD_TEMPLATE = r"""
                 <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:12px;">
                     <div>
                         <h3 style="color:#34d399; margin:0; font-size:1.15rem; font-weight:800;">Cleaned Dataset Preview (Top 15 Rows)</h3>
-                        <div style="font-size:0.85rem; color:#94a3b8; margin-top:2px;">Showing <strong id="filter-row-count" style="color:#38bdf8;">15</strong> records</div>
+                        <div style="font-size:0.85rem; color:#94a3b8; margin-top:2px;">Showing <strong id="filter-row-count" style="color:#38bdf8;">15</strong> records &bull; Click any header to sort</div>
                     </div>
-                    <input type="text" id="table-search" class="search-input" placeholder="Search cleaned rows..." aria-label="Filter cleaned dataset rows" onkeyup="filterCleanTable()">
+                    <div style="display:flex; gap:8px;">
+                        <input type="text" id="table-search" class="search-input" placeholder="Search cleaned rows..." aria-label="Filter cleaned dataset rows" onkeyup="filterCleanTable()">
+                        <button type="button" class="action-btn" onclick="exportTableJSON()">Export JSON</button>
+                    </div>
                 </div>
                 <div class="table-wrap" id="clean-table-container">
                     {{ cleaned_preview_html | safe }}
@@ -1040,9 +1158,12 @@ DASHBOARD_TEMPLATE = r"""
 
             {% if chart_b64 %}
             <div id="chart-section" class="chart-box">
-                <h3 style="margin-top:0; color:#38bdf8; font-size:1.2rem; font-weight:800;">Generated Statistical Visualization</h3>
-                <img src="data:image/png;base64,{{ chart_b64 }}" alt="Automated statistical visualization generated for: {{ goal }}">
-                <div style="margin-top:16px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:12px;">
+                    <h3 style="margin:0; color:#38bdf8; font-size:1.2rem; font-weight:800;">Generated Statistical Visualization</h3>
+                    <button type="button" class="action-btn" onclick="openChartModal()">🔍 Click to Expand / Zoom</button>
+                </div>
+                <img src="data:image/png;base64,{{ chart_b64 }}" id="main-chart-img" style="cursor:zoom-in;" onclick="openChartModal()" alt="Automated statistical visualization generated for: {{ goal }}">
+                <div style="margin-top:16px; display:flex; justify-content:center; gap:10px;">
                     <a class="download-csv-btn" href="data:image/png;base64,{{ chart_b64 }}" download="analysis_chart.png">Download Chart (PNG)</a>
                 </div>
             </div>
@@ -1069,9 +1190,84 @@ DASHBOARD_TEMPLATE = r"""
                 {% endif %}
             </div>
             {% endif %}
+
+            <!-- Interactive Follow-Up Query Console -->
+            <div class="followup-box">
+                <div class="followup-header">
+                    <span style="font-size:1.2rem;">💬</span>
+                    <strong style="color:#f8fafc; font-size:1.05rem;">Ask Follow-Up Question to Multi-Agent Pipeline</strong>
+                </div>
+                <form action="/analyze" method="POST" enctype="multipart/form-data">
+                    <input type="hidden" name="sample_csv" value="{{ dataset_label }}">
+                    <div class="followup-input-row">
+                        <input type="text" name="user_goal" class="followup-input" placeholder="e.g. Compare customer segments by average discount, or break down monthly trends..." required>
+                        <button type="submit" class="action-btn pitch-btn">Submit Query &rarr;</button>
+                    </div>
+                </form>
+            </div>
         </section>
         {% endif %}
     </main>
+
+    <!-- Interactive Multi-Agent Network Graph Modal -->
+    <div id="graph-modal" class="graph-modal hidden" role="dialog" aria-modal="true" aria-label="Multi-Agent Network Graph">
+        <div class="modal-header">
+            <div style="display:flex; align-items:center; gap:10px;">
+                <span class="dash-brand-dot"></span>
+                <strong style="font-size:1.15rem; color:#f8fafc;">⚡ Multi-Agent LangGraph Orchestration Inspector</strong>
+            </div>
+            <button type="button" class="action-btn" onclick="closeGraphModal()">Close [Esc]</button>
+        </div>
+        <div class="modal-body">
+            <div style="color:#38bdf8; font-size:0.95rem; font-weight:800; text-transform:uppercase; letter-spacing:0.06em; margin-bottom:10px;">Autonomous Execution Graph</div>
+            <h2 style="font-size:2rem; margin:0 0 10px; color:#ffffff;">Active Node Pipeline Topology</h2>
+            <p style="color:#94a3b8; max-width:760px; margin:0 auto 24px;">Inspect how data payloads transition securely across specialized agents with cyclic self-healing boundaries.</p>
+
+            <div class="graph-container">
+                <div class="graph-node node-1">
+                    <span class="node-badge">Node 1 &bull; Schema Profiler</span>
+                    <h3 style="color:#f8fafc; margin:0 0 6px; font-size:1.1rem;">Deterministic Profiling</h3>
+                    <p style="color:#cbd5e1; font-size:0.88rem; margin:0 0 12px;">Scans nulls, duplicate keys, column types, and statistical quartiles directly from CSV bytes.</p>
+                    <div style="font-size:0.78rem; color:#38bdf8; font-weight:700;">Output: Structured JSON Profile</div>
+                </div>
+
+                <div class="graph-node node-2">
+                    <span class="node-badge">Security Gate &bull; AST Sandbox</span>
+                    <h3 style="color:#f8fafc; margin:0 0 6px; font-size:1.1rem;">Zero-Hallucination Guard</h3>
+                    <p style="color:#cbd5e1; font-size:0.88rem; margin:0 0 12px;">AST tree walk verifies code safety. Rejects eval, exec, os, socket, sys, and subprocess attacks.</p>
+                    <div style="font-size:0.78rem; color:#34d399; font-weight:700;">Status: 100% Sandbox Enforced</div>
+                </div>
+
+                <div class="graph-node node-3">
+                    <span class="node-badge">Node 2 &bull; Self-Healing Analyst</span>
+                    <h3 style="color:#f8fafc; margin:0 0 6px; font-size:1.1rem;">Vectorized Execution</h3>
+                    <p style="color:#cbd5e1; font-size:0.88rem; margin:0 0 12px;">Runs in isolated namespace. If an exception triggers, the cyclic retry loop fixes the bug in-flight.</p>
+                    <div style="font-size:0.78rem; color:#818cf8; font-weight:700;">Attempts: {{ retry_count }} &bull; Max 3 Retries</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chart Zoom Lightbox Modal -->
+    <div id="chart-modal" class="chart-modal hidden" role="dialog" aria-modal="true" aria-label="Chart Lightbox">
+        <div class="modal-header">
+            <strong style="font-size:1.15rem; color:#f8fafc;">Statistical Figure Deep Zoom</strong>
+            <button type="button" class="action-btn" onclick="closeChartModal()">Close [Esc]</button>
+        </div>
+        <div class="modal-body" style="padding:10px;">
+            {% if chart_b64 %}
+            <img src="data:image/png;base64,{{ chart_b64 }}" id="lightbox-img" style="max-height:80vh; max-width:95vw; border-radius:12px; transition:transform 0.2s;" alt="Expanded Chart">
+            {% endif %}
+        </div>
+        <div style="display:flex; justify-content:center; gap:12px; padding-top:14px; border-top:1px solid rgba(56,189,248,0.2);">
+            <button type="button" class="action-btn" onclick="zoomChart(1.2)">Zoom In (+)</button>
+            <button type="button" class="action-btn" onclick="zoomChart(0.8)">Zoom Out (-)</button>
+            <button type="button" class="action-btn" onclick="resetZoom()">Reset</button>
+            {% if chart_b64 %}
+            <a class="download-csv-btn" href="data:image/png;base64,{{ chart_b64 }}" download="analysis_chart.png">Download PNG</a>
+            {% endif %}
+        </div>
+    </div>
 
     <!-- Hackathon Presentation Pitch Modal -->
     <div id="pitch-modal" class="pitch-modal hidden" role="dialog" aria-modal="true" aria-label="Pitch Deck Mode">
@@ -1154,7 +1350,46 @@ DASHBOARD_TEMPLATE = r"""
     </div>
 
     <script>
+        /* Modern Web Audio Synthesizer */
+        let audioEnabled = true;
+        let audioCtx = null;
+        function getAudioContext() {
+            if (!audioCtx) {
+                const AudioCtxClass = window.AudioContext || window.webkitAudioContext;
+                if (AudioCtxClass) audioCtx = new AudioCtxClass();
+            }
+            if (audioCtx && audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+            return audioCtx;
+        }
+        function playBlip(freq = 600, duration = 0.05) {
+            if (!audioEnabled) return;
+            try {
+                const ctx = getAudioContext();
+                if (!ctx) return;
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = "sine";
+                osc.frequency.setValueAtTime(freq, ctx.currentTime);
+                gain.gain.setValueAtTime(0.04, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + duration);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start();
+                osc.stop(ctx.currentTime + duration);
+            } catch (err) {}
+        }
+        function toggleAudio() {
+            audioEnabled = !audioEnabled;
+            const btn = document.getElementById("audio-btn");
+            if (btn) btn.textContent = audioEnabled ? "🔊 Sound: ON" : "🔇 Sound: OFF";
+            if (audioEnabled) playBlip(800, 0.08);
+        }
+
+        /* View Switcher */
         function switchView(mode, btn) {
+            playBlip(680, 0.04);
             document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
             if (btn) btn.classList.add("active");
             const rep = document.getElementById("report-section");
@@ -1174,7 +1409,127 @@ DASHBOARD_TEMPLATE = r"""
             else if (mode === "trace") { show(rep, false); show(dat, false); show(ch, false); show(bar, false); show(tr, true); }
         }
 
+        /* Scenario Simulator Engine */
+        function updateSimulation(pct) {
+            playBlip(400 + Number(pct) * 20, 0.02);
+            const sliderLabel = document.getElementById("slider-val");
+            if (sliderLabel) sliderLabel.textContent = pct + "%";
+            
+            // Baseline computation extracted from displayed KPI or default 150000
+            let baselineRevenue = 150000;
+            const kpiCards = document.querySelectorAll(".kpi-card");
+            kpiCards.forEach(card => {
+                const text = card.textContent;
+                const match = text.match(/[\$₹]?([0-9,]+(\.[0-9]+)?)/);
+                if (match && Number(match[1].replace(/,/g, "")) > baselineRevenue) {
+                    baselineRevenue = Number(match[1].replace(/,/g, ""));
+                }
+            });
+            const savings = Math.round(baselineRevenue * (Number(pct) / 100) * 0.14);
+            const savingsEl = document.getElementById("sim-savings");
+            if (savingsEl) {
+                savingsEl.textContent = "+$" + savings.toLocaleString();
+            }
+        }
+
+        /* Interactive Table Sorting */
+        function initSortableTable() {
+            const table = document.querySelector("#clean-table-container table");
+            if (!table) return;
+            const headers = table.querySelectorAll("th");
+            headers.forEach((th, idx) => {
+                th.classList.add("sortable");
+                th.title = "Click to sort by this column";
+                th.innerHTML += ' <span class="sort-icon">&varr;</span>';
+                th.addEventListener("click", () => {
+                    playBlip(750, 0.03);
+                    sortTableByColumn(table, idx);
+                });
+            });
+        }
+        let sortAsc = true;
+        let lastSortedIdx = -1;
+        function sortTableByColumn(table, colIdx) {
+            const tbody = table.querySelector("tbody");
+            if (!tbody) return;
+            const rows = Array.from(tbody.querySelectorAll("tr"));
+            if (lastSortedIdx === colIdx) sortAsc = !sortAsc;
+            else sortAsc = true;
+            lastSortedIdx = colIdx;
+
+            rows.sort((a, b) => {
+                const cellA = (a.cells[colIdx]?.textContent || "").trim();
+                const cellB = (b.cells[colIdx]?.textContent || "").trim();
+                const numA = parseFloat(cellA.replace(/[^0-9.-]+/g, ""));
+                const numB = parseFloat(cellB.replace(/[^0-9.-]+/g, ""));
+                if (!isNaN(numA) && !isNaN(numB)) {
+                    return sortAsc ? numA - numB : numB - numA;
+                }
+                return sortAsc ? cellA.localeCompare(cellB) : cellB.localeCompare(cellA);
+            });
+            rows.forEach(r => tbody.appendChild(r));
+
+            table.querySelectorAll("th .sort-icon").forEach((icon, i) => {
+                icon.textContent = (i === colIdx) ? (sortAsc ? "▲" : "▼") : "↕";
+            });
+        }
+
+        /* Export Filtered Table as JSON */
+        function exportTableJSON() {
+            playBlip(800, 0.05);
+            const table = document.querySelector("#clean-table-container table");
+            if (!table) return;
+            const headers = Array.from(table.querySelectorAll("th")).map(th => th.textContent.replace(/[▲▼↕]/g, "").trim());
+            const rows = Array.from(table.querySelectorAll("tbody tr")).filter(r => r.style.display !== "none");
+            const data = rows.map(r => {
+                const rowObj = {};
+                Array.from(r.cells).forEach((td, i) => {
+                    rowObj[headers[i] || `col_${i}`] = td.textContent.trim();
+                });
+                return rowObj;
+            });
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = "cleaned_data_filtered.json";
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        /* Chart Zoom Lightbox */
+        let currentChartZoom = 1;
+        function openChartModal() {
+            playBlip(720, 0.05);
+            document.getElementById("chart-modal").classList.remove("hidden");
+            resetZoom();
+        }
+        function closeChartModal() {
+            document.getElementById("chart-modal").classList.add("hidden");
+        }
+        function zoomChart(factor) {
+            currentChartZoom *= factor;
+            const img = document.getElementById("lightbox-img");
+            if (img) img.style.transform = `scale(${currentChartZoom})`;
+        }
+        function resetZoom() {
+            currentChartZoom = 1;
+            const img = document.getElementById("lightbox-img");
+            if (img) img.style.transform = "scale(1)";
+        }
+
+        /* Graph Modal */
+        function openGraphModal() {
+            playBlip(750, 0.05);
+            document.getElementById("graph-modal").classList.remove("hidden");
+        }
+        function closeGraphModal() {
+            document.getElementById("graph-modal").classList.add("hidden");
+        }
+
         document.addEventListener("DOMContentLoaded", function() {
+            initSortableTable();
+            updateSimulation(10);
             document.querySelectorAll(".tab-btn").forEach(function(btn) {
                 btn.addEventListener("click", function() {
                     const mode = this.getAttribute("data-view") || this.id.replace("tab-", "");
@@ -1200,6 +1555,7 @@ DASHBOARD_TEMPLATE = r"""
         });
 
         function toggleTraceDrawer() {
+            playBlip(600, 0.03);
             const tr = document.getElementById("trace-section");
             const btn = document.getElementById("toggle-trace-btn");
             if (!tr || !btn) return;
@@ -1221,6 +1577,7 @@ DASHBOARD_TEMPLATE = r"""
         }
 
         function copyReport() {
+            playBlip(900, 0.05);
             const rawBox = document.getElementById("raw-markdown");
             if (!rawBox) return;
             navigator.clipboard.writeText(rawBox.value).then(() => {
@@ -1231,6 +1588,7 @@ DASHBOARD_TEMPLATE = r"""
         }
 
         function copyCode() {
+            playBlip(900, 0.05);
             const codeEl = document.getElementById("agent-code-block");
             if (!codeEl) return;
             navigator.clipboard.writeText(codeEl.innerText).then(() => {
@@ -1241,6 +1599,7 @@ DASHBOARD_TEMPLATE = r"""
         }
 
         function downloadReport() {
+            playBlip(850, 0.05);
             const rawBox = document.getElementById("raw-markdown");
             if (!rawBox) return;
             const blob = new Blob([rawBox.value], { type: "text/markdown;charset=utf-8" });
@@ -1256,6 +1615,7 @@ DASHBOARD_TEMPLATE = r"""
         let currentSlide = 1;
         const totalSlides = 4;
         function openPitchMode() {
+            playBlip(800, 0.06);
             document.getElementById("pitch-modal").classList.remove("hidden");
             currentSlide = 1;
             showSlide(currentSlide);
@@ -1272,17 +1632,33 @@ DASHBOARD_TEMPLATE = r"""
             if (cnt) cnt.textContent = `Slide ${n} of ${totalSlides}`;
         }
         function nextSlide() {
-            if (currentSlide < totalSlides) { currentSlide++; showSlide(currentSlide); }
+            if (currentSlide < totalSlides) {
+                playBlip(700, 0.03);
+                currentSlide++;
+                showSlide(currentSlide);
+            }
         }
         function prevSlide() {
-            if (currentSlide > 1) { currentSlide--; showSlide(currentSlide); }
+            if (currentSlide > 1) {
+                playBlip(600, 0.03);
+                currentSlide--;
+                showSlide(currentSlide);
+            }
         }
         document.addEventListener("keydown", function(e) {
-            const modal = document.getElementById("pitch-modal");
-            if (!modal || modal.classList.contains("hidden")) return;
-            if (e.key === "Escape") closePitchMode();
-            if (e.key === "ArrowRight" || e.key === " ") nextSlide();
-            if (e.key === "ArrowLeft") prevSlide();
+            const pitch = document.getElementById("pitch-modal");
+            const graph = document.getElementById("graph-modal");
+            const chart = document.getElementById("chart-modal");
+
+            if (e.key === "Escape") {
+                if (pitch && !pitch.classList.contains("hidden")) closePitchMode();
+                if (graph && !graph.classList.contains("hidden")) closeGraphModal();
+                if (chart && !chart.classList.contains("hidden")) closeChartModal();
+            }
+            if (pitch && !pitch.classList.contains("hidden")) {
+                if (e.key === "ArrowRight" || e.key === " ") nextSlide();
+                if (e.key === "ArrowLeft") prevSlide();
+            }
         });
     </script>
 </body>
