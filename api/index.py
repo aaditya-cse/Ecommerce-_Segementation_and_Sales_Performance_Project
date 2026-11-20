@@ -163,6 +163,8 @@ HOME_TEMPLATE = r"""
             --indigo: #818cf8;
             --text: #f8fafc;
             --muted: #94a3b8;
+            --cursor-x: 50vw;
+            --cursor-y: 50vh;
         }
         * { box-sizing: border-box; }
         body {
@@ -176,6 +178,26 @@ HOME_TEMPLATE = r"""
             padding: 0;
             line-height: 1.65;
             min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: radial-gradient(650px circle at var(--cursor-x) var(--cursor-y), rgba(56, 189, 248, 0.08), transparent 80%);
+            pointer-events: none;
+            z-index: 0;
+        }
+        #bg-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 0;
+            pointer-events: none;
+            opacity: 0.72;
         }
         .skip-link { position: absolute; left: -999px; background: var(--accent); color: #0f172a; padding: 8px 14px; font-weight: 700; border-radius: 6px; }
         .skip-link:focus { left: 16px; top: 16px; z-index: 100; }
@@ -189,6 +211,8 @@ HOME_TEMPLATE = r"""
             margin: 0 auto;
             padding: 20px 24px;
             border-bottom: 1px solid rgba(56, 189, 248, 0.12);
+            position: relative;
+            z-index: 10;
         }
         .brand {
             font-weight: 900;
@@ -223,9 +247,10 @@ HOME_TEMPLATE = r"""
             background: linear-gradient(90deg, rgba(56, 189, 248, 0.2), rgba(99, 102, 241, 0.2));
             border-color: rgba(56, 189, 248, 0.4);
             color: #7dd3fc;
+            box-shadow: 0 0 16px rgba(56, 189, 248, 0.25);
         }
 
-        .container { max-width: 1140px; margin: 30px auto; padding: 0 20px 60px; }
+        .container { max-width: 1140px; margin: 30px auto; padding: 0 20px 60px; position: relative; z-index: 10; }
 
         /* Hero */
         .hero { text-align: center; padding: 24px 12px 36px; }
@@ -246,12 +271,19 @@ HOME_TEMPLATE = r"""
         .hero h1 {
             font-size: 3rem;
             margin: 0 0 16px;
-            background: linear-gradient(135deg, #ffffff 10%, #7dd3fc 45%, #818cf8 75%, #34d399 100%);
+            background: linear-gradient(135deg, #ffffff 0%, #7dd3fc 35%, #818cf8 70%, #34d399 100%);
+            background-size: 200% 200%;
+            animation: textShimmer 8s ease infinite;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             line-height: 1.15;
             font-weight: 900;
             letter-spacing: -0.03em;
+        }
+        @keyframes textShimmer {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
         .hero p {
             color: #cbd5e1;
@@ -276,20 +308,38 @@ HOME_TEMPLATE = r"""
             text-align: left;
             backdrop-filter: blur(12px);
             box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
-            transition: transform 0.2s, border-color 0.2s;
+            transform-style: preserve-3d;
+            perspective: 1000px;
+            will-change: transform;
+            transition: transform 0.15s ease-out, border-color 0.25s, box-shadow 0.25s;
             position: relative;
             overflow: hidden;
+            cursor: pointer;
         }
         .agent-card:hover {
-            transform: translateY(-3px);
             border-color: var(--accent);
-            box-shadow: 0 16px 35px -5px rgba(56, 189, 248, 0.2);
+            box-shadow: 0 16px 35px -5px rgba(56, 189, 248, 0.25);
         }
         .agent-card::before {
             content: '';
             position: absolute;
             top: 0; left: 0; right: 0; height: 3px;
             background: linear-gradient(90deg, var(--accent), var(--indigo));
+        }
+        .tilt-glare {
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            pointer-events: none;
+            background: radial-gradient(circle at var(--glare-x, 50%) var(--glare-y, 50%), rgba(255, 255, 255, 0.16) 0%, transparent 60%);
+            opacity: 0;
+            transition: opacity 0.2s;
+            mix-blend-mode: overlay;
+            z-index: 2;
+        }
+        .agent-card:hover .tilt-glare,
+        .preset-card:hover .tilt-glare {
+            opacity: 1;
         }
         .agent-step { color: var(--accent); font-size: 0.78rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; display: flex; align-items: center; gap: 6px; }
         .agent-title { font-weight: 800; font-size: 1.1rem; margin: 8px 0 6px; color: #f1f5f9; }
@@ -305,16 +355,20 @@ HOME_TEMPLATE = r"""
             padding: 16px 18px;
             cursor: pointer;
             text-align: left;
-            transition: all 0.2s;
             display: flex;
             align-items: flex-start;
             gap: 14px;
+            transform-style: preserve-3d;
+            perspective: 1000px;
+            will-change: transform;
+            transition: transform 0.15s ease-out, border-color 0.25s, box-shadow 0.25s;
+            position: relative;
+            overflow: hidden;
         }
         .preset-card:hover {
             background: rgba(30, 41, 59, 0.85);
             border-color: var(--accent);
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(56, 189, 248, 0.15);
+            box-shadow: 0 10px 24px rgba(56, 189, 248, 0.2);
         }
         .preset-icon { font-size: 1.6rem; line-height: 1; padding: 10px; background: rgba(56, 189, 248, 0.1); border-radius: 10px; }
         .preset-body strong { display: block; color: #f8fafc; font-size: 0.98rem; margin-bottom: 3px; }
@@ -444,6 +498,7 @@ HOME_TEMPLATE = r"""
     </style>
 </head>
 <body>
+    <canvas id="bg-canvas" aria-hidden="true"></canvas>
     <a href="#main-content" class="skip-link">Skip to main content</a>
 
     <nav class="navbar" aria-label="Primary Navigation">
@@ -555,18 +610,160 @@ HOME_TEMPLATE = r"""
     </div>
 
     <script>
+        // Synthesized Audio Feedback
+        let audioCtx = null;
+        function playBlip(freq = 600, duration = 0.04) {
+            try {
+                const AudioCtxClass = window.AudioContext || window.webkitAudioContext;
+                if (!AudioCtxClass) return;
+                if (!audioCtx) audioCtx = new AudioCtxClass();
+                if (audioCtx.state === 'suspended') audioCtx.resume();
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = "sine";
+                osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+                gain.gain.setValueAtTime(0.025, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start();
+                osc.stop(audioCtx.currentTime + duration);
+            } catch (e) {}
+        }
+
+        // 3D Particle Constellation Canvas
+        function init3DCanvas() {
+            const canvas = document.getElementById("bg-canvas");
+            if (!canvas) return;
+            const ctx = canvas.getContext("2d");
+            let width = canvas.width = window.innerWidth;
+            let height = canvas.height = window.innerHeight;
+            
+            window.addEventListener("resize", () => {
+                width = canvas.width = window.innerWidth;
+                height = canvas.height = window.innerHeight;
+            });
+
+            let mouseX = 0, mouseY = 0;
+            window.addEventListener("mousemove", (e) => {
+                mouseX = (e.clientX - width / 2) * 0.04;
+                mouseY = (e.clientY - height / 2) * 0.04;
+                document.documentElement.style.setProperty("--cursor-x", e.clientX + "px");
+                document.documentElement.style.setProperty("--cursor-y", e.clientY + "px");
+            });
+
+            const numNodes = 45;
+            const nodes = [];
+            for (let i = 0; i < numNodes; i++) {
+                nodes.push({
+                    x: (Math.random() - 0.5) * width * 1.4,
+                    y: (Math.random() - 0.5) * height * 1.4,
+                    z: Math.random() * 500 + 100,
+                    vx: (Math.random() - 0.5) * 0.5,
+                    vy: (Math.random() - 0.5) * 0.5,
+                    vz: (Math.random() - 0.5) * 0.3
+                });
+            }
+
+            function render() {
+                ctx.clearRect(0, 0, width, height);
+                const fov = 350;
+                const projected = [];
+
+                for (let i = 0; i < nodes.length; i++) {
+                    const p = nodes[i];
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    p.z += p.vz;
+
+                    if (p.z < 60) p.z = 600;
+                    if (p.z > 600) p.z = 60;
+                    if (p.x < -width) p.x = width;
+                    if (p.x > width) p.x = -width;
+                    if (p.y < -height) p.y = height;
+                    if (p.y > height) p.y = -height;
+
+                    const scale = fov / (fov + p.z);
+                    const px = p.x * scale + width / 2 + mouseX * scale;
+                    const py = p.y * scale + height / 2 + mouseY * scale;
+                    projected.push({ x: px, y: py, scale: scale });
+
+                    ctx.beginPath();
+                    ctx.arc(px, py, Math.max(1, 2.4 * scale), 0, Math.PI * 2);
+                    ctx.fillStyle = "rgba(56, 189, 248, " + (0.35 * scale) + ")";
+                    ctx.fill();
+                }
+
+                for (let i = 0; i < projected.length; i++) {
+                    for (let j = i + 1; j < projected.length; j++) {
+                        const dx = projected[i].x - projected[j].x;
+                        const dy = projected[i].y - projected[j].y;
+                        const dist = Math.sqrt(dx * dx + dy * dy);
+                        if (dist < 110) {
+                            ctx.beginPath();
+                            ctx.moveTo(projected[i].x, projected[i].y);
+                            ctx.lineTo(projected[j].x, projected[j].y);
+                            const alpha = (1 - dist / 110) * 0.18 * projected[i].scale;
+                            ctx.strokeStyle = "rgba(129, 140, 248, " + alpha + ")";
+                            ctx.lineWidth = 1;
+                            ctx.stroke();
+                        }
+                    }
+                }
+                requestAnimationFrame(render);
+            }
+            requestAnimationFrame(render);
+        }
+
+        // 3D Card Tilt Interaction
+        function init3DTilt() {
+            const cards = document.querySelectorAll(".agent-card, .preset-card");
+            cards.forEach(card => {
+                if (!card.querySelector(".tilt-glare")) {
+                    const g = document.createElement("div");
+                    g.className = "tilt-glare";
+                    card.appendChild(g);
+                }
+                card.addEventListener("mousemove", e => {
+                    const rect = card.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    const cx = rect.width / 2;
+                    const cy = rect.height / 2;
+                    const rotX = ((y - cy) / cy) * -8;
+                    const rotY = ((x - cx) / cx) * 8;
+                    card.style.transform = `perspective(1000px) rotateX(${rotX.toFixed(2)}deg) rotateY(${rotY.toFixed(2)}deg) scale3d(1.02, 1.02, 1.02)`;
+                    card.style.setProperty("--glare-x", `${(x / rect.width * 100).toFixed(1)}%`);
+                    card.style.setProperty("--glare-y", `${(y / rect.height * 100).toFixed(1)}%`);
+                });
+                card.addEventListener("mouseenter", () => playBlip(560, 0.02));
+                card.addEventListener("mouseleave", () => {
+                    card.style.transform = "perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)";
+                });
+            });
+        }
+
         function setGoal(text) {
+            playBlip(680, 0.03);
             const box = document.getElementById("user-goal");
             if (box) box.value = text;
         }
         function selectPreset(path, prompt) {
+            playBlip(720, 0.04);
             const sel = document.getElementById("sample-csv");
             if (sel) sel.value = path;
             setGoal(prompt);
             const upload = document.getElementById("uploaded-csv");
             if (upload) upload.value = "";
         }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            init3DCanvas();
+            init3DTilt();
+        });
+
         document.getElementById("analysis-form").addEventListener("submit", function () {
+            playBlip(880, 0.06);
             document.getElementById("loader").classList.add("active");
             let sec = 0;
             setInterval(() => {
@@ -614,6 +811,8 @@ DASHBOARD_TEMPLATE = r"""
             --indigo: #818cf8;
             --text: #f8fafc;
             --muted: #94a3b8;
+            --cursor-x: 50vw;
+            --cursor-y: 50vh;
         }
         * { box-sizing: border-box; }
         body {
@@ -626,6 +825,26 @@ DASHBOARD_TEMPLATE = r"""
             padding: 0;
             line-height: 1.65;
             min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: radial-gradient(650px circle at var(--cursor-x) var(--cursor-y), rgba(56, 189, 248, 0.08), transparent 80%);
+            pointer-events: none;
+            z-index: 0;
+        }
+        #bg-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 0;
+            pointer-events: none;
+            opacity: 0.72;
         }
         .skip-link { position: absolute; left: -999px; background: var(--accent); color: #0f172a; padding: 8px 14px; font-weight: 700; border-radius: 6px; }
         .skip-link:focus { left: 16px; top: 16px; z-index: 100; }
@@ -725,12 +944,31 @@ DASHBOARD_TEMPLATE = r"""
             box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
             position: relative;
             overflow: hidden;
-            transition: transform 0.2s, border-color 0.2s;
+            transform-style: preserve-3d;
+            perspective: 1000px;
+            will-change: transform;
+            transition: transform 0.15s ease-out, border-color 0.25s, box-shadow 0.25s;
+            cursor: pointer;
         }
         .kpi-card:hover {
-            transform: translateY(-2px);
             border-color: var(--accent);
-            box-shadow: 0 15px 30px -5px rgba(56, 189, 248, 0.2);
+            box-shadow: 0 16px 35px -5px rgba(56, 189, 248, 0.25);
+        }
+        .tilt-glare {
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            pointer-events: none;
+            background: radial-gradient(circle at var(--glare-x, 50%) var(--glare-y, 50%), rgba(255, 255, 255, 0.16) 0%, transparent 60%);
+            opacity: 0;
+            transition: opacity 0.2s;
+            mix-blend-mode: overlay;
+            z-index: 2;
+        }
+        .kpi-card:hover .tilt-glare,
+        .sim-card:hover .tilt-glare,
+        .graph-node:hover .tilt-glare {
+            opacity: 1;
         }
         .kpi-label { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); font-weight: 800; }
         .kpi-val { font-size: 1.6rem; font-weight: 900; color: #f8fafc; margin-top: 6px; letter-spacing: -0.02em; }
@@ -945,6 +1183,16 @@ DASHBOARD_TEMPLATE = r"""
             padding: 22px 26px;
             margin-bottom: 24px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            transform-style: preserve-3d;
+            perspective: 1000px;
+            will-change: transform;
+            transition: transform 0.15s ease-out, border-color 0.25s, box-shadow 0.25s;
+            position: relative;
+            overflow: hidden;
+        }
+        .sim-card:hover {
+            border-color: var(--accent);
+            box-shadow: 0 16px 36px rgba(56, 189, 248, 0.25);
         }
         .sim-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 16px; }
         .sim-badge { background: rgba(56, 189, 248, 0.12); color: #7dd3fc; border: 1px solid rgba(56, 189, 248, 0.35); padding: 4px 12px; border-radius: 999px; font-size: 0.78rem; font-weight: 700; text-transform: uppercase; }
@@ -980,7 +1228,7 @@ DASHBOARD_TEMPLATE = r"""
         .sim-metric-val { font-size: 1.8rem; font-weight: 900; color: #34d399; margin: 4px 0; letter-spacing: -0.02em; }
         .sim-metric-sub { font-size: 0.8rem; color: #6ee7b7; font-weight: 600; }
 
-        /* Multi-Agent Node Graph Styling */
+        /* Multi-Agent Node Graph Styling & Holographic Flow */
         .graph-container {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
@@ -989,6 +1237,35 @@ DASHBOARD_TEMPLATE = r"""
             text-align: left;
             margin-top: 20px;
         }
+        .graph-pipeline-flow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin: 18px 0;
+            width: 100%;
+        }
+        .pipeline-beam {
+            height: 3px;
+            flex: 1;
+            background: linear-gradient(90deg, #38bdf8, #34d399, #818cf8);
+            position: relative;
+            border-radius: 999px;
+            overflow: hidden;
+            box-shadow: 0 0 12px rgba(56, 189, 248, 0.5);
+        }
+        .beam-pulse {
+            position: absolute;
+            top: 0; left: 0; bottom: 0;
+            width: 60px;
+            background: #ffffff;
+            box-shadow: 0 0 16px #ffffff, 0 0 24px #38bdf8;
+            animation: beamPulse 1.8s infinite ease-in-out;
+        }
+        @keyframes beamPulse {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(800%); }
+        }
         .graph-node {
             background: rgba(15, 23, 42, 0.9);
             border: 1px solid rgba(56, 189, 248, 0.3);
@@ -996,9 +1273,13 @@ DASHBOARD_TEMPLATE = r"""
             padding: 22px;
             position: relative;
             box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
-            transition: all 0.2s;
+            transform-style: preserve-3d;
+            perspective: 1000px;
+            will-change: transform;
+            transition: transform 0.15s ease-out, border-color 0.25s, box-shadow 0.25s;
+            overflow: hidden;
         }
-        .graph-node:hover { transform: translateY(-3px); border-color: var(--accent); box-shadow: 0 12px 30px rgba(56, 189, 248, 0.25); }
+        .graph-node:hover { border-color: var(--accent); box-shadow: 0 14px 34px rgba(56, 189, 248, 0.28); }
         .node-badge { display: inline-block; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; padding: 3px 10px; border-radius: 6px; margin-bottom: 10px; }
         .node-1 .node-badge { background: rgba(56, 189, 248, 0.15); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.3); }
         .node-2 .node-badge { background: rgba(52, 211, 153, 0.15); color: #34d399; border: 1px solid rgba(52, 211, 153, 0.3); }
@@ -1024,6 +1305,7 @@ DASHBOARD_TEMPLATE = r"""
     </style>
 </head>
 <body>
+    <canvas id="bg-canvas" aria-hidden="true"></canvas>
     <a href="#main-content" class="skip-link">Skip to main content</a>
 
     <header class="topbar" role="banner">
@@ -1221,7 +1503,15 @@ DASHBOARD_TEMPLATE = r"""
         <div class="modal-body">
             <div style="color:#38bdf8; font-size:0.95rem; font-weight:800; text-transform:uppercase; letter-spacing:0.06em; margin-bottom:10px;">Autonomous Execution Graph</div>
             <h2 style="font-size:2rem; margin:0 0 10px; color:#ffffff;">Active Node Pipeline Topology</h2>
-            <p style="color:#94a3b8; max-width:760px; margin:0 auto 24px;">Inspect how data payloads transition securely across specialized agents with cyclic self-healing boundaries.</p>
+            <p style="color:#94a3b8; max-width:760px; margin:0 auto 16px;">Inspect how data payloads transition securely across specialized agents with cyclic self-healing boundaries.</p>
+
+            <div class="graph-pipeline-flow" aria-hidden="true">
+                <span style="font-size:0.8rem; font-weight:800; color:#38bdf8; text-transform:uppercase;">Input Payload</span>
+                <div class="pipeline-beam"><div class="beam-pulse"></div></div>
+                <span style="font-size:0.8rem; font-weight:800; color:#34d399; text-transform:uppercase;">AST Verified</span>
+                <div class="pipeline-beam"><div class="beam-pulse" style="animation-delay: 0.6s;"></div></div>
+                <span style="font-size:0.8rem; font-weight:800; color:#818cf8; text-transform:uppercase;">BI Artifacts</span>
+            </div>
 
             <div class="graph-container">
                 <div class="graph-node node-1">
@@ -1527,7 +1817,156 @@ DASHBOARD_TEMPLATE = r"""
             document.getElementById("graph-modal").classList.add("hidden");
         }
 
+        // 3D Particle Constellation Canvas
+        function init3DCanvas() {
+            const canvas = document.getElementById("bg-canvas");
+            if (!canvas) return;
+            const ctx = canvas.getContext("2d");
+            let width = canvas.width = window.innerWidth;
+            let height = canvas.height = window.innerHeight;
+            
+            window.addEventListener("resize", () => {
+                width = canvas.width = window.innerWidth;
+                height = canvas.height = window.innerHeight;
+            });
+
+            let mouseX = 0, mouseY = 0;
+            window.addEventListener("mousemove", (e) => {
+                mouseX = (e.clientX - width / 2) * 0.04;
+                mouseY = (e.clientY - height / 2) * 0.04;
+                document.documentElement.style.setProperty("--cursor-x", e.clientX + "px");
+                document.documentElement.style.setProperty("--cursor-y", e.clientY + "px");
+            });
+
+            const numNodes = 42;
+            const nodes = [];
+            for (let i = 0; i < numNodes; i++) {
+                nodes.push({
+                    x: (Math.random() - 0.5) * width * 1.4,
+                    y: (Math.random() - 0.5) * height * 1.4,
+                    z: Math.random() * 500 + 100,
+                    vx: (Math.random() - 0.5) * 0.45,
+                    vy: (Math.random() - 0.5) * 0.45,
+                    vz: (Math.random() - 0.5) * 0.3
+                });
+            }
+
+            function render() {
+                ctx.clearRect(0, 0, width, height);
+                const fov = 350;
+                const projected = [];
+
+                for (let i = 0; i < nodes.length; i++) {
+                    const p = nodes[i];
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    p.z += p.vz;
+
+                    if (p.z < 60) p.z = 600;
+                    if (p.z > 600) p.z = 60;
+                    if (p.x < -width) p.x = width;
+                    if (p.x > width) p.x = -width;
+                    if (p.y < -height) p.y = height;
+                    if (p.y > height) p.y = -height;
+
+                    const scale = fov / (fov + p.z);
+                    const px = p.x * scale + width / 2 + mouseX * scale;
+                    const py = p.y * scale + height / 2 + mouseY * scale;
+                    projected.push({ x: px, y: py, scale: scale });
+
+                    ctx.beginPath();
+                    ctx.arc(px, py, Math.max(1, 2.4 * scale), 0, Math.PI * 2);
+                    ctx.fillStyle = "rgba(56, 189, 248, " + (0.35 * scale) + ")";
+                    ctx.fill();
+                }
+
+                for (let i = 0; i < projected.length; i++) {
+                    for (let j = i + 1; j < projected.length; j++) {
+                        const dx = projected[i].x - projected[j].x;
+                        const dy = projected[i].y - projected[j].y;
+                        const dist = Math.sqrt(dx * dx + dy * dy);
+                        if (dist < 110) {
+                            ctx.beginPath();
+                            ctx.moveTo(projected[i].x, projected[i].y);
+                            ctx.lineTo(projected[j].x, projected[j].y);
+                            const alpha = (1 - dist / 110) * 0.18 * projected[i].scale;
+                            ctx.strokeStyle = "rgba(129, 140, 248, " + alpha + ")";
+                            ctx.lineWidth = 1;
+                            ctx.stroke();
+                        }
+                    }
+                }
+                requestAnimationFrame(render);
+            }
+            requestAnimationFrame(render);
+        }
+
+        // 3D Card Tilt Interaction
+        function init3DTilt() {
+            const cards = document.querySelectorAll(".kpi-card, .sim-card, .graph-node");
+            cards.forEach(card => {
+                if (!card.querySelector(".tilt-glare")) {
+                    const g = document.createElement("div");
+                    g.className = "tilt-glare";
+                    card.appendChild(g);
+                }
+                card.addEventListener("mousemove", e => {
+                    const rect = card.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    const cx = rect.width / 2;
+                    const cy = rect.height / 2;
+                    const rotX = ((y - cy) / cy) * -7;
+                    const rotY = ((x - cx) / cx) * 7;
+                    card.style.transform = `perspective(1000px) rotateX(${rotX.toFixed(2)}deg) rotateY(${rotY.toFixed(2)}deg) scale3d(1.02, 1.02, 1.02)`;
+                    card.style.setProperty("--glare-x", `${(x / rect.width * 100).toFixed(1)}%`);
+                    card.style.setProperty("--glare-y", `${(y / rect.height * 100).toFixed(1)}%`);
+                });
+                card.addEventListener("mouseenter", () => playBlip(560, 0.02));
+                card.addEventListener("mouseleave", () => {
+                    card.style.transform = "perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)";
+                });
+            });
+        }
+
+        // Animated Numeric KPI Counter-Up
+        function animateCounters() {
+            const kpis = document.querySelectorAll(".kpi-val");
+            kpis.forEach(el => {
+                const text = el.textContent.trim();
+                const match = text.match(/^([^\d.-]*)([\d,]+(?:\.\d+)?)(.*)$/);
+                if (!match) return;
+                const prefix = match[1];
+                const numStr = match[2];
+                const suffix = match[3];
+                const target = parseFloat(numStr.replace(/,/g, ""));
+                const hasDec = numStr.includes(".");
+                const decCount = hasDec ? numStr.split(".")[1].length : 0;
+                const duration = 1200;
+                const start = performance.now();
+
+                function frame(now) {
+                    const progress = Math.min((now - start) / duration, 1);
+                    const ease = 1 - Math.pow(1 - progress, 3);
+                    const cur = target * ease;
+                    const formatted = hasDec
+                        ? cur.toLocaleString(undefined, { minimumFractionDigits: decCount, maximumFractionDigits: decCount })
+                        : Math.round(cur).toLocaleString();
+                    el.textContent = `${prefix}${formatted}${suffix}`;
+                    if (progress < 1) {
+                        requestAnimationFrame(frame);
+                    } else {
+                        el.textContent = text;
+                    }
+                }
+                requestAnimationFrame(frame);
+            });
+        }
+
         document.addEventListener("DOMContentLoaded", function() {
+            init3DCanvas();
+            init3DTilt();
+            animateCounters();
             initSortableTable();
             updateSimulation(10);
             document.querySelectorAll(".tab-btn").forEach(function(btn) {
