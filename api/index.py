@@ -2382,8 +2382,8 @@ def analyze(path):
             csv_path = os.path.join(ROOT_DIR, rel_path)
             dataset_label = os.path.basename(rel_path)
 
-        if not os.getenv("GROQ_API_KEY"):
-            raise ValueError("Server configuration incomplete: GROQ_API_KEY is not configured.")
+        # If GROQ_API_KEY is present, LLMs are used; otherwise, the resilient deterministic multi-agent engine executes
+        has_api_key = bool(os.getenv("GROQ_API_KEY"))
 
         result = AGENT_GRAPH.invoke({
             "csv_path": csv_path,
