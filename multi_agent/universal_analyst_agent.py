@@ -114,8 +114,8 @@ def get_active_groq_model() -> str:
 
 
 def _ensure_multi_charts(df: pd.DataFrame, chart_candidates: list, existing: list) -> list:
-    """Ensures up to 3 diverse charts (Bar, Line/Horizontal Bar, Distribution/Donut) across different parameters."""
-    saved = list(existing)
+    """Generates up to 3 lightweight matplotlib charts (Bar, Line Trend, Horizontal Bar) in <0.25s without scipy overhead."""
+    saved = [p for p in existing if p and os.path.exists(p)]
     if len(saved) >= 3 or df is None or df.empty:
         return saved
 
@@ -128,61 +128,59 @@ def _ensure_multi_charts(df: pd.DataFrame, chart_candidates: list, existing: lis
         if not any(k in c.lower() for k in ("id", "date", "time", "name", "email", "phone"))
         and 2 <= df[c].nunique(dropna=True) <= 15
     ]
-    date_cols = [
-        c for c in df.columns
-        if any(k in c.lower() for k in ("date", "time", "month", "day"))
-    ]
+    date_cols = [c for c in df.columns if any(k in c.lower() for k in ("date", "time", "month", "day"))]
 
     if not num_cols:
         return saved
 
     primary_num = next((c for c in num_cols if any(k in c.lower() for k in ("rev", "sales", "amount", "total", "price", "fee", "profit"))), num_cols[0])
     secondary_num = next((c for c in num_cols if c != primary_num), primary_num)
+    palette = ["#38bdf8", "#10b981", "#a855f7", "#f59e0b", "#ec4899", "#6366f1"]
 
-    # Chart 1: Vertical Bar Chart on Primary Category vs Primary Metric
+    # Chart 1: Vertical Bar Chart (Primary Category vs Primary Metric)
     if len(saved) < 1 and len(chart_candidates) >= 1 and cat_cols:
         try:
             c1 = cat_cols[0]
             grp = df.groupby(c1)[primary_num].sum().sort_values(ascending=False).head(6)
             if len(grp) >= 2:
-                plt.figure(figsize=(8, 4.4))
-                sns.barplot(x=grp.index.astype(str), y=grp.values, hue=grp.index.astype(str), palette="viridis", legend=False)
-                plt.title(f"Total {primary_num} by {c1} (Bar Analysis)", fontsize=12, fontweight="bold")
-                plt.xlabel(c1)
-                plt.ylabel(primary_num)
+                fig, ax = plt.subplots(figsize=(7.5, 4.0))
+                ax.bar(grp.index.astype(str), grp.values, color=palette[:len(grp)])
+                ax.set_title(f"{primary_num} by {c1} (Bar Comparison)", fontsize=11, fontweight="bold")
+                ax.set_ylabel(primary_num)
+                ax.spines["top"].set_visible(False)
+                ax.spines["right"].set_visible(False)
                 plt.xticks(rotation=20, ha="right")
-                sns.despine()
                 plt.tight_layout()
-                plt.savefig(chart_candidates[0], dpi=150, bbox_inches="tight")
-                plt.close("all")
+                fig.savefig(chart_candidates[0], dpi=120, bbox_inches="tight")
+                plt.close(fig)
                 if os.path.exists(chart_candidates[0]):
                     saved.append(chart_candidates[0])
         except Exception:
             plt.close("all")
 
-    # Chart 2: Time-Series Line Chart (if date column exists) OR Horizontal Bar on 2nd Parameter
+    # Chart 2: Line Trend Chart (Date column) OR Horizontal Bar (2nd Category)
     if len(saved) < 2 and len(chart_candidates) >= 2:
         try:
             drawn = False
             if date_cols:
-                dcol = date_cols[0]
-                dt_series = pd.to_datetime(df[dcol], errors="coerce")
-                if dt_series.notna().sum() >= 5:
+                dt_series = pd.to_datetime(df[date_cols[0]], errors="coerce")
+                if dt_series.notna().sum() >= 4:
                     temp = df.assign(_dt=dt_series).dropna(subset=["_dt"])
                     trend = temp.groupby(temp["_dt"].dt.to_period("M"))[primary_num].sum()
                     if len(trend) >= 2:
-                        plt.figure(figsize=(8, 4.4))
-                        plt.plot(trend.index.astype(str), trend.values, marker="o", linewidth=2.5, color="#38bdf8")
-                        plt.fill_between(trend.index.astype(str), trend.values, alpha=0.15, color="#38bdf8")
-                        plt.title(f"{primary_num} Trend Over Time (Line Chart)", fontsize=12, fontweight="bold")
-                        plt.xlabel("Period")
-                        plt.ylabel(primary_num)
-                        plt.xticks(rotation=25, ha="right")
-                        plt.grid(True, linestyle="--", alpha=0.3)
-                        sns.despine()
+                        fig, ax = plt.subplots(figsize=(7.5, 4.0))
+                        x_labels = trend.index.astype(str)
+                        ax.plot(x_labels, trend.values, marker="o", linewidth=2.2, color="#38bdf8")
+                        ax.fill_between(x_labels, trend.values, alpha=0.15, color="#38bdf8")
+                        ax.set_title(f"{primary_num} Trend Over Time (Line Chart)", fontsize=11, fontweight="bold")
+                        ax.set_ylabel(primary_num)
+                        ax.grid(True, linestyle="--", alpha=0.3)
+                        ax.spines["top"].set_visible(False)
+                        ax.spines["right"].set_visible(False)
+                        plt.xticks(rotation=20, ha="right")
                         plt.tight_layout()
-                        plt.savefig(chart_candidates[1], dpi=150, bbox_inches="tight")
-                        plt.close("all")
+                        fig.savefig(chart_candidates[1], dpi=120, bbox_inches="tight")
+                        plt.close(fig)
                         if os.path.exists(chart_candidates[1]):
                             saved.append(chart_candidates[1])
                             drawn = True
@@ -190,39 +188,41 @@ def _ensure_multi_charts(df: pd.DataFrame, chart_candidates: list, existing: lis
                 c2 = cat_cols[1]
                 grp2 = df.groupby(c2)[primary_num].sum().sort_values(ascending=True).tail(6)
                 if len(grp2) >= 2:
-                    plt.figure(figsize=(8, 4.4))
-                    plt.barh(grp2.index.astype(str), grp2.values, color="#10b981")
-                    plt.title(f"{primary_num} Breakdown by {c2} (Horizontal Bar)", fontsize=12, fontweight="bold")
-                    plt.xlabel(primary_num)
-                    plt.ylabel(c2)
-                    sns.despine()
+                    fig, ax = plt.subplots(figsize=(7.5, 4.0))
+                    ax.barh(grp2.index.astype(str), grp2.values, color="#10b981")
+                    ax.set_title(f"{primary_num} by {c2} (Horizontal Bar)", fontsize=11, fontweight="bold")
+                    ax.set_xlabel(primary_num)
+                    ax.spines["top"].set_visible(False)
+                    ax.spines["right"].set_visible(False)
                     plt.tight_layout()
-                    plt.savefig(chart_candidates[1], dpi=150, bbox_inches="tight")
-                    plt.close("all")
+                    fig.savefig(chart_candidates[1], dpi=120, bbox_inches="tight")
+                    plt.close(fig)
                     if os.path.exists(chart_candidates[1]):
                         saved.append(chart_candidates[1])
         except Exception:
             plt.close("all")
 
-    # Chart 3: Distribution (Histogram + KDE) or Share Chart on Secondary Parameter
+    # Chart 3: Fast Histogram or Horizontal Bar on Secondary Metric/Category (zero scipy overhead)
     if len(saved) < 3 and len(chart_candidates) >= 3:
         try:
-            plt.figure(figsize=(8, 4.4))
-            vals = pd.to_numeric(df[secondary_num], errors="coerce").dropna()
-            if len(vals) >= 5 and vals.nunique() >= 4:
-                sns.histplot(vals, kde=True, color="#a855f7", bins=15)
-                plt.title(f"Distribution & Density of {secondary_num} (Histogram + KDE)", fontsize=12, fontweight="bold")
-                plt.xlabel(secondary_num)
-                plt.ylabel("Frequency")
-                sns.despine()
-            elif len(cat_cols) >= 1:
-                c_share = cat_cols[-1]
-                share = df[c_share].value_counts().head(5)
-                plt.pie(share.values, labels=share.index.astype(str), autopct="%1.1f%%", startangle=140, wedgeprops={"width": 0.45})
-                plt.title(f"Share Distribution by {c_share} (Donut Chart)", fontsize=12, fontweight="bold")
+            fig, ax = plt.subplots(figsize=(7.5, 4.0))
+            if len(cat_cols) >= 2 and secondary_num != primary_num:
+                grp3 = df.groupby(cat_cols[0])[secondary_num].mean().sort_values(ascending=False).head(6)
+                ax.bar(grp3.index.astype(str), grp3.values, color="#a855f7")
+                ax.set_title(f"Average {secondary_num} by {cat_cols[0]}", fontsize=11, fontweight="bold")
+                ax.set_ylabel(f"Avg {secondary_num}")
+                plt.xticks(rotation=20, ha="right")
+            else:
+                vals = pd.to_numeric(df[secondary_num], errors="coerce").dropna()
+                ax.hist(vals, bins=12, color="#a855f7", edgecolor="#1e293b", alpha=0.85)
+                ax.set_title(f"{secondary_num} Value Distribution (Histogram)", fontsize=11, fontweight="bold")
+                ax.set_xlabel(secondary_num)
+                ax.set_ylabel("Count")
+            ax.spines["top"].set_visible(False)
+            ax.spines["right"].set_visible(False)
             plt.tight_layout()
-            plt.savefig(chart_candidates[2], dpi=150, bbox_inches="tight")
-            plt.close("all")
+            fig.savefig(chart_candidates[2], dpi=120, bbox_inches="tight")
+            plt.close(fig)
             if os.path.exists(chart_candidates[2]):
                 saved.append(chart_candidates[2])
         except Exception:

@@ -695,6 +695,7 @@ def analyze(path):
         report_raw=report_raw,
         report_html=report_html,
         chart_b64=chart_b64,
+            charts_b64=charts_b64,
         cleaned_csv_b64=cleaned_csv_b64,
         cleaned_preview_html=cleaned_preview_html,
         cleaned_shape=cleaned_shape,
