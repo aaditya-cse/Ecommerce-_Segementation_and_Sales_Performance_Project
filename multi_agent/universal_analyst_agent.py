@@ -112,32 +112,123 @@ def get_active_groq_model() -> str:
         pass
     return "llama-3.1-8b-instant"
 
-def _ensure_chart_fallback(df, out_path):
-    try:
-        num_cols = [c for c in df.select_dtypes(include=[np.number]).columns if "id" not in c.lower()]
-        cat_cols = [c for c in df.select_dtypes(exclude=[np.number]).columns if "id" not in c.lower() and "date" not in c.lower()]
-        if not num_cols:
-            return False
-        plt.figure(figsize=(8, 4.5))
-        if cat_cols:
-            grouped = df.groupby(cat_cols[0])[num_cols[0]].sum().sort_values(ascending=False).head(6)
-            if len(grouped) >= 2:
-                sns.barplot(x=grouped.index.astype(str), y=grouped.values, hue=grouped.index.astype(str), palette="viridis", legend=False)
-                plt.title(f"Total {num_cols[0]} by {cat_cols[0]}", fontweight="bold")
+
+def _ensure_multi_charts(df: pd.DataFrame, chart_candidates: list, existing: list) -> list:
+    """Ensures up to 3 diverse charts (Bar, Line/Horizontal Bar, Distribution/Donut) across different parameters."""
+    saved = list(existing)
+    if len(saved) >= 3 or df is None or df.empty:
+        return saved
+
+    num_cols = [
+        c for c in df.select_dtypes(include=[np.number]).columns
+        if not any(k in c.lower() for k in ("id", "zip", "pin", "code", "year"))
+    ]
+    cat_cols = [
+        c for c in df.select_dtypes(exclude=[np.number]).columns
+        if not any(k in c.lower() for k in ("id", "date", "time", "name", "email", "phone"))
+        and 2 <= df[c].nunique(dropna=True) <= 15
+    ]
+    date_cols = [
+        c for c in df.columns
+        if any(k in c.lower() for k in ("date", "time", "month", "day"))
+    ]
+
+    if not num_cols:
+        return saved
+
+    primary_num = next((c for c in num_cols if any(k in c.lower() for k in ("rev", "sales", "amount", "total", "price", "fee", "profit"))), num_cols[0])
+    secondary_num = next((c for c in num_cols if c != primary_num), primary_num)
+
+    # Chart 1: Vertical Bar Chart on Primary Category vs Primary Metric
+    if len(saved) < 1 and len(chart_candidates) >= 1 and cat_cols:
+        try:
+            c1 = cat_cols[0]
+            grp = df.groupby(c1)[primary_num].sum().sort_values(ascending=False).head(6)
+            if len(grp) >= 2:
+                plt.figure(figsize=(8, 4.4))
+                sns.barplot(x=grp.index.astype(str), y=grp.values, hue=grp.index.astype(str), palette="viridis", legend=False)
+                plt.title(f"Total {primary_num} by {c1} (Bar Analysis)", fontsize=12, fontweight="bold")
+                plt.xlabel(c1)
+                plt.ylabel(primary_num)
                 plt.xticks(rotation=20, ha="right")
-            else:
-                sns.histplot(df[num_cols[0]].dropna(), kde=True)
-                plt.title(f"Distribution of {num_cols[0]}", fontweight="bold")
-        else:
-            sns.histplot(df[num_cols[0]].dropna(), kde=True)
-            plt.title(f"Distribution of {num_cols[0]}", fontweight="bold")
-        plt.tight_layout()
-        plt.savefig(out_path, dpi=150, bbox_inches="tight")
-        plt.close("all")
-        return os.path.exists(out_path)
-    except Exception:
-        plt.close("all")
-        return False
+                sns.despine()
+                plt.tight_layout()
+                plt.savefig(chart_candidates[0], dpi=150, bbox_inches="tight")
+                plt.close("all")
+                if os.path.exists(chart_candidates[0]):
+                    saved.append(chart_candidates[0])
+        except Exception:
+            plt.close("all")
+
+    # Chart 2: Time-Series Line Chart (if date column exists) OR Horizontal Bar on 2nd Parameter
+    if len(saved) < 2 and len(chart_candidates) >= 2:
+        try:
+            drawn = False
+            if date_cols:
+                dcol = date_cols[0]
+                dt_series = pd.to_datetime(df[dcol], errors="coerce")
+                if dt_series.notna().sum() >= 5:
+                    temp = df.assign(_dt=dt_series).dropna(subset=["_dt"])
+                    trend = temp.groupby(temp["_dt"].dt.to_period("M"))[primary_num].sum()
+                    if len(trend) >= 2:
+                        plt.figure(figsize=(8, 4.4))
+                        plt.plot(trend.index.astype(str), trend.values, marker="o", linewidth=2.5, color="#38bdf8")
+                        plt.fill_between(trend.index.astype(str), trend.values, alpha=0.15, color="#38bdf8")
+                        plt.title(f"{primary_num} Trend Over Time (Line Chart)", fontsize=12, fontweight="bold")
+                        plt.xlabel("Period")
+                        plt.ylabel(primary_num)
+                        plt.xticks(rotation=25, ha="right")
+                        plt.grid(True, linestyle="--", alpha=0.3)
+                        sns.despine()
+                        plt.tight_layout()
+                        plt.savefig(chart_candidates[1], dpi=150, bbox_inches="tight")
+                        plt.close("all")
+                        if os.path.exists(chart_candidates[1]):
+                            saved.append(chart_candidates[1])
+                            drawn = True
+            if not drawn and len(cat_cols) >= 2:
+                c2 = cat_cols[1]
+                grp2 = df.groupby(c2)[primary_num].sum().sort_values(ascending=True).tail(6)
+                if len(grp2) >= 2:
+                    plt.figure(figsize=(8, 4.4))
+                    plt.barh(grp2.index.astype(str), grp2.values, color="#10b981")
+                    plt.title(f"{primary_num} Breakdown by {c2} (Horizontal Bar)", fontsize=12, fontweight="bold")
+                    plt.xlabel(primary_num)
+                    plt.ylabel(c2)
+                    sns.despine()
+                    plt.tight_layout()
+                    plt.savefig(chart_candidates[1], dpi=150, bbox_inches="tight")
+                    plt.close("all")
+                    if os.path.exists(chart_candidates[1]):
+                        saved.append(chart_candidates[1])
+        except Exception:
+            plt.close("all")
+
+    # Chart 3: Distribution (Histogram + KDE) or Share Chart on Secondary Parameter
+    if len(saved) < 3 and len(chart_candidates) >= 3:
+        try:
+            plt.figure(figsize=(8, 4.4))
+            vals = pd.to_numeric(df[secondary_num], errors="coerce").dropna()
+            if len(vals) >= 5 and vals.nunique() >= 4:
+                sns.histplot(vals, kde=True, color="#a855f7", bins=15)
+                plt.title(f"Distribution & Density of {secondary_num} (Histogram + KDE)", fontsize=12, fontweight="bold")
+                plt.xlabel(secondary_num)
+                plt.ylabel("Frequency")
+                sns.despine()
+            elif len(cat_cols) >= 1:
+                c_share = cat_cols[-1]
+                share = df[c_share].value_counts().head(5)
+                plt.pie(share.values, labels=share.index.astype(str), autopct="%1.1f%%", startangle=140, wedgeprops={"width": 0.45})
+                plt.title(f"Share Distribution by {c_share} (Donut Chart)", fontsize=12, fontweight="bold")
+            plt.tight_layout()
+            plt.savefig(chart_candidates[2], dpi=150, bbox_inches="tight")
+            plt.close("all")
+            if os.path.exists(chart_candidates[2]):
+                saved.append(chart_candidates[2])
+        except Exception:
+            plt.close("all")
+
+    return saved
 
 
 def schema_profiler_agent(state: UniversalAgentState) -> Dict[str, Any]:
