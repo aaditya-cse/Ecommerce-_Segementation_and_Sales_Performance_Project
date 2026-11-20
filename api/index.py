@@ -629,11 +629,6 @@ def analyze(path):
     uploaded = request.files.get("uploaded_csv")
 
     try:
-        if not os.getenv("GROQ_API_KEY"):
-            raise ValueError(
-                "GROQ_API_KEY is not configured. Please set GROQ_API_KEY in your .env file or environment variables to enable the AI agents."
-            )
-
         if uploaded and uploaded.filename:
             safe_name = secure_filename(uploaded.filename)
             if not safe_name.lower().endswith(".csv"):
@@ -651,6 +646,9 @@ def analyze(path):
                 raise ValueError("Invalid sample dataset selected.")
             csv_path = os.path.join(ROOT_DIR, rel_path)
             dataset_label = os.path.basename(rel_path)
+
+        if not os.getenv("GROQ_API_KEY"):
+            raise ValueError("Server configuration incomplete: GROQ_API_KEY is not configured.")
 
         result = AGENT_GRAPH.invoke({
             "csv_path": csv_path,
