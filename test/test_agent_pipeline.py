@@ -13,6 +13,9 @@ from universal_analyst_agent import (
     clean_llm_text,
     schema_profiler_agent,
     validate_generated_code,
+    compute_data_health_score,
+    ml_predictor_agent,
+    financial_modeler_agent,
 )
 from index import app
 from renderer import extract_kpi_cards, render_markdown_to_html
@@ -181,5 +184,150 @@ def test_hardened_security_and_privacy_headers():
     assert "Permissions-Policy" in resp.headers
     assert resp.headers.get("Cross-Origin-Opener-Policy") == "same-origin"
     assert resp.headers.get("Cross-Origin-Resource-Policy") == "same-origin"
+    assert resp.headers.get("Cross-Origin-Embedder-Policy") == "require-corp"
+    assert resp.headers.get("X-Permitted-Cross-Domain-Policies") == "none"
     assert resp.headers.get("X-DNS-Prefetch-Control") == "off"
     assert "Werkzeug" not in resp.headers.get("Server", "")
+
+
+def test_compute_data_health_score():
+    """Deterministic 0-100% data health scorecard must accurately compute hygiene metrics."""
+    import pandas as pd
+    # 1. Pristine clean data
+    df_clean = pd.DataFrame({
+        "Revenue": [100.0, 250.0, 300.0, 450.0],
+        "Orders": [1, 2, 3, 4],
+    })
+    health_clean = compute_data_health_score(df_clean)
+    assert health_clean["overall_score"] == 100.0
+    assert "Enterprise Ready" in health_clean["grade"]
+    assert health_clean["null_count"] == 0
+    assert health_clean["duplicate_count"] == 0
+
+    # 2. Dirty data with nulls, duplicates, and negative anomalies
+    df_dirty = pd.DataFrame({
+        "Revenue": [100.0, None, -50.0, 100.0],
+        "Price": [-10.0, 20.0, 30.0, -10.0],
+    })
+    health_dirty = compute_data_health_score(df_dirty)
+    assert health_dirty["overall_score"] < 90.0
+    assert health_dirty["null_count"] > 0
+    assert health_dirty["anomaly_count"] > 0
+
+
+def test_ml_predictor_agent_clustering_and_forecast():
+    """Agent 3: Automated K-Means customer segmentation and regression forecasting."""
+    csv_content = (
+        "Customer_ID,Revenue,Orders,Discount\n"
+        + "\n".join(f"{i},{100 + i * 45},{1 + (i % 5)},{5 + (i % 10)}" for i in range(1, 25))
+    )
+    with tempfile.NamedTemporaryFile("w", suffix=".csv", delete=False, encoding="utf-8") as f:
+        f.write(csv_content)
+        tmp_path = f.name
+    try:
+        state = {"csv_path": tmp_path, "user_goal": "Cluster customers and predict sales"}
+        result = ml_predictor_agent(state)
+        assert "ml_insights" in result
+        insights = result["ml_insights"]
+        assert "clusters" in insights
+        assert len(insights["clusters"]) >= 2
+        assert "forecast" in insights
+        assert 0.0 <= insights["forecast"]["r_squared"] <= 1.0
+        assert result["ml_chart_path"] != ""
+        assert os.path.exists(result["ml_chart_path"])
+    finally:
+        if os.path.exists(tmp_path):
+            os.remove(tmp_path)
+        if result.get("ml_chart_path") and os.path.exists(result["ml_chart_path"]):
+            os.remove(result["ml_chart_path"])
+
+
+def test_financial_modeler_scenarios():
+    """Agent 4: Financial sensitivity modeling computes all operational scenarios."""
+    csv_content = "Order_ID,Revenue,Status\n1,1000,Completed\n2,2000,Returned\n3,1500,Completed\n"
+    with tempfile.NamedTemporaryFile("w", suffix=".csv", delete=False, encoding="utf-8") as f:
+        f.write(csv_content)
+        tmp_path = f.name
+    try:
+        state = {"csv_path": tmp_path}
+        res = financial_modeler_agent(state)
+        scenarios = res.get("scenario_models", {})
+        assert "baseline" in scenarios
+        assert "conservative" in scenarios
+        assert "target" in scenarios
+        assert "aggressive" in scenarios
+        assert scenarios["baseline"]["gross_volume"] == 4500.0
+        assert scenarios["target"]["net_retained_capital"] > 0
+    finally:
+        if os.path.exists(tmp_path):
+            os.remove(tmp_path)
+
+
+def test_langgraph_5_agent_swarm_topology():
+    """Graph compilation must contain all 5 autonomous agent nodes."""
+    graph = build_universal_graph()
+    expected_nodes = {"profiler", "analyst", "ml_predictor", "financial_modeler", "strategist"}
+    assert expected_nodes.issubset(set(graph.nodes.keys()))
+
+
+def test_ast_security_blocks_attribute_traversal_and_builtins():
+    """AST sandbox must block __subclasses__, dunder attributes, getattr, and eval."""
+    with pytest.raises(SecurityError, match="Blocked unsafe attribute access: __class__"):
+        validate_generated_code("x = ().__class__")
+
+    with pytest.raises(SecurityError, match="Blocked unsafe attribute access: __subclasses__"):
+        validate_generated_code("x = object.__subclasses__()")
+
+    with pytest.raises(SecurityError, match="Blocked unsafe function call: getattr"):
+        validate_generated_code("getattr(df, '__class__')")
+
+    with pytest.raises(SecurityError, match="Blocked unsafe function call: eval"):
+        validate_generated_code("eval('2 + 2')")
+
+
+def test_rate_limiter_eviction_and_cleanup():
+    """Rate limiter must prune stale client records when table exceeds threshold."""
+    limiter = SlidingWindowRateLimiter(max_requests=5, window_seconds=1, max_clients=2)
+    # Add client 1 and 2
+    assert limiter.is_allowed("192.168.1.1")[0] is True
+    assert limiter.is_allowed("192.168.1.2")[0] is True
+    # Add client 3, triggers auto-eviction if table size exceeds max_clients
+    assert limiter.is_allowed("192.168.1.3")[0] is True
+    assert len(limiter._hits) <= 3
+
+
+def test_safe_builtins_whitelist_integrity():
+    """Restricted execution environment must exclude dangerous system primitives."""
+    from universal_analyst_agent import SAFE_BUILTINS
+    assert "open" not in SAFE_BUILTINS
+    assert "__import__" not in SAFE_BUILTINS
+    assert "eval" not in SAFE_BUILTINS
+    assert "exec" not in SAFE_BUILTINS
+    assert "compile" not in SAFE_BUILTINS
+    assert "sum" in SAFE_BUILTINS
+    assert "len" in SAFE_BUILTINS
+
+
+def test_ml_predictor_handles_empty_or_missing_csv():
+    """Agent 3 must gracefully return empty insights if CSV is missing or empty."""
+    res_empty = ml_predictor_agent({"csv_path": "non_existent_file.csv"})
+    assert res_empty["ml_insights"] == {}
+    assert res_empty["ml_chart_path"] == ""
+
+
+def test_financial_modeler_handles_missing_file():
+    """Agent 4 must safely handle non-existent CSV files without crashing."""
+    res = financial_modeler_agent({"csv_path": "missing_data.csv"})
+    assert res["scenario_models"] == {}
+
+
+def test_compute_data_health_score_single_row():
+    """Data health scorecard must handle edge case of single row dataset."""
+    import pandas as pd
+    df_single = pd.DataFrame({"Revenue": [500.0], "Category": ["Electronics"]})
+    score = compute_data_health_score(df_single)
+    assert score["overall_score"] == 100.0
+    assert score["completeness_pct"] == 100.0
+    assert score["uniqueness_pct"] == 100.0
+
+

@@ -508,7 +508,8 @@ HOME_TEMPLATE = r"""
         </div>
         <div class="nav-badges">
             <span class="badge hackathon">🏆 Hackathon Edition</span>
-            <span class="badge">LangGraph 3-Agent</span>
+            <span class="badge">LangGraph 5-Agent Swarm</span>
+            <span class="badge">AutoML Clustering</span>
             <span class="badge">AST Security Guard</span>
             <span class="badge">WCAG 2.1 AA</span>
         </div>
@@ -516,25 +517,35 @@ HOME_TEMPLATE = r"""
 
     <main id="main-content" class="container" role="main">
         <header class="hero" role="banner">
-            <div class="hero-pill">⚡ Self-Healing Multi-Agent Architecture • AST Zero-Hallucination Sandbox</div>
+            <div class="hero-pill">⚡ 5-Agent Autonomous LangGraph Swarm • AutoML Segmentation &amp; What-If Simulation</div>
             <h1>Autonomous Multi-Agent CSV Analyst</h1>
-            <p>Transform messy operational datasets into boardroom-ready Business Intelligence in seconds. Three coordinated agents inspect schemas, sanitize anomalies via an AST-sandboxed Python runtime, and construct interactive executive dashboards.</p>
+            <p>Transform messy operational datasets into boardroom-ready Business Intelligence in seconds. Five coordinated agents audit data health, clean anomalies via an AST-sandboxed Python runtime, discover ML customer clusters, simulate margin scenarios, and generate executive presentation decks.</p>
 
             <div class="pipeline-grid" aria-label="Multi-Agent Architecture Overview">
                 <div class="agent-card">
                     <div class="agent-step">Agent 01 &bull; Profiler</div>
-                    <div class="agent-title">Schema &amp; Anomaly Profiler</div>
-                    <p class="agent-desc">Automated scanning of column data types, duplicate records, null frequencies, and statistical distributions.</p>
+                    <div class="agent-title">Schema &amp; Data Health Auditor</div>
+                    <p class="agent-desc">Automated scanning of schema types, duplicate records, null frequencies, and 0-100% Data Hygiene Scorecard.</p>
                 </div>
                 <div class="agent-card">
                     <div class="agent-step">Agent 02 &bull; AST Sandbox</div>
                     <div class="agent-title">Self-Healing Pandas Analyst</div>
-                    <p class="agent-desc">Generates AST-checked Python transformations, auto-corrects syntax bugs, and plots publication-quality figures.</p>
+                    <p class="agent-desc">Generates AST-checked Python transformations, auto-corrects syntax bugs, and extracts publication-grade KPIs.</p>
                 </div>
                 <div class="agent-card">
-                    <div class="agent-step">Agent 03 &bull; Strategist</div>
-                    <div class="agent-title">Executive BI Synthesizer</div>
-                    <p class="agent-desc">Synthesizes verified data points into quantitative KPI cards, executive markdown tables, and high-ROI actions.</p>
+                    <div class="agent-step">Agent 03 &bull; Predictive ML</div>
+                    <div class="agent-title">AutoML Segmenter &amp; Forecaster</div>
+                    <p class="agent-desc">Performs K-Means clustering into customer tiers, trend extrapolation with R&sup2; fit, and confidence interval modeling.</p>
+                </div>
+                <div class="agent-card">
+                    <div class="agent-step">Agent 04 &bull; Modeler</div>
+                    <div class="agent-title">What-If Sensitivity Modeler</div>
+                    <p class="agent-desc">Evaluates operational leakage, gross margin expansion, and computes Conservative, Target, and Aggressive scenario models.</p>
+                </div>
+                <div class="agent-card">
+                    <div class="agent-step">Agent 05 &bull; Strategist</div>
+                    <div class="agent-title">Boardroom BI Synthesizer</div>
+                    <p class="agent-desc">Synthesizes verified data points into boardroom Markdown tables, high-ROI actions, and 1-click executive pitch deck slides.</p>
                 </div>
             </div>
         </header>
@@ -599,12 +610,14 @@ HOME_TEMPLATE = r"""
         <div class="spinner-box">
             <div class="spinner"></div>
         </div>
-        <h2 style="margin:0; color:#38bdf8; font-weight:800; font-size:1.6rem;">Orchestrating 3-Agent LangGraph Pipeline...</h2>
-        <p style="color:#94a3b8; margin:8px 0 0; font-size:1.02rem;">Executing AST verification &bull; Real-time Sandbox Runtime &bull; <strong id="elapsed-sec" style="color:#38bdf8;">0s</strong></p>
+        <h2 style="margin:0; color:#38bdf8; font-weight:800; font-size:1.6rem;">Orchestrating 5-Agent LangGraph Swarm...</h2>
+        <p style="color:#94a3b8; margin:8px 0 0; font-size:1.02rem;">Executing AST verification &bull; AutoML Clustering &bull; <strong id="elapsed-sec" style="color:#38bdf8;">0s</strong></p>
         <ul class="step-list">
-            <li id="st-1" class="active-step">🔍 1. Schema Profiler: Profiling shapes, missing nulls &amp; type schema...</li>
+            <li id="st-1" class="active-step">🔍 1. Data Health Auditor: Auditing completeness, uniqueness &amp; hygiene...</li>
             <li id="st-2">🛡️ 2. AST Sandbox Analyst: Verifying security AST &amp; generating chart...</li>
-            <li id="st-3">🧠 3. Executive Strategist: Synthesizing KPI cards &amp; strategic actions...</li>
+            <li id="st-3">🤖 3. AutoML Segmenter: Computing K-Means clusters &amp; trend forecast...</li>
+            <li id="st-4">💡 4. What-If Modeler: Calculating margin expansion scenarios...</li>
+            <li id="st-5">🧠 5. Boardroom Strategist: Synthesizing KPI cards &amp; executive deck...</li>
         </ul>
         <button type="button" onclick="window.stop(); document.getElementById('loader').classList.remove('active');" style="margin-top:22px; background:transparent; border:1px solid #475569; color:#94a3b8; padding:8px 20px; border-radius:10px; cursor:pointer; font-size:0.9rem;">Cancel Pipeline</button>
     </div>
@@ -776,13 +789,25 @@ HOME_TEMPLATE = r"""
                 const s2 = document.getElementById("st-2");
                 if (s1) s1.classList.remove("active-step");
                 if (s2) s2.classList.add("active-step");
-            }, 1400);
+            }, 1200);
             setTimeout(() => {
                 const s2 = document.getElementById("st-2");
                 const s3 = document.getElementById("st-3");
                 if (s2) s2.classList.remove("active-step");
                 if (s3) s3.classList.add("active-step");
-            }, 3200);
+            }, 2600);
+            setTimeout(() => {
+                const s3 = document.getElementById("st-3");
+                const s4 = document.getElementById("st-4");
+                if (s3) s3.classList.remove("active-step");
+                if (s4) s4.classList.add("active-step");
+            }, 4000);
+            setTimeout(() => {
+                const s4 = document.getElementById("st-4");
+                const s5 = document.getElementById("st-5");
+                if (s4) s4.classList.remove("active-step");
+                if (s5) s5.classList.add("active-step");
+            }, 5400);
         });
     </script>
 </body>
@@ -1301,6 +1326,42 @@ DASHBOARD_TEMPLATE = r"""
         th.sortable:hover { background: rgba(56, 189, 248, 0.18) !important; color: #ffffff; }
         .sort-icon { font-size: 0.75rem; margin-left: 6px; opacity: 0.7; }
 
+        /* Data Health Scorecard Styling */
+        .health-card {
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 41, 59, 0.85) 100%);
+            border: 1px solid rgba(52, 211, 153, 0.35);
+            border-radius: 16px;
+            padding: 18px 24px;
+            margin-bottom: 22px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
+        }
+        .health-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; }
+        .health-circle-badge {
+            background: radial-gradient(circle, rgba(16, 185, 129, 0.25) 0%, rgba(6, 78, 59, 0.4) 100%);
+            border: 2px solid #10b981;
+            border-radius: 50%;
+            width: 62px;
+            height: 62px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 0 18px rgba(16, 185, 129, 0.35);
+            flex-shrink: 0;
+        }
+        .health-score-val { font-size: 1.15rem; font-weight: 900; color: #6ee7b7; line-height: 1; }
+        .health-score-sub { font-size: 0.62rem; color: #a7f3d0; font-weight: 700; }
+        .health-pills { display: flex; gap: 10px; flex-wrap: wrap; }
+        .health-pill {
+            background: rgba(15, 23, 42, 0.85);
+            border: 1px solid rgba(56, 189, 248, 0.25);
+            padding: 6px 14px;
+            border-radius: 999px;
+            font-size: 0.82rem;
+            color: #cbd5e1;
+        }
+        .health-pill strong { color: #38bdf8; margin-left: 4px; }
+
         @media print { .topbar, .toolbar, .trace-drawer-bar, .search-input, .pitch-modal { display: none !important; } body { background: #ffffff; color: #000000; } }
     </style>
 </head>
@@ -1340,10 +1401,34 @@ DASHBOARD_TEMPLATE = r"""
             <div class="pipeline-status" aria-label="Agent Execution Status">
                 <span class="status-step">01 Profiler &#10003;</span>
                 <span class="status-step">02 AST Sandbox &#10003; ({{ retry_count }} try)</span>
-                <span class="status-step">03 Strategist &#10003;</span>
+                <span class="status-step">03 ML Predictor &#10003;</span>
+                <span class="status-step">04 Fin Modeler &#10003;</span>
+                <span class="status-step">05 Strategist &#10003;</span>
                 <span class="ast-badge">🛡️ Zero-Hallucination AST Verified</span>
             </div>
         </section>
+
+        {% if health_score and health_score.overall_score %}
+        <section class="health-card" aria-label="Data Health Scorecard">
+            <div class="health-header">
+                <div style="display:flex; align-items:center; gap:14px;">
+                    <div class="health-circle-badge">
+                        <span class="health-score-val">{{ health_score.overall_score }}</span>
+                        <span class="health-score-sub">/ 100</span>
+                    </div>
+                    <div>
+                        <strong style="font-size:1.15rem; color:#f8fafc;">Data Quality &amp; Health Score: <span style="color:#34d399;">{{ health_score.grade }}</span></strong>
+                        <div style="font-size:0.86rem; color:#94a3b8; margin-top:3px;">Mathematical verification: {{ health_score.null_count }} missing cells &bull; {{ health_score.duplicate_count }} duplicates &bull; {{ health_score.anomaly_count }} out-of-bound values detected &amp; handled.</div>
+                    </div>
+                </div>
+                <div class="health-pills">
+                    <span class="health-pill">Completeness: <strong>{{ health_score.completeness_pct }}%</strong></span>
+                    <span class="health-pill">Uniqueness: <strong>{{ health_score.uniqueness_pct }}%</strong></span>
+                    <span class="health-pill">Validity: <strong>{{ health_score.validity_pct }}%</strong></span>
+                </div>
+            </div>
+        </section>
+        {% endif %}
 
         {% if kpi_cards %}
         <section class="kpi-grid" aria-label="Key Performance Metrics">
@@ -1401,6 +1486,9 @@ DASHBOARD_TEMPLATE = r"""
                 <div class="tab-group" role="tablist" aria-label="Dashboard View Switcher">
                     <button type="button" class="tab-btn active" id="tab-all" data-view="all" onclick="switchView('all', this)">Executive Overview</button>
                     <button type="button" class="tab-btn" id="tab-report" data-view="report" onclick="switchView('report', this)">KPI Report &amp; Tables</button>
+                    {% if ml_insights and ml_insights.clusters %}
+                    <button type="button" class="tab-btn" id="tab-ml" data-view="ml" onclick="switchView('ml', this)">🤖 Predictive ML &amp; Segments</button>
+                    {% endif %}
                     {% if cleaned_preview_html %}
                     <button type="button" class="tab-btn" id="tab-data" data-view="data" onclick="switchView('data', this)">Cleaned Dataset</button>
                     {% endif %}
@@ -1419,6 +1507,81 @@ DASHBOARD_TEMPLATE = r"""
             <div id="report-section" class="report-body">
                 {{ report_html | safe }}
             </div>
+
+            {% if ml_insights and ml_insights.clusters %}
+            <div id="ml-section" class="ml-box" style="margin-top: 28px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:14px; border-bottom:1px solid var(--border); padding-bottom:12px;">
+                    <div>
+                        <h3 style="color:#38bdf8; margin:0; font-size:1.25rem; font-weight:800;">🤖 Automated K-Means Customer Clustering &amp; Predictive Forecasting</h3>
+                        <div style="font-size:0.86rem; color:#94a3b8; margin-top:3px;">Vectorized machine learning clustering &bull; Trend regression with 90% confidence bands.</div>
+                    </div>
+                    <span class="sim-badge">AutoML Engine Output</span>
+                </div>
+
+                <div class="table-wrap">
+                    <table class="styled-table">
+                        <thead>
+                            <tr>
+                                <th>Customer Segment Tier</th>
+                                <th>Volume</th>
+                                <th>Share of Total</th>
+                                <th>Avg Primary Metric</th>
+                                <th>Automated Strategic Playbook</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for cluster in ml_insights.clusters %}
+                            <tr>
+                                <td><strong style="color:#38bdf8;">{{ cluster.name }}</strong></td>
+                                <td>{{ cluster.count }} records</td>
+                                <td><span style="color:#34d399; font-weight:700;">{{ cluster.percent_of_total }}%</span></td>
+                                <td>{{ cluster.primary_feature }}: <strong>{{ cluster.avg_primary_metric }}</strong></td>
+                                <td>
+                                    {% if 'Champions' in cluster.name %}
+                                    <span style="color:#6ee7b7; font-weight:700;">💎 VIP Retention, Loyalty Rewards &amp; Concierge Upsell</span>
+                                    {% elif 'Core' in cluster.name %}
+                                    <span style="color:#93c5fd; font-weight:700;">📈 Frequency Incentives &amp; Automated Cross-Sell</span>
+                                    {% else %}
+                                    <span style="color:#fde047; font-weight:700;">🎯 Margin-Safe Reactivation Triggers &amp; Nudges</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                {% if ml_insights.forecast %}
+                <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:14px; margin:20px 0;">
+                    <div class="kpi-card">
+                        <div class="kpi-label">Forecast R&sup2; Fit</div>
+                        <div class="kpi-val">{{ ml_insights.forecast.r_squared }}</div>
+                        <div class="kpi-tag">Statistical Confidence</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-label">Trend Growth Velocity</div>
+                        <div class="kpi-val">{% if ml_insights.forecast.growth_velocity_pct > 0 %}+{% endif %}{{ ml_insights.forecast.growth_velocity_pct }}%</div>
+                        <div class="kpi-tag">Sequential Momentum</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-label">Forward Projected Horizon</div>
+                        <div class="kpi-val">{{ ml_insights.forecast.projected_final_value }}</div>
+                        <div class="kpi-tag">+{{ ml_insights.forecast.projected_horizon_points }} Periods Out</div>
+                    </div>
+                </div>
+                {% endif %}
+
+                {% if ml_chart_b64 %}
+                <div class="chart-box" style="margin-top:20px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:12px;">
+                        <h4 style="margin:0; color:#38bdf8; font-size:1.1rem; font-weight:800;">Predictive Visualization: Dual K-Means Clusters &amp; Forward Horizon Fit</h4>
+                        <a class="download-csv-btn" href="data:image/png;base64,{{ ml_chart_b64 }}" download="predictive_ml_chart.png">Download ML Chart (PNG)</a>
+                    </div>
+                    <img src="data:image/png;base64,{{ ml_chart_b64 }}" style="max-width:100%; height:auto; border-radius:10px; box-shadow:0 10px 30px rgba(0,0,0,0.5);" alt="Predictive Machine Learning Chart">
+                </div>
+                {% endif %}
+            </div>
+            {% endif %}
 
             {% if cleaned_preview_html %}
             <div id="data-section" style="margin-top: 28px;">
@@ -1515,24 +1678,38 @@ DASHBOARD_TEMPLATE = r"""
 
             <div class="graph-container">
                 <div class="graph-node node-1">
-                    <span class="node-badge">Node 1 &bull; Schema Profiler</span>
-                    <h3 style="color:#f8fafc; margin:0 0 6px; font-size:1.1rem;">Deterministic Profiling</h3>
-                    <p style="color:#cbd5e1; font-size:0.88rem; margin:0 0 12px;">Scans nulls, duplicate keys, column types, and statistical quartiles directly from CSV bytes.</p>
-                    <div style="font-size:0.78rem; color:#38bdf8; font-weight:700;">Output: Structured JSON Profile</div>
+                    <span class="node-badge">Agent 1 &bull; Schema Profiler</span>
+                    <h3 style="color:#f8fafc; margin:0 0 6px; font-size:1.1rem;">Data Health &amp; Hygiene</h3>
+                    <p style="color:#cbd5e1; font-size:0.88rem; margin:0 0 12px;">Profiles nulls, duplicate keys, dtypes, and generates the 0-100% Data Quality Scorecard.</p>
+                    <div style="font-size:0.78rem; color:#38bdf8; font-weight:700;">Output: Structured Profile &amp; Hygiene Score</div>
                 </div>
 
                 <div class="graph-node node-2">
                     <span class="node-badge">Security Gate &bull; AST Sandbox</span>
                     <h3 style="color:#f8fafc; margin:0 0 6px; font-size:1.1rem;">Zero-Hallucination Guard</h3>
-                    <p style="color:#cbd5e1; font-size:0.88rem; margin:0 0 12px;">AST tree walk verifies code safety. Rejects eval, exec, os, socket, sys, and subprocess attacks.</p>
+                    <p style="color:#cbd5e1; font-size:0.88rem; margin:0 0 12px;">AST tree walk blocks eval, exec, os, socket, sys, and subprocess attacks before execution.</p>
                     <div style="font-size:0.78rem; color:#34d399; font-weight:700;">Status: 100% Sandbox Enforced</div>
                 </div>
 
                 <div class="graph-node node-3">
-                    <span class="node-badge">Node 2 &bull; Self-Healing Analyst</span>
-                    <h3 style="color:#f8fafc; margin:0 0 6px; font-size:1.1rem;">Vectorized Execution</h3>
-                    <p style="color:#cbd5e1; font-size:0.88rem; margin:0 0 12px;">Runs in isolated namespace. If an exception triggers, the cyclic retry loop fixes the bug in-flight.</p>
-                    <div style="font-size:0.78rem; color:#818cf8; font-weight:700;">Attempts: {{ retry_count }} &bull; Max 3 Retries</div>
+                    <span class="node-badge">Agent 2 &bull; Pandas Analyst</span>
+                    <h3 style="color:#f8fafc; margin:0 0 6px; font-size:1.1rem;">Self-Healing Pandas Runtime</h3>
+                    <p style="color:#cbd5e1; font-size:0.88rem; margin:0 0 12px;">Transforms messy data, normalizes strings, and produces verified stdout KPIs. (Attempts: {{ retry_count }})</p>
+                    <div style="font-size:0.78rem; color:#818cf8; font-weight:700;">Output: Cleaned CSV &amp; Core Figure</div>
+                </div>
+
+                <div class="graph-node node-2">
+                    <span class="node-badge" style="background:rgba(245,158,11,0.15); color:#f59e0b; border:1px solid rgba(245,158,11,0.3);">Agent 3 &bull; Predictive ML</span>
+                    <h3 style="color:#f8fafc; margin:0 0 6px; font-size:1.1rem;">AutoML Clustering &amp; Forecast</h3>
+                    <p style="color:#cbd5e1; font-size:0.88rem; margin:0 0 12px;">Runs K-Means customer tier clustering and linear trend extrapolation with R&sup2; confidence interval.</p>
+                    <div style="font-size:0.78rem; color:#f59e0b; font-weight:700;">Output: Segment Profiles &amp; ML Visuals</div>
+                </div>
+
+                <div class="graph-node node-1">
+                    <span class="node-badge">Agent 4 &amp; 5 &bull; Executive BI</span>
+                    <h3 style="color:#f8fafc; margin:0 0 6px; font-size:1.1rem;">What-If Sensitivity &amp; Strategy</h3>
+                    <p style="color:#cbd5e1; font-size:0.88rem; margin:0 0 12px;">Computes gross margin expansion, return mitigation cashflow, and outputs executive markdown.</p>
+                    <div style="font-size:0.78rem; color:#38bdf8; font-weight:700;">Output: Boardroom Pitch Deck &amp; Directives</div>
                 </div>
             </div>
         </div>
@@ -1683,6 +1860,7 @@ DASHBOARD_TEMPLATE = r"""
             document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
             if (btn) btn.classList.add("active");
             const rep = document.getElementById("report-section");
+            const ml = document.getElementById("ml-section");
             const dat = document.getElementById("data-section");
             const ch = document.getElementById("chart-section");
             const bar = document.getElementById("trace-drawer-bar");
@@ -1690,13 +1868,14 @@ DASHBOARD_TEMPLATE = r"""
             const show = (el, flag) => { if (el) el.classList.toggle("hidden", !flag); };
 
             if (mode === "all") {
-                show(rep, true); show(dat, true); show(ch, true); show(bar, true); show(tr, false);
+                show(rep, true); show(ml, true); show(dat, true); show(ch, true); show(bar, true); show(tr, false);
                 const tBtn = document.getElementById("toggle-trace-btn");
                 if (tBtn) tBtn.innerHTML = "Show AST-Verified Code &amp; Trace &#9662;";
-            } else if (mode === "report") { show(rep, true); show(dat, false); show(ch, false); show(bar, false); show(tr, false); }
-            else if (mode === "data") { show(rep, false); show(dat, true); show(ch, false); show(bar, false); show(tr, false); }
-            else if (mode === "chart") { show(rep, false); show(dat, false); show(ch, true); show(bar, false); show(tr, false); }
-            else if (mode === "trace") { show(rep, false); show(dat, false); show(ch, false); show(bar, false); show(tr, true); }
+            } else if (mode === "report") { show(rep, true); show(ml, false); show(dat, false); show(ch, false); show(bar, false); show(tr, false); }
+            else if (mode === "ml") { show(rep, false); show(ml, true); show(dat, false); show(ch, false); show(bar, false); show(tr, false); }
+            else if (mode === "data") { show(rep, false); show(ml, false); show(dat, true); show(ch, false); show(bar, false); show(tr, false); }
+            else if (mode === "chart") { show(rep, false); show(ml, false); show(dat, false); show(ch, true); show(bar, false); show(tr, false); }
+            else if (mode === "trace") { show(rep, false); show(ml, false); show(dat, false); show(ch, false); show(bar, false); show(tr, true); }
         }
 
         /* Scenario Simulator Engine */
@@ -2126,12 +2305,16 @@ def analyze(path):
             report_html="",
             chart_b64="",
             charts_b64=[],
+            ml_chart_b64="",
             cleaned_csv_b64="",
             cleaned_preview_html="",
             cleaned_shape="",
             generated_code="",
             analysis_output="",
             kpi_cards=[],
+            health_score={},
+            ml_insights={},
+            scenario_models={},
             retry_count=1,
             dataset_label="Rate Limited",
             error=f"Rate limit exceeded: Too many requests from your IP. Please wait {retry_after} seconds before launching another analysis.",
@@ -2145,12 +2328,16 @@ def analyze(path):
             report_html="",
             chart_b64="",
             charts_b64=[],
+            ml_chart_b64="",
             cleaned_csv_b64="",
             cleaned_preview_html="",
             cleaned_shape="",
             generated_code="",
             analysis_output="",
             kpi_cards=[],
+            health_score={},
+            ml_insights={},
+            scenario_models={},
             retry_count=1,
             dataset_label="Payload Too Large",
             error="Payload Too Large: Maximum allowed upload size is 5 MB.",
@@ -2160,12 +2347,16 @@ def analyze(path):
     report_raw = ""
     report_html = ""
     chart_b64 = ""
+    ml_chart_b64 = ""
     cleaned_csv_b64 = ""
     cleaned_preview_html = ""
     cleaned_shape = ""
     generated_code = ""
     analysis_output = ""
     kpi_cards = []
+    health_score = {}
+    ml_insights = {}
+    scenario_models = {}
     retry_count = 1
     error = ""
     dataset_label = "Sample Dataset"
@@ -2206,6 +2397,10 @@ def analyze(path):
             "error_log": "",
             "retry_count": 0,
             "final_report": "",
+            "health_score": {},
+            "ml_insights": {},
+            "ml_chart_path": "",
+            "scenario_models": {},
         })
 
         report_raw = result.get("final_report", "")
@@ -2213,12 +2408,20 @@ def analyze(path):
         generated_code = result.get("generated_code", "")
         analysis_output = result.get("analysis_output", "")
         kpi_cards = extract_kpi_cards(analysis_output)
+        health_score = result.get("health_score", {})
+        ml_insights = result.get("ml_insights", {})
+        scenario_models = result.get("scenario_models", {})
         retry_count = result.get("retry_count", 1)
 
         c_path = result.get("chart_path", "")
         if c_path and os.path.exists(c_path):
             with open(c_path, "rb") as img_f:
                 chart_b64 = base64.b64encode(img_f.read()).decode("utf-8")
+
+        ml_c_path = result.get("ml_chart_path", "")
+        if ml_c_path and os.path.exists(ml_c_path):
+            with open(ml_c_path, "rb") as ml_f:
+                ml_chart_b64 = base64.b64encode(ml_f.read()).decode("utf-8")
 
         clean_csv_path = result.get("cleaned_csv_path", "")
         if clean_csv_path and os.path.exists(clean_csv_path):
@@ -2240,12 +2443,16 @@ def analyze(path):
         report_html=report_html,
         chart_b64=chart_b64,
         charts_b64=charts_b64,
+        ml_chart_b64=ml_chart_b64,
         cleaned_csv_b64=cleaned_csv_b64,
         cleaned_preview_html=cleaned_preview_html,
         cleaned_shape=cleaned_shape,
         generated_code=generated_code,
         analysis_output=analysis_output,
         kpi_cards=kpi_cards,
+        health_score=health_score,
+        ml_insights=ml_insights,
+        scenario_models=scenario_models,
         retry_count=retry_count,
         dataset_label=dataset_label,
         error=error,
@@ -2255,5 +2462,6 @@ def analyze(path):
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
+    is_debug = os.environ.get("FLASK_DEBUG", "0").lower() in ("1", "true")
     print(f"\n🚀 AgentOps BI Studio starting on http://127.0.0.1:{port}\n")
-    app.run(host="0.0.0.0", port=port, debug=True)
+    app.run(host="127.0.0.1", port=port, debug=is_debug)

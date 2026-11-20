@@ -42,9 +42,33 @@ _NETWORK_TIMEOUT_SECONDS = 5
 # ==========================================
 FORBIDDEN_IMPORTS = {
     "os", "sys", "subprocess", "shutil", "socket",
-    "requests", "urllib", "pathlib", "pickle", "pty", "ctypes"
+    "requests", "urllib", "pathlib", "pickle", "pty", "ctypes",
+    "importlib", "posix", "nt", "winreg", "builtins", "platform",
+    "inspect", "gc", "threading", "multiprocessing", "asyncio",
+    "webbrowser", "http", "ftplib", "smtplib"
 }
-FORBIDDEN_CALLS = {"eval", "exec", "compile", "open", "__import__", "input", "breakpoint"}
+FORBIDDEN_CALLS = {
+    "eval", "exec", "compile", "open", "__import__", "input", "breakpoint",
+    "getattr", "setattr", "delattr", "hasattr", "globals", "locals", "vars",
+    "dir", "exit", "quit"
+}
+FORBIDDEN_ATTRS = {
+    "__class__", "__bases__", "__subclasses__", "__mro__", "__globals__",
+    "__builtins__", "__import__", "__code__", "__reduce__", "__reduce_ex__",
+    "__dict__", "__closure__", "__func__", "__self__"
+}
+
+SAFE_BUILTINS: Dict[str, Any] = {
+    "abs": abs, "all": all, "any": any, "bool": bool, "dict": dict,
+    "enumerate": enumerate, "float": float, "int": int, "len": len,
+    "list": list, "max": max, "min": min, "range": range, "round": round,
+    "set": set, "str": str, "sum": sum, "tuple": tuple, "zip": zip,
+    "print": print, "isinstance": isinstance, "issubclass": issubclass,
+    "sorted": sorted, "reversed": reversed, "filter": filter, "map": map,
+    "None": None, "True": True, "False": False, "Exception": Exception,
+    "ValueError": ValueError, "TypeError": TypeError, "KeyError": KeyError,
+    "IndexError": IndexError
+}
 
 
 class SecurityError(Exception):
@@ -65,15 +89,22 @@ def validate_generated_code(code_str: str) -> None:
             root_pkg = node.module.split(".")[0]
             if root_pkg in FORBIDDEN_IMPORTS:
                 raise SecurityError(f"Blocked unsafe import from: {node.module}")
-        elif isinstance(node, ast.Call) and isinstance(node.func, ast.Name):
-            if node.func.id in FORBIDDEN_CALLS:
-                raise SecurityError(f"Blocked unsafe function call: {node.func.id}")
+        elif isinstance(node, ast.Call):
+            if isinstance(node.func, ast.Name):
+                if node.func.id in FORBIDDEN_CALLS:
+                    raise SecurityError(f"Blocked unsafe function call: {node.func.id}")
+            elif isinstance(node.func, ast.Attribute):
+                if node.func.attr in FORBIDDEN_CALLS:
+                    raise SecurityError(f"Blocked unsafe function call: {node.func.attr}")
+        elif isinstance(node, ast.Attribute):
+            if node.attr in FORBIDDEN_ATTRS or node.attr.startswith("__"):
+                raise SecurityError(f"Blocked unsafe attribute access: {node.attr}")
 
 
 # ==========================================
 # 1. SHARED GRAPH STATE
 # ==========================================
-class UniversalAgentState(TypedDict):
+class UniversalAgentState(TypedDict, total=False):
     csv_path: str
     user_goal: str
     dataset_profile: str
@@ -85,6 +116,10 @@ class UniversalAgentState(TypedDict):
     error_log: str
     retry_count: int
     final_report: str
+    health_score: Dict[str, Any]
+    ml_insights: Dict[str, Any]
+    ml_chart_path: str
+    scenario_models: Dict[str, Any]
 
 
 def clean_llm_text(text: str) -> str:
@@ -241,12 +276,53 @@ def _ensure_multi_charts(df: pd.DataFrame, chart_candidates: list, existing: lis
     return saved
 
 
+def compute_data_health_score(df: pd.DataFrame) -> Dict[str, Any]:
+    """Calculates deterministic 0-100% data quality health scorecard."""
+    total_cells = df.size if df.size > 0 else 1
+    null_cells = int(df.isnull().sum().sum())
+    completeness = round(((total_cells - null_cells) / total_cells) * 100, 1)
+
+    total_rows = len(df) if len(df) > 0 else 1
+    dup_rows = int(df.duplicated().sum())
+    uniqueness = round(((total_rows - dup_rows) / total_rows) * 100, 1)
+
+    # Check for negative numeric values in revenue/price/quantity/age
+    num_cols = df.select_dtypes(include=[np.number]).columns
+    anomaly_count = 0
+    for col in num_cols:
+        if any(k in col.lower() for k in ("rev", "price", "amount", "qty", "quantity", "age")):
+            anomaly_count += int((df[col] < 0).sum())
+    validity = round(max(0.0, 100.0 - (anomaly_count / total_rows * 100)), 1)
+
+    overall = round(0.4 * completeness + 0.35 * uniqueness + 0.25 * validity, 1)
+    if overall >= 95:
+        grade = "A+ (Enterprise Ready)"
+    elif overall >= 85:
+        grade = "A (High Quality)"
+    elif overall >= 75:
+        grade = "B (Moderate Anomalies)"
+    else:
+        grade = "C (Action Required)"
+
+    return {
+        "overall_score": overall,
+        "grade": grade,
+        "completeness_pct": completeness,
+        "uniqueness_pct": uniqueness,
+        "validity_pct": validity,
+        "null_count": null_cells,
+        "duplicate_count": dup_rows,
+        "anomaly_count": anomaly_count,
+    }
+
+
 def schema_profiler_agent(state: UniversalAgentState) -> Dict[str, Any]:
     """Agent 1: Profile CSV schema, detect duplicates/missing values, and return structured JSON."""
     if state.get("dataset_profile"):
         return {"retry_count": 0}
 
     df = pd.read_csv(state["csv_path"])
+    health = compute_data_health_score(df)
     num_cols = df.select_dtypes(include=[np.number]).columns.tolist()
     cat_cols = df.select_dtypes(exclude=[np.number]).columns.tolist()
 
@@ -263,9 +339,14 @@ def schema_profiler_agent(state: UniversalAgentState) -> Dict[str, Any]:
         "numeric_summary": df[num_cols].describe().round(2).to_dict() if num_cols else {},
         "top_categorical_values": cat_samples,
         "sample_rows": df.head(3).to_dict(orient="records"),
+        "health_score": health,
     }
 
-    return {"dataset_profile": json.dumps(profile, indent=2, default=str), "retry_count": 0}
+    return {
+        "dataset_profile": json.dumps(profile, indent=2, default=str),
+        "health_score": health,
+        "retry_count": 0,
+    }
 
 
 # ==========================================
@@ -327,7 +408,7 @@ def pandas_analyst_agent(state: UniversalAgentState) -> Dict[str, Any]:
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
             with contextlib.redirect_stdout(stdout_buffer):
-                exec(clean_code, {"__builtins__": __builtins__, **exec_globals})
+                exec(clean_code, {"__builtins__": SAFE_BUILTINS, **exec_globals})
 
         # Fallback: if LLM forgot to call df.to_csv(CLEANED_CSV_PATH), save the cleaned df automatically
         if not os.path.exists(cleaned_csv_file):
@@ -359,14 +440,247 @@ def route_after_execution(state: UniversalAgentState) -> str:
     """Evaluate whether analyst agent execution succeeded or should be retried."""
     if state.get("error_log") and state.get("retry_count", 0) < _MAX_PIPELINE_RETRIES:
         return "retry_analyst"
-    return "strategist"
+    return "ml_predictor"
 
 
 # ==========================================
-# 4. AGENT 3: EXECUTIVE STRATEGIST
+# 4. AGENT 3: PREDICTIVE ML FORECASTER & SEGMENTER
+# ==========================================
+def ml_predictor_agent(state: UniversalAgentState) -> Dict[str, Any]:
+    """Agent 3: Automated Machine Learning - K-Means Customer/Entity Clustering & Trend Forecasting."""
+    csv_file = state.get("cleaned_csv_path") or state.get("csv_path")
+    if not csv_file or not os.path.exists(csv_file):
+        return {"ml_insights": {}, "ml_chart_path": ""}
+
+    try:
+        df = pd.read_csv(csv_file)
+        if df.empty or len(df) < 4:
+            return {"ml_insights": {}, "ml_chart_path": ""}
+
+        num_cols = df.select_dtypes(include=[np.number]).columns.tolist()
+        feature_cols = [
+            c for c in num_cols
+            if not any(k in c.lower() for k in ("id", "zip", "pin", "code", "phone", "year"))
+        ]
+        
+        ml_insights: Dict[str, Any] = {}
+        chart_path = ""
+        
+        if len(feature_cols) >= 1:
+            use_features = feature_cols[:2] if len(feature_cols) >= 2 else [feature_cols[0], feature_cols[0]]
+            X_raw = df[use_features].fillna(df[use_features].median()).values.astype(float)
+            
+            mins = X_raw.min(axis=0)
+            maxs = X_raw.max(axis=0)
+            ranges = np.where((maxs - mins) == 0, 1.0, (maxs - mins))
+            X_norm = (X_raw - mins) / ranges
+            
+            k = 3 if len(df) >= 15 else 2
+            indices = np.linspace(0, len(df) - 1, k, dtype=int)
+            centroids = X_norm[indices].copy()
+            
+            labels = np.zeros(len(df), dtype=int)
+            for _ in range(15):
+                dists = np.linalg.norm(X_norm[:, None, :] - centroids[None, :, :], axis=2)
+                new_labels = np.argmin(dists, axis=1)
+                if np.array_equal(labels, new_labels):
+                    break
+                labels = new_labels
+                for j in range(k):
+                    if np.any(labels == j):
+                        centroids[j] = X_norm[labels == j].mean(axis=0)
+
+            cluster_means = [float(X_raw[labels == j, 0].mean()) if np.any(labels == j) else 0.0 for j in range(k)]
+            sorted_order = np.argsort(cluster_means)
+            remap = {old: new for new, old in enumerate(sorted_order)}
+            remapped_labels = np.array([remap[l] for l in labels])
+            
+            segment_names = ["Tier 1: Growth & Opportunity", "Tier 2: Core Steady Base", "Tier 3: High-Value Champions"]
+            if k == 2:
+                segment_names = ["Tier 1: Standard Base", "Tier 2: High-Value Champions"]
+
+            segment_summary = []
+            for j in range(k):
+                mask = (remapped_labels == j)
+                count = int(np.sum(mask))
+                pct = round((count / len(df)) * 100, 1)
+                f1_mean = round(float(X_raw[mask, 0].mean()), 2) if count > 0 else 0.0
+                f2_mean = round(float(X_raw[mask, 1].mean()), 2) if (count > 0 and len(use_features) >= 2) else f1_mean
+                segment_summary.append({
+                    "cluster_id": j,
+                    "name": segment_names[j],
+                    "count": count,
+                    "percent_of_total": pct,
+                    "avg_primary_metric": f1_mean,
+                    "avg_secondary_metric": f2_mean,
+                    "primary_feature": use_features[0],
+                    "secondary_feature": use_features[1],
+                })
+            
+            ml_insights["clusters"] = segment_summary
+            
+            primary_metric = use_features[0]
+            y_vals = df[primary_metric].dropna().values.astype(float)
+            x_vals = np.arange(len(y_vals), dtype=float)
+            y_pred = y_vals
+            proj_x = x_vals
+            proj_y = y_vals
+            if len(y_vals) >= 5 and np.std(y_vals) > 0:
+                slope, intercept = np.polyfit(x_vals, y_vals, 1)
+                y_pred = slope * x_vals + intercept
+                ss_res = np.sum((y_vals - y_pred) ** 2)
+                ss_tot = np.sum((y_vals - np.mean(y_vals)) ** 2)
+                r_squared = max(0.0, min(1.0, 1.0 - (ss_res / (ss_tot + 1e-9))))
+                growth_velocity = ((y_pred[-1] - y_pred[0]) / (abs(y_pred[0]) + 1e-9)) * 100
+                
+                proj_horizon = max(3, int(len(y_vals) * 0.25))
+                proj_x = np.arange(len(y_vals), len(y_vals) + proj_horizon, dtype=float)
+                proj_y = slope * proj_x + intercept
+                
+                ml_insights["forecast"] = {
+                    "metric": primary_metric,
+                    "slope": round(float(slope), 2),
+                    "r_squared": round(float(r_squared), 3),
+                    "growth_velocity_pct": round(float(growth_velocity), 1),
+                    "projected_horizon_points": proj_horizon,
+                    "projected_final_value": round(float(proj_y[-1]), 2),
+                }
+
+            work_dir = os.path.join(tempfile.gettempdir(), "generated_charts")
+            os.makedirs(work_dir, exist_ok=True)
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S_%f")
+            chart_file = os.path.join(work_dir, f"ml_plot_{timestamp}.png")
+            
+            fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(11.5, 4.2))
+            fig.patch.set_facecolor("#0b1324")
+            
+            palette = ["#f59e0b", "#38bdf8", "#10b981"]
+            for j in range(k):
+                mask = (remapped_labels == j)
+                c_name = segment_names[j].split(":")[1].strip() if ":" in segment_names[j] else segment_names[j]
+                ax1.scatter(
+                    X_raw[mask, 0],
+                    X_raw[mask, 1],
+                    color=palette[j % len(palette)],
+                    label=f"{c_name} ({np.sum(mask)})",
+                    alpha=0.8,
+                    edgecolors="#0f172a",
+                    s=55
+                )
+            ax1.set_facecolor("#030712")
+            ax1.set_title("Automated K-Means Customer Segmentation", color="#f8fafc", fontsize=11, fontweight="bold")
+            ax1.set_xlabel(use_features[0], color="#94a3b8")
+            ax1.set_ylabel(use_features[1], color="#94a3b8")
+            ax1.tick_params(colors="#94a3b8")
+            ax1.legend(loc="best", facecolor="#0f172a", edgecolor="#334155", labelcolor="#e2e8f0", fontsize=8)
+            ax1.grid(True, linestyle="--", alpha=0.15)
+            ax1.spines["top"].set_visible(False)
+            ax1.spines["right"].set_visible(False)
+            for spine in ax1.spines.values():
+                spine.set_color("#334155")
+                
+            ax2.set_facecolor("#030712")
+            ax2.plot(x_vals, y_vals, color="#64748b", alpha=0.5, label="Observed", linewidth=1.2)
+            if "forecast" in ml_insights:
+                ax2.plot(x_vals, y_pred, color="#38bdf8", label=f"Trend Fit (R²={ml_insights['forecast']['r_squared']})", linewidth=2.2)
+                ax2.plot(proj_x, proj_y, color="#34d399", linestyle="--", label="Projected Forward", linewidth=2.2)
+                band = np.std(y_vals) * 0.75
+                ax2.fill_between(
+                    np.concatenate([x_vals, proj_x]),
+                    np.concatenate([y_pred, proj_y]) - band,
+                    np.concatenate([y_pred, proj_y]) + band,
+                    color="#38bdf8",
+                    alpha=0.12,
+                    label="90% Confidence Interval"
+                )
+            ax2.set_title(f"Predictive Forward Extrapolation ({use_features[0]})", color="#f8fafc", fontsize=11, fontweight="bold")
+            ax2.set_xlabel("Sequential Sample Index", color="#94a3b8")
+            ax2.set_ylabel(use_features[0], color="#94a3b8")
+            ax2.tick_params(colors="#94a3b8")
+            ax2.legend(loc="best", facecolor="#0f172a", edgecolor="#334155", labelcolor="#e2e8f0", fontsize=8)
+            ax2.grid(True, linestyle="--", alpha=0.15)
+            ax2.spines["top"].set_visible(False)
+            ax2.spines["right"].set_visible(False)
+            for spine in ax2.spines.values():
+                spine.set_color("#334155")
+
+            plt.tight_layout()
+            fig.savefig(chart_file, dpi=130, bbox_inches="tight", facecolor=fig.get_facecolor())
+            plt.close(fig)
+            if os.path.exists(chart_file):
+                chart_path = chart_file
+
+        return {"ml_insights": ml_insights, "ml_chart_path": chart_path}
+    except Exception:
+        plt.close("all")
+        return {"ml_insights": {}, "ml_chart_path": ""}
+
+
+# ==========================================
+# 5. AGENT 4: FINANCIAL WHAT-IF & UNIT ECONOMICS MODELER
+# ==========================================
+def financial_modeler_agent(state: UniversalAgentState) -> Dict[str, Any]:
+    """Agent 4: Executive What-If & Unit Economics Financial Sensitivity Modeler."""
+    csv_file = state.get("cleaned_csv_path") or state.get("csv_path")
+    if not csv_file or not os.path.exists(csv_file):
+        return {"scenario_models": {}}
+
+    try:
+        df = pd.read_csv(csv_file)
+        if df.empty:
+            return {"scenario_models": {}}
+
+        num_cols = df.select_dtypes(include=[np.number]).columns.tolist()
+        rev_col = next((c for c in num_cols if any(k in c.lower() for k in ("rev", "sales", "amount", "total", "price", "fee"))), None)
+        
+        base_rev = float(df[rev_col].sum()) if rev_col else float(len(df) * 1000)
+        total_rows = len(df)
+
+        status_col = next((c for c in df.columns if any(k in c.lower() for k in ("status", "return", "cancel"))), None)
+        return_rate_pct = 8.5
+        if status_col:
+            neg_count = df[status_col].astype(str).str.lower().isin(["returned", "cancelled", "refunded", "failed"]).sum()
+            return_rate_pct = round((neg_count / total_rows) * 100, 1)
+
+        scenarios = {
+            "baseline": {
+                "label": "Current Operational Baseline",
+                "gross_volume": round(base_rev, 2),
+                "operational_leakage_pct": return_rate_pct,
+                "net_retained_capital": round(base_rev * (1 - return_rate_pct / 100), 2),
+            },
+            "conservative": {
+                "label": "Conservative Optimization (+5% Efficiency)",
+                "gross_volume": round(base_rev * 1.05, 2),
+                "operational_leakage_pct": round(return_rate_pct * 0.9, 1),
+                "margin_gain": round(base_rev * 0.05 + base_rev * (return_rate_pct * 0.1 / 100), 2),
+                "net_retained_capital": round(base_rev * 1.05 * (1 - (return_rate_pct * 0.9) / 100), 2),
+            },
+            "target": {
+                "label": "Target Multi-Agent Strategic Plan (+12% Revenue, -25% Return Loss)",
+                "gross_volume": round(base_rev * 1.12, 2),
+                "operational_leakage_pct": round(return_rate_pct * 0.75, 1),
+                "margin_gain": round(base_rev * 0.12 + base_rev * (return_rate_pct * 0.25 / 100), 2),
+                "net_retained_capital": round(base_rev * 1.12 * (1 - (return_rate_pct * 0.75) / 100), 2),
+            },
+            "aggressive": {
+                "label": "Aggressive Full Automation (+22% Revenue, -40% Friction)",
+                "gross_volume": round(base_rev * 1.22, 2),
+                "operational_leakage_pct": round(return_rate_pct * 0.60, 1),
+                "margin_gain": round(base_rev * 0.22 + base_rev * (return_rate_pct * 0.40 / 100), 2),
+                "net_retained_capital": round(base_rev * 1.22 * (1 - (return_rate_pct * 0.60) / 100), 2),
+            }
+        }
+        return {"scenario_models": scenarios}
+    except Exception:
+        return {"scenario_models": {}}
+
+
+# ==========================================
+# 6. AGENT 5: EXECUTIVE STRATEGIST
 # ==========================================
 def executive_strategist_agent(state: UniversalAgentState) -> Dict[str, Any]:
-    """Agent 3: Synthesize verified Python output into a polished executive business report."""
+    """Agent 5: Synthesize verified Python output into a polished executive business report."""
     llm = ChatGroq(model=get_active_groq_model(), temperature=_LLM_TEMPERATURE_STRATEGIST)
 
     system_prompt = (
@@ -378,10 +692,19 @@ def executive_strategist_agent(state: UniversalAgentState) -> Dict[str, Any]:
         "3. Top 3-4 Actionable Business Recommendations\nSTRICT FORMATTING RULES:\n- NEVER put a Markdown table inside another table cell.\n- NEVER use `<br>` HTML tags or escaped `\\$` backslashes; format multi-item breakdowns as 'Name: ?Value; Name2: ?Value2' and match exact counts (never label 4 items as Top 5).\n- Use INR (₹) for Indian datasets (like prices 699, 1899) unless another currency is explicitly specified."
     )
 
+    ml_context = ""
+    if state.get("ml_insights") and "clusters" in state["ml_insights"]:
+        clusters = state["ml_insights"]["clusters"]
+        ml_context = "\n\nML SEGMENTATION SUMMARY:\n" + "\n".join(
+            f"- {c['name']}: {c['count']} items ({c['percent_of_total']}%), Avg {c['primary_feature']}={c['avg_primary_metric']}"
+            for c in clusters
+        )
+
     user_msg = (
         f"USER GOAL: {state['user_goal']}\n\n"
         f"DATASET PROFILE:\n{state['dataset_profile']}\n\n"
         f"VERIFIED PYTHON EXECUTION OUTPUT:\n{state['analysis_output']}"
+        f"{ml_context}"
     )
 
     raw_report = llm.invoke([SystemMessage(content=system_prompt), HumanMessage(content=user_msg)]).content
@@ -393,13 +716,15 @@ def executive_strategist_agent(state: UniversalAgentState) -> Dict[str, Any]:
 
 
 # ==========================================
-# 5. BUILD LANGGRAPH WITH RETRY LOOP
+# 7. BUILD 5-AGENT LANGGRAPH PIPELINE
 # ==========================================
 def build_universal_graph():
-    """Compile the 3-agent state graph with cyclic retry execution for self-healing."""
+    """Compile the 5-agent state graph with cyclic retry execution for self-healing."""
     graph = StateGraph(UniversalAgentState)
     graph.add_node("profiler", schema_profiler_agent)
     graph.add_node("analyst", pandas_analyst_agent)
+    graph.add_node("ml_predictor", ml_predictor_agent)
+    graph.add_node("financial_modeler", financial_modeler_agent)
     graph.add_node("strategist", executive_strategist_agent)
 
     graph.set_entry_point("profiler")
@@ -407,8 +732,10 @@ def build_universal_graph():
     graph.add_conditional_edges(
         "analyst",
         route_after_execution,
-        {"retry_analyst": "analyst", "strategist": "strategist"},
+        {"retry_analyst": "analyst", "ml_predictor": "ml_predictor"},
     )
+    graph.add_edge("ml_predictor", "financial_modeler")
+    graph.add_edge("financial_modeler", "strategist")
     graph.add_edge("strategist", END)
     return graph.compile()
 

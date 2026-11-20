@@ -17,16 +17,24 @@ def generate_nonce() -> str:
 
 
 class SlidingWindowRateLimiter:
-    """In-memory per-IP sliding-window rate limiter to prevent endpoint abuse."""
+    """In-memory per-IP sliding-window rate limiter to prevent endpoint abuse with auto-eviction."""
 
-    def __init__(self, max_requests: int = 25, window_seconds: int = 60) -> None:
+    def __init__(self, max_requests: int = 25, window_seconds: int = 60, max_clients: int = 5000) -> None:
         self.max_requests = max_requests
         self.window_seconds = window_seconds
+        self.max_clients = max_clients
         self._hits: Dict[str, Deque[float]] = defaultdict(deque)
 
     def is_allowed(self, client_id: str) -> Tuple[bool, int]:
         """Return (allowed, retry_after_seconds) for the given client identifier."""
         now = time.monotonic()
+        # Auto-prune stale clients if table grows too large
+        if len(self._hits) > self.max_clients:
+            cutoff_all = now - self.window_seconds
+            stale_keys = [k for k, q in self._hits.items() if not q or q[-1] < cutoff_all]
+            for k in stale_keys:
+                del self._hits[k]
+
         bucket = self._hits[client_id]
         cutoff = now - self.window_seconds
         while bucket and bucket[0] < cutoff:
@@ -123,14 +131,17 @@ def apply_hardened_headers(response: Response) -> Response:
         "script-src 'self' 'unsafe-inline'; "
         "style-src 'self' 'unsafe-inline'; "
         "connect-src 'self'; "
+        "object-src 'none'; "
         "frame-ancestors 'none'; "
         "form-action 'self'; "
         "base-uri 'self';"
     )
     response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
-    response.headers["Permissions-Policy"] = "camera=(), microphone=(), geolocation=(), payment=()"
+    response.headers["Permissions-Policy"] = "camera=(), microphone=(), geolocation=(), payment=(), usb=(), accelerometer=()"
     response.headers["Cross-Origin-Opener-Policy"] = "same-origin"
     response.headers["Cross-Origin-Resource-Policy"] = "same-origin"
+    response.headers["Cross-Origin-Embedder-Policy"] = "require-corp"
+    response.headers["X-Permitted-Cross-Domain-Policies"] = "none"
     response.headers["X-DNS-Prefetch-Control"] = "off"
     response.headers.pop("Server", None)
     return response
