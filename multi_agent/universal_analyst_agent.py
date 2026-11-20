@@ -83,31 +83,34 @@ def clean_llm_text(text: str) -> str:
 
 @lru_cache(maxsize=1)
 def get_active_groq_model() -> str:
-    api_key = os.getenv("GROQ_API_KEY")
+    api_key = os.getenv("GROQ_API_KEY", "")
     preferred = [
-        "llama-3.3-70b-versatile",
         "llama-3.1-8b-instant",
-        "mixtral-8x7b-32768",
-        "gemma2-9b-it",
+        "llama-3.3-70b-versatile",
+        "openai/gpt-oss-20b",
+        "meta-llama/llama-4-scout-17b-16e-instruct",
+        "qwen/qwen3-32b",
     ]
+    blocked_keywords = ("whisper", "guard", "tts", "orpheus", "safeguard", "prompt-guard")
     try:
         req = urllib.request.Request(
             "https://api.groq.com/openai/v1/models",
             headers={"Authorization": f"Bearer {api_key}", "User-Agent": "Mozilla/5.0"},
         )
         with urllib.request.urlopen(req, timeout=5) as resp:
-            ids = [m["id"] for m in json.loads(resp.read().decode()).get("data", [])]
+            data = json.loads(resp.read().decode()).get("data", [])
+            ids = [
+                m["id"] for m in data
+                if m.get("id") and not any(b in m["id"].lower() for b in blocked_keywords)
+            ]
             for m in preferred:
                 if m in ids:
                     return m
+            if ids:
+                return ids[0]
     except Exception:
         pass
     return "llama-3.1-8b-instant"
-
-
-# ==========================================
-# 2. AGENT 1: DYNAMIC SCHEMA & QUALITY PROFILER
-# ==========================================
 
 def _ensure_chart_fallback(df, out_path):
     try:
