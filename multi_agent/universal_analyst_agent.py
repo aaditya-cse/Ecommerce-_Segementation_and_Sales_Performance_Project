@@ -1,3 +1,5 @@
+"""Three-agent autonomous CSV analytics pipeline using LangGraph, Groq LLMs, and AST sandboxing."""
+
 import os
 import io
 import re
@@ -26,6 +28,14 @@ _cur_dir = os.path.dirname(os.path.abspath(__file__))
 _root_dir = os.path.dirname(_cur_dir)
 load_dotenv(os.path.join(_root_dir, ".env"))
 load_dotenv(os.path.join(_cur_dir, ".env"))
+
+# Pipeline configuration constants
+_DEFAULT_GROQ_MODEL = "llama-3.1-8b-instant"
+_LLM_TEMPERATURE_ANALYST = 0.1
+_LLM_TEMPERATURE_STRATEGIST = 0.2
+_MAX_PIPELINE_RETRIES = 3
+_CHART_DPI = 150
+_NETWORK_TIMEOUT_SECONDS = 5
 
 # ==========================================
 # SECURITY: AST STATIC ANALYZER FOR SANDBOX
@@ -232,6 +242,7 @@ def _ensure_multi_charts(df: pd.DataFrame, chart_candidates: list, existing: lis
 
 
 def schema_profiler_agent(state: UniversalAgentState) -> Dict[str, Any]:
+    """Agent 1: Profile CSV schema, detect duplicates/missing values, and return structured JSON."""
     if state.get("dataset_profile"):
         return {"retry_count": 0}
 
@@ -261,8 +272,9 @@ def schema_profiler_agent(state: UniversalAgentState) -> Dict[str, Any]:
 # 3. AGENT 2: AST-SANDBOXED CODE, CLEANER & CHART ANALYST
 # ==========================================
 def pandas_analyst_agent(state: UniversalAgentState) -> Dict[str, Any]:
+    """Agent 2: AST-sandboxed code generator and runner that executes pandas/seaborn analytics."""
     attempt = state.get("retry_count", 0) + 1
-    llm = ChatGroq(model=get_active_groq_model(), temperature=0.1)
+    llm = ChatGroq(model=get_active_groq_model(), temperature=_LLM_TEMPERATURE_ANALYST)
 
     work_dir = os.path.join(tempfile.gettempdir(), "generated_charts")
     os.makedirs(work_dir, exist_ok=True)
@@ -344,7 +356,8 @@ def pandas_analyst_agent(state: UniversalAgentState) -> Dict[str, Any]:
 
 
 def route_after_execution(state: UniversalAgentState) -> str:
-    if state.get("error_log") and state.get("retry_count", 0) < 3:
+    """Evaluate whether analyst agent execution succeeded or should be retried."""
+    if state.get("error_log") and state.get("retry_count", 0) < _MAX_PIPELINE_RETRIES:
         return "retry_analyst"
     return "strategist"
 
@@ -353,7 +366,8 @@ def route_after_execution(state: UniversalAgentState) -> str:
 # 4. AGENT 3: EXECUTIVE STRATEGIST
 # ==========================================
 def executive_strategist_agent(state: UniversalAgentState) -> Dict[str, Any]:
-    llm = ChatGroq(model=get_active_groq_model(), temperature=0.2)
+    """Agent 3: Synthesize verified Python output into a polished executive business report."""
+    llm = ChatGroq(model=get_active_groq_model(), temperature=_LLM_TEMPERATURE_STRATEGIST)
 
     system_prompt = (
         "You are a Principal Data Consultant writing a business report in clean Markdown. "
@@ -382,6 +396,7 @@ def executive_strategist_agent(state: UniversalAgentState) -> Dict[str, Any]:
 # 5. BUILD LANGGRAPH WITH RETRY LOOP
 # ==========================================
 def build_universal_graph():
+    """Compile the 3-agent state graph with cyclic retry execution for self-healing."""
     graph = StateGraph(UniversalAgentState)
     graph.add_node("profiler", schema_profiler_agent)
     graph.add_node("analyst", pandas_analyst_agent)

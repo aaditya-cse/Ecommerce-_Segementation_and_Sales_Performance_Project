@@ -128,3 +128,58 @@ def test_kpi_extractor_and_markdown_table_renderer():
     html = render_markdown_to_html(md)
     assert "<table" in html
     assert "Home &amp; Kitchen" in html or "Home & Kitchen" in html
+
+
+def test_rate_limiter_isolates_different_ips():
+    """Different client IPs must maintain independent rate limiting windows."""
+    limiter = SlidingWindowRateLimiter(max_requests=1, window_seconds=60)
+    assert limiter.is_allowed("192.168.1.100")[0] is True
+    assert limiter.is_allowed("192.168.1.200")[0] is True
+    # The first IP is now exhausted, but the second IP was only used once
+    assert limiter.is_allowed("192.168.1.100")[0] is False
+    assert limiter.is_allowed("192.168.1.200")[0] is False
+
+
+def test_validate_csv_rejects_single_column():
+    """CSVs with fewer than 2 columns must be rejected as invalid tabular data."""
+    single_col_data = b"Product_Name\nLaptop\nSmartphone\nHeadphones\n"
+    with pytest.raises(ValueError, match="2\\+ columns"):
+        validate_csv_bytes(single_col_data)
+
+
+def test_validate_csv_rejects_binary_magic_bytes():
+    """Common binary container signatures must be caught before CSV parsing."""
+    with pytest.raises(ValueError, match="Binary file detected"):
+        validate_csv_bytes(b"PK\x03\x04\x14\x00\x00\x00")
+    with pytest.raises(ValueError, match="Binary file detected"):
+        validate_csv_bytes(b"%PDF-1.4\n%...\n")
+    with pytest.raises(ValueError, match="Binary file detected"):
+        validate_csv_bytes(b"BM\x36\x00\x00\x00")
+
+
+def test_validate_csv_rejects_sql_injection_headers():
+    """Column headers containing SQL DDL/DML injection keywords must be blocked."""
+    evil_csv = b"col1,user_id; DROP TABLE accounts;--\n1,100\n"
+    with pytest.raises(ValueError, match="Suspicious column names detected"):
+        validate_csv_bytes(evil_csv)
+
+
+def test_sanitize_csv_cell_extended_vectors():
+    """CSV cells with pipe, backtick, or embedded tabs must be escaped, while standard data passes unaltered."""
+    assert sanitize_csv_cell("|calc.exe").startswith("'")
+    assert sanitize_csv_cell("`whoami`").startswith("'")
+    assert sanitize_csv_cell("data\tleak").startswith("'")
+    assert sanitize_csv_cell("42.50") == "42.50"
+    assert sanitize_csv_cell("Standard Product Description") == "Standard Product Description"
+
+
+def test_hardened_security_and_privacy_headers():
+    """HTTP responses must contain modern security policies and must not leak Server version."""
+    client = app.test_client()
+    resp = client.get("/")
+    assert resp.status_code == 200
+    assert "Permissions-Policy" in resp.headers
+    assert resp.headers.get("Cross-Origin-Opener-Policy") == "same-origin"
+    assert resp.headers.get("Cross-Origin-Resource-Policy") == "same-origin"
+    assert resp.headers.get("X-DNS-Prefetch-Control") == "off"
+    assert "Werkzeug" not in resp.headers.get("Server", "")

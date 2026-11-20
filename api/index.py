@@ -11,7 +11,7 @@ from werkzeug.utils import secure_filename
 os.environ["MPLCONFIGDIR"] = os.path.join(tempfile.gettempdir(), "matplotlib")
 os.makedirs(os.environ["MPLCONFIGDIR"], exist_ok=True)
 
-from flask import Flask, request, render_template_string, redirect, url_for
+from flask import Flask, request, render_template_string
 from dotenv import load_dotenv
 
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -615,6 +615,25 @@ def analyze(path):
             goal=request.form.get("user_goal", ""),
         ), 429
 
+    if request.content_length and request.content_length > 5 * 1024 * 1024:
+        return render_template_string(
+            DASHBOARD_TEMPLATE,
+            report_raw="",
+            report_html="",
+            chart_b64="",
+            charts_b64=[],
+            cleaned_csv_b64="",
+            cleaned_preview_html="",
+            cleaned_shape="",
+            generated_code="",
+            analysis_output="",
+            kpi_cards=[],
+            retry_count=1,
+            dataset_label="Payload Too Large",
+            error="Payload Too Large: Maximum allowed upload size is 5 MB.",
+            goal=request.form.get("user_goal", "")[:500],
+        ), 413
+
     report_raw = ""
     report_html = ""
     chart_b64 = ""
@@ -697,7 +716,7 @@ def analyze(path):
         report_raw=report_raw,
         report_html=report_html,
         chart_b64=chart_b64,
-            charts_b64=charts_b64,
+        charts_b64=charts_b64,
         cleaned_csv_b64=cleaned_csv_b64,
         cleaned_preview_html=cleaned_preview_html,
         cleaned_shape=cleaned_shape,
