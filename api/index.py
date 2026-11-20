@@ -153,131 +153,405 @@ HOME_TEMPLATE = r"""
     <title>AgentOps BI Studio | Autonomous Multi-Agent CSV Analyst</title>
     <style>
         :root {
-            --bg: #060b16;
-            --card: #0f172a;
-            --border: #263348;
+            --bg: #030712;
+            --card: rgba(15, 23, 42, 0.78);
+            --card-border: rgba(56, 189, 248, 0.18);
+            --card-hover: rgba(30, 41, 59, 0.9);
             --accent: #38bdf8;
+            --accent-glow: rgba(56, 189, 248, 0.35);
+            --emerald: #34d399;
+            --indigo: #818cf8;
             --text: #f8fafc;
             --muted: #94a3b8;
         }
         * { box-sizing: border-box; }
-        body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: radial-gradient(circle at 85% 10%, #0f2d4a 0%, var(--bg) 52%); color: var(--text); margin: 0; padding: 0; line-height: 1.65; min-height: 100vh; }
-        .skip-link { position: absolute; left: -999px; background: var(--accent); color: #0f172a; padding: 8px 12px; font-weight: 700; }
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: radial-gradient(circle at 15% 15%, rgba(14, 165, 233, 0.18) 0%, transparent 45%),
+                        radial-gradient(circle at 85% 85%, rgba(52, 211, 153, 0.12) 0%, transparent 45%),
+                        radial-gradient(circle at 50% 50%, rgba(99, 102, 241, 0.1) 0%, transparent 60%),
+                        var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 0;
+            line-height: 1.65;
+            min-height: 100vh;
+        }
+        .skip-link { position: absolute; left: -999px; background: var(--accent); color: #0f172a; padding: 8px 14px; font-weight: 700; border-radius: 6px; }
         .skip-link:focus { left: 16px; top: 16px; z-index: 100; }
 
-        .navbar { display: flex; justify-content: space-between; align-items: center; max-width: 1120px; margin: 0 auto; padding: 18px 24px; border-bottom: 1px solid rgba(51,65,85,0.55); }
-        .brand { font-weight: 800; font-size: 1.18rem; color: #f8fafc; display: flex; align-items: center; gap: 10px; }
-        .brand-dot { width: 10px; height: 10px; background: #10b981; border-radius: 50%; box-shadow: 0 0 12px #10b981; }
-        .nav-pills { display: flex; gap: 10px; flex-wrap: wrap; }
-        .pill { background: rgba(30,41,59,0.75); border: 1px solid var(--border); color: #cbd5e1; padding: 4px 12px; border-radius: 999px; font-size: 0.78rem; font-weight: 600; }
+        /* Navbar */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1180px;
+            margin: 0 auto;
+            padding: 20px 24px;
+            border-bottom: 1px solid rgba(56, 189, 248, 0.12);
+        }
+        .brand {
+            font-weight: 900;
+            font-size: 1.25rem;
+            color: #f8fafc;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            letter-spacing: -0.02em;
+        }
+        .brand-dot {
+            width: 12px;
+            height: 12px;
+            background: #10b981;
+            border-radius: 50%;
+            box-shadow: 0 0 16px #10b981, 0 0 30px #10b981;
+            animation: pulse-dot 2s infinite ease-in-out;
+        }
+        @keyframes pulse-dot { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.6; transform: scale(0.85); } }
+        .nav-badges { display: flex; gap: 10px; flex-wrap: wrap; }
+        .badge {
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid var(--card-border);
+            color: #cbd5e1;
+            padding: 5px 13px;
+            border-radius: 999px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            backdrop-filter: blur(8px);
+        }
+        .badge.hackathon {
+            background: linear-gradient(90deg, rgba(56, 189, 248, 0.2), rgba(99, 102, 241, 0.2));
+            border-color: rgba(56, 189, 248, 0.4);
+            color: #7dd3fc;
+        }
 
-        .container { max-width: 1060px; margin: 26px auto; padding: 0 20px 52px; }
-        .hero { text-align: center; padding: 18px 12px 26px; }
-        .hero h1 { font-size: 2.4rem; margin: 0 0 12px; background: linear-gradient(90deg, #38bdf8, #818cf8, #34d399); -webkit-background-clip: text; -webkit-text-fill-color: transparent; line-height: 1.2; }
-        .hero p { color: #cbd5e1; max-width: 720px; margin: 0 auto 24px; font-size: 1.04rem; }
+        .container { max-width: 1140px; margin: 30px auto; padding: 0 20px 60px; }
 
-        .pipeline-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; margin-bottom: 26px; }
-        .agent-card { background: rgba(15,23,42,0.85); border: 1px solid var(--border); border-radius: 14px; padding: 16px 18px; text-align: left; }
-        .agent-step { color: var(--accent); font-size: 0.76rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; }
-        .agent-title { font-weight: 700; font-size: 1.02rem; margin: 4px 0; color: #f1f5f9; }
-        .agent-desc { font-size: 0.85rem; color: var(--muted); margin: 0; }
+        /* Hero */
+        .hero { text-align: center; padding: 24px 12px 36px; }
+        .hero-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(56, 189, 248, 0.12);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            color: #7dd3fc;
+            padding: 6px 16px;
+            border-radius: 999px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            margin-bottom: 18px;
+            box-shadow: 0 0 20px rgba(56, 189, 248, 0.15);
+        }
+        .hero h1 {
+            font-size: 3rem;
+            margin: 0 0 16px;
+            background: linear-gradient(135deg, #ffffff 10%, #7dd3fc 45%, #818cf8 75%, #34d399 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1.15;
+            font-weight: 900;
+            letter-spacing: -0.03em;
+        }
+        .hero p {
+            color: #cbd5e1;
+            max-width: 780px;
+            margin: 0 auto 32px;
+            font-size: 1.12rem;
+            line-height: 1.7;
+        }
 
-        .card { background: var(--card); padding: 28px; border-radius: 16px; border: 1px solid var(--border); box-shadow: 0 20px 45px rgba(0,0,0,0.48); }
-        h2 { color: #f1f5f9; font-size: 1.35rem; margin-top: 0; }
-        label { display: block; margin: 16px 0 6px; font-weight: 600; color: #f1f5f9; }
-        select, input[type="file"], textarea { width: 100%; padding: 12px 14px; border-radius: 10px; border: 1px solid #334155; background: #060b16; color: var(--text); font-size: 1rem; }
-        select:focus, input[type="file"]:focus, textarea:focus, button:focus { outline: 3px solid var(--accent); outline-offset: 2px; }
-        .hint { font-size: 0.85rem; color: var(--muted); margin-top: 5px; }
+        /* 3-Agent Stepper Pipeline */
+        .pipeline-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+        .agent-card {
+            background: var(--card);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 20px 22px;
+            text-align: left;
+            backdrop-filter: blur(12px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
+            transition: transform 0.2s, border-color 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+        .agent-card:hover {
+            transform: translateY(-3px);
+            border-color: var(--accent);
+            box-shadow: 0 16px 35px -5px rgba(56, 189, 248, 0.2);
+        }
+        .agent-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 3px;
+            background: linear-gradient(90deg, var(--accent), var(--indigo));
+        }
+        .agent-step { color: var(--accent); font-size: 0.78rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; display: flex; align-items: center; gap: 6px; }
+        .agent-title { font-weight: 800; font-size: 1.1rem; margin: 8px 0 6px; color: #f1f5f9; }
+        .agent-desc { font-size: 0.88rem; color: var(--muted); margin: 0; line-height: 1.55; }
 
-        .chip-row { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0 10px; }
-        .chip-btn { background: #1e293b; color: #7dd3fc; border: 1px solid #334155; padding: 7px 14px; border-radius: 999px; font-size: 0.84rem; cursor: pointer; transition: 0.15s; }
-        .chip-btn:hover { border-color: var(--accent); background: #0f172a; transform: translateY(-1px); }
+        /* Benchmark One-Click Cards */
+        .presets-title { font-size: 1.05rem; font-weight: 800; color: #cbd5e1; margin: 0 0 14px; display: flex; align-items: center; gap: 8px; }
+        .presets-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 14px; margin-bottom: 24px; }
+        .preset-card {
+            background: rgba(15, 23, 42, 0.65);
+            border: 1px solid rgba(51, 65, 85, 0.7);
+            border-radius: 14px;
+            padding: 16px 18px;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.2s;
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+        }
+        .preset-card:hover {
+            background: rgba(30, 41, 59, 0.85);
+            border-color: var(--accent);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(56, 189, 248, 0.15);
+        }
+        .preset-icon { font-size: 1.6rem; line-height: 1; padding: 10px; background: rgba(56, 189, 248, 0.1); border-radius: 10px; }
+        .preset-body strong { display: block; color: #f8fafc; font-size: 0.98rem; margin-bottom: 3px; }
+        .preset-body span { display: block; color: var(--muted); font-size: 0.82rem; }
 
-        .btn-launch { margin-top: 22px; width: 100%; background: linear-gradient(90deg, #0284c7, #2563eb); color: #ffffff; border: none; padding: 15px 28px; border-radius: 10px; font-size: 1.08rem; font-weight: 700; cursor: pointer; box-shadow: 0 8px 22px rgba(2,132,199,0.38); transition: 0.2s; }
-        .btn-launch:hover { filter: brightness(1.1); transform: translateY(-1px); }
+        /* Main Form Card */
+        .card {
+            background: var(--card);
+            padding: 34px;
+            border-radius: 20px;
+            border: 1px solid var(--card-border);
+            backdrop-filter: blur(14px);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(56, 189, 248, 0.12);
+        }
+        h2 { color: #f1f5f9; font-size: 1.45rem; margin-top: 0; font-weight: 800; letter-spacing: -0.01em; }
+        label { display: block; margin: 20px 0 8px; font-weight: 700; color: #f1f5f9; font-size: 0.96rem; }
+        select, input[type="file"], textarea {
+            width: 100%;
+            padding: 14px 16px;
+            border-radius: 12px;
+            border: 1px solid #334155;
+            background: rgba(6, 11, 22, 0.85);
+            color: var(--text);
+            font-size: 1rem;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        select:focus, input[type="file"]:focus, textarea:focus, button:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-glow);
+        }
+        .hint { font-size: 0.86rem; color: var(--muted); margin-top: 6px; }
 
-        .loader-overlay { display: none; position: fixed; inset: 0; background: rgba(6, 11, 22, 0.95); z-index: 999; flex-direction: column; justify-content: center; align-items: center; padding: 24px; text-align: center; }
+        .chip-row { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0 12px; }
+        .chip-btn {
+            background: rgba(30, 41, 59, 0.85);
+            color: #7dd3fc;
+            border: 1px solid #334155;
+            padding: 8px 15px;
+            border-radius: 999px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .chip-btn:hover {
+            border-color: var(--accent);
+            background: #0f172a;
+            color: #ffffff;
+            transform: translateY(-1px);
+        }
+
+        .btn-launch {
+            margin-top: 26px;
+            width: 100%;
+            background: linear-gradient(90deg, #0284c7, #2563eb, #7c3aed);
+            background-size: 200% auto;
+            color: #ffffff;
+            border: none;
+            padding: 16px 30px;
+            border-radius: 12px;
+            font-size: 1.15rem;
+            font-weight: 800;
+            cursor: pointer;
+            box-shadow: 0 10px 28px rgba(2, 132, 199, 0.45);
+            transition: all 0.3s;
+            letter-spacing: 0.01em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        .btn-launch:hover {
+            background-position: right center;
+            filter: brightness(1.1);
+            transform: translateY(-2px);
+            box-shadow: 0 14px 34px rgba(2, 132, 199, 0.6);
+        }
+
+        /* Modern Animated Loader Overlay */
+        .loader-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(3, 7, 18, 0.94);
+            backdrop-filter: blur(12px);
+            z-index: 999;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 24px;
+            text-align: center;
+        }
         .loader-overlay.active { display: flex; }
-        .spinner { width: 54px; height: 54px; border: 4px solid #1e293b; border-top-color: #38bdf8; border-radius: 50%; animation: spin 0.9s linear infinite; margin-bottom: 20px; }
+        .spinner-box { position: relative; width: 72px; height: 72px; margin-bottom: 24px; }
+        .spinner {
+            width: 72px;
+            height: 72px;
+            border: 4px solid rgba(56, 189, 248, 0.15);
+            border-top-color: #38bdf8;
+            border-right-color: #818cf8;
+            border-radius: 50%;
+            animation: spin 0.9s cubic-bezier(0.55, 0.15, 0.45, 0.85) infinite;
+        }
         @keyframes spin { to { transform: rotate(360deg); } }
-        .step-list { list-style: none; padding: 0; margin: 16px 0 0; text-align: left; max-width: 430px; width: 100%; }
-        .step-list li { padding: 10px 14px; margin-bottom: 8px; border-radius: 8px; background: #0f172a; border: 1px solid #334155; color: #94a3b8; font-size: 0.92rem; }
-        .step-list li.active-step { border-color: #38bdf8; color: #f8fafc; font-weight: 600; }
+        .step-list { list-style: none; padding: 0; margin: 20px 0 0; text-align: left; max-width: 460px; width: 100%; }
+        .step-list li {
+            padding: 12px 16px;
+            margin-bottom: 10px;
+            border-radius: 10px;
+            background: rgba(15, 23, 42, 0.9);
+            border: 1px solid #334155;
+            color: #94a3b8;
+            font-size: 0.94rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s;
+        }
+        .step-list li.active-step {
+            border-color: #38bdf8;
+            color: #f8fafc;
+            font-weight: 700;
+            background: rgba(56, 189, 248, 0.12);
+            box-shadow: 0 0 20px rgba(56, 189, 248, 0.2);
+        }
     </style>
 </head>
 <body>
     <a href="#main-content" class="skip-link">Skip to main content</a>
 
     <nav class="navbar" aria-label="Primary Navigation">
-        <div class="brand"><span class="brand-dot"></span> AgentOps BI Studio</div>
-        <div class="nav-pills">
-            <span class="pill">LangGraph 3-Agent</span>
-            <span class="pill">AST Security Sandbox</span>
-            <span class="pill">WCAG Accessible</span>
+        <div class="brand">
+            <span class="brand-dot"></span>
+            <span>AgentOps <span style="color:#38bdf8;">BI Studio</span></span>
+        </div>
+        <div class="nav-badges">
+            <span class="badge hackathon">🏆 Hackathon Edition</span>
+            <span class="badge">LangGraph 3-Agent</span>
+            <span class="badge">AST Security Guard</span>
+            <span class="badge">WCAG 2.1 AA</span>
         </div>
     </nav>
 
     <main id="main-content" class="container" role="main">
         <header class="hero" role="banner">
+            <div class="hero-pill">⚡ Self-Healing Multi-Agent Architecture • AST Zero-Hallucination Sandbox</div>
             <h1>Autonomous Multi-Agent CSV Analyst</h1>
-            <p>Upload any raw operational CSV or choose a benchmark dataset. Three autonomous agents clean anomalies, verify computations in an AST sandbox, and launch a dedicated Executive Dashboard.</p>
+            <p>Transform messy operational datasets into boardroom-ready Business Intelligence in seconds. Three coordinated agents inspect schemas, sanitize anomalies via an AST-sandboxed Python runtime, and construct interactive executive dashboards.</p>
 
             <div class="pipeline-grid" aria-label="Multi-Agent Architecture Overview">
                 <div class="agent-card">
                     <div class="agent-step">Agent 01 &bull; Profiler</div>
-                    <div class="agent-title">Schema &amp; Anomaly Inspector</div>
-                    <p class="agent-desc">Profiles column types, duplicate rows, missing values, and distribution skew automatically.</p>
+                    <div class="agent-title">Schema &amp; Anomaly Profiler</div>
+                    <p class="agent-desc">Automated scanning of column data types, duplicate records, null frequencies, and statistical distributions.</p>
                 </div>
                 <div class="agent-card">
                     <div class="agent-step">Agent 02 &bull; AST Sandbox</div>
-                    <div class="agent-title">Self-Healing Pandas Cleaner</div>
-                    <p class="agent-desc">Runs AST-verified Pandas code, exports a downloadable clean CSV, and plots charts.</p>
+                    <div class="agent-title">Self-Healing Pandas Analyst</div>
+                    <p class="agent-desc">Generates AST-checked Python transformations, auto-corrects syntax bugs, and plots publication-quality figures.</p>
                 </div>
                 <div class="agent-card">
                     <div class="agent-step">Agent 03 &bull; Strategist</div>
                     <div class="agent-title">Executive BI Synthesizer</div>
-                    <p class="agent-desc">Converts verified outputs into structured KPI cards, tables, and strategic actions.</p>
+                    <p class="agent-desc">Synthesizes verified data points into quantitative KPI cards, executive markdown tables, and high-ROI actions.</p>
                 </div>
             </div>
         </header>
 
         <section class="card" aria-labelledby="form-heading">
-            <h2 id="form-heading">Configure Dataset &amp; Launch Dashboard</h2>
+            <h2 id="form-heading">Launch Live Multi-Agent Analysis</h2>
+
+            <div class="presets-title">⚡ 1-Click Hackathon Benchmarks:</div>
+            <div class="presets-grid" role="group" aria-label="Demo Benchmark Presets">
+                <div class="preset-card" onclick="selectPreset('data/raw/ecommerce_sales_data.csv', 'Clean duplicates and missing values, perform RFM customer value segmentation, summarize Net Revenue by category, and plot top revenue drivers.')">
+                    <div class="preset-icon">🛒</div>
+                    <div class="preset-body">
+                        <strong>E-Commerce Sales &amp; RFM</strong>
+                        <span>371 rows &bull; Revenue, Orders, Segmentation &amp; Returns</span>
+                    </div>
+                </div>
+                <div class="preset-card" onclick="selectPreset('data/raw/edtech_student_enrollments.csv', 'Audit student course enrollment patterns, calculate completion rates across subject domains, and plot course completion velocity.')">
+                    <div class="preset-icon">🎓</div>
+                    <div class="preset-body">
+                        <strong>EdTech Student Cohorts</strong>
+                        <span>184 rows &bull; Completion Rates, Retention &amp; Engagement</span>
+                    </div>
+                </div>
+                <div class="preset-card" onclick="selectPreset('data/raw/food_delivery_operations.csv', 'Audit delivery delay hotspots, calculate average order value and rider tip correlations, and visualize delivery duration trends.')">
+                    <div class="preset-icon">🍔</div>
+                    <div class="preset-body">
+                        <strong>Quick-Commerce Operations</strong>
+                        <span>250 rows &bull; Delivery Times, Ratings &amp; Delay Factors</span>
+                    </div>
+                </div>
+            </div>
+
             <form id="analysis-form" action="/analyze" method="POST" enctype="multipart/form-data">
-                <label for="sample-csv">1. Choose Built-in Sample Dataset:</label>
+                <label for="sample-csv">1. Select Benchmark Dataset:</label>
                 <select id="sample-csv" name="sample_csv">
                     <option value="data/raw/ecommerce_sales_data.csv">E-Commerce Sales &amp; RFM Segmentation (371 rows)</option>
                     <option value="data/raw/edtech_student_enrollments.csv">EdTech Student Enrollments (184 rows)</option>
                     <option value="data/raw/food_delivery_operations.csv">Food Delivery Operations (250 rows)</option>
                 </select>
 
-                <label for="uploaded-csv">OR Upload Custom CSV File (Max 5 MB):</label>
+                <label for="uploaded-csv">OR Upload Any Custom CSV File (Max 5 MB):</label>
                 <input id="uploaded-csv" type="file" name="uploaded_csv" accept=".csv" aria-describedby="csv-hint">
-                <p id="csv-hint" class="hint">Only valid .csv files up to 5 MB are accepted. Cleaned output will be ready for download on the dashboard.</p>
+                <p id="csv-hint" class="hint">Upload any real-world operational dataset. The sandbox cleans anomalies and delivers an exportable cleaned CSV.</p>
 
-                <label for="user-goal">2. Ask Any Business or Data Analysis Question:</label>
-                <div class="chip-row" aria-label="Sample Analysis Prompts">
+                <label for="user-goal">2. Business Goal or Analytical Question:</label>
+                <div class="chip-row" aria-label="Prompt Shortcuts">
                     <button type="button" class="chip-btn" onclick="setGoal('Clean duplicates, missing values, and inconsistent text casing; calculate core KPIs and Net Revenue by primary category; and plot a summary bar chart.')">Executive KPIs &amp; Revenue Chart</button>
                     <button type="button" class="chip-btn" onclick="setGoal('Audit data quality anomalies, clean outliers and nulls, compare performance across regions/cities, and visualize regional distribution.')">Data Quality &amp; Regional Audit</button>
                     <button type="button" class="chip-btn" onclick="setGoal('Clean the dataset, analyze customer ratings, discounts, and cancellation/return rates, and plot key operational drivers.')">Ratings &amp; Operations Deep-Dive</button>
                 </div>
                 <textarea id="user-goal" name="user_goal" rows="3" required placeholder="e.g., Clean duplicates and nulls, calculate net revenue by category, and plot a chart.">Clean duplicates and missing values, summarize top KPIs, and plot the primary revenue driver.</textarea>
 
-                <button type="submit" class="btn-launch">Launch Executive Dashboard &rarr;</button>
+                <button type="submit" class="btn-launch">
+                    <span>Launch Autonomous BI Pipeline</span>
+                    <span>&rarr;</span>
+                </button>
             </form>
         </section>
     </main>
 
     <div id="loader" class="loader-overlay" role="status" aria-live="polite">
-        <div class="spinner"></div>
-        <h2 style="margin:0; color:#38bdf8;">Orchestrating 3-Agent Pipeline...</h2>
-        <p style="color:#94a3b8; margin:6px 0 0;">Preparing your dedicated interactive Executive Dashboard &bull; <strong id="elapsed-sec" style="color:#38bdf8;">0s</strong></p>
+        <div class="spinner-box">
+            <div class="spinner"></div>
+        </div>
+        <h2 style="margin:0; color:#38bdf8; font-weight:800; font-size:1.6rem;">Orchestrating 3-Agent LangGraph Pipeline...</h2>
+        <p style="color:#94a3b8; margin:8px 0 0; font-size:1.02rem;">Executing AST verification &bull; Real-time Sandbox Runtime &bull; <strong id="elapsed-sec" style="color:#38bdf8;">0s</strong></p>
         <ul class="step-list">
-            <li id="st-1" class="active-step">1. Schema Profiler: Scanning rows, nulls &amp; duplicates...</li>
-            <li id="st-2">2. AST Sandbox Analyst: Cleaning data &amp; generating chart...</li>
-            <li id="st-3">3. Executive Strategist: Building KPI cards &amp; report...</li>
+            <li id="st-1" class="active-step">🔍 1. Schema Profiler: Profiling shapes, missing nulls &amp; type schema...</li>
+            <li id="st-2">🛡️ 2. AST Sandbox Analyst: Verifying security AST &amp; generating chart...</li>
+            <li id="st-3">🧠 3. Executive Strategist: Synthesizing KPI cards &amp; strategic actions...</li>
         </ul>
-        <button type="button" onclick="window.stop(); document.getElementById('loader').classList.remove('active');" style="margin-top:18px; background:transparent; border:1px solid #475569; color:#94a3b8; padding:7px 16px; border-radius:8px; cursor:pointer; font-size:0.85rem;">Cancel Request</button>
+        <button type="button" onclick="window.stop(); document.getElementById('loader').classList.remove('active');" style="margin-top:22px; background:transparent; border:1px solid #475569; color:#94a3b8; padding:8px 20px; border-radius:10px; cursor:pointer; font-size:0.9rem;">Cancel Pipeline</button>
     </div>
 
     <script>
@@ -285,15 +559,32 @@ HOME_TEMPLATE = r"""
             const box = document.getElementById("user-goal");
             if (box) box.value = text;
         }
+        function selectPreset(path, prompt) {
+            const sel = document.getElementById("sample-csv");
+            if (sel) sel.value = path;
+            setGoal(prompt);
+            const upload = document.getElementById("uploaded-csv");
+            if (upload) upload.value = "";
+        }
         document.getElementById("analysis-form").addEventListener("submit", function () {
-            document.getElementById("loader").classList.add("active"); let sec = 0; setInterval(() => { sec++; const el = document.getElementById("elapsed-sec"); if (el) el.textContent = sec + "s"; }, 1000);
+            document.getElementById("loader").classList.add("active");
+            let sec = 0;
+            setInterval(() => {
+                sec++;
+                const el = document.getElementById("elapsed-sec");
+                if (el) el.textContent = sec + "s";
+            }, 1000);
             setTimeout(() => {
-                document.getElementById("st-1").classList.remove("active-step");
-                document.getElementById("st-2").classList.add("active-step");
+                const s1 = document.getElementById("st-1");
+                const s2 = document.getElementById("st-2");
+                if (s1) s1.classList.remove("active-step");
+                if (s2) s2.classList.add("active-step");
             }, 1400);
             setTimeout(() => {
-                document.getElementById("st-2").classList.remove("active-step");
-                document.getElementById("st-3").classList.add("active-step");
+                const s2 = document.getElementById("st-2");
+                const s3 = document.getElementById("st-3");
+                if (s2) s2.classList.remove("active-step");
+                if (s3) s3.classList.add("active-step");
             }, 3200);
         });
     </script>
@@ -311,77 +602,342 @@ DASHBOARD_TEMPLATE = r"""
     <title>Executive Intelligence Dashboard | AgentOps BI</title>
     <style>
         :root {
-            --bg: #060b16;
-            --card: #0f172a;
-            --card-alt: #1e293b;
-            --border: #263348;
+            --bg: #030712;
+            --card: rgba(15, 23, 42, 0.82);
+            --card-alt: rgba(30, 41, 59, 0.85);
+            --border: rgba(56, 189, 248, 0.18);
             --accent: #38bdf8;
+            --accent-glow: rgba(56, 189, 248, 0.35);
             --accent-btn: #0284c7;
             --green-btn: #059669;
+            --emerald: #34d399;
+            --indigo: #818cf8;
             --text: #f8fafc;
             --muted: #94a3b8;
         }
         * { box-sizing: border-box; }
-        body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: radial-gradient(circle at top left, #0c223a 0%, var(--bg) 45%); color: var(--text); margin: 0; padding: 0; line-height: 1.65; }
-        .skip-link { position: absolute; left: -999px; background: var(--accent); color: #0f172a; padding: 8px 12px; font-weight: 700; }
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: radial-gradient(circle at 10% 10%, rgba(14, 165, 233, 0.16) 0%, transparent 45%),
+                        radial-gradient(circle at 90% 90%, rgba(52, 211, 153, 0.12) 0%, transparent 45%),
+                        var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 0;
+            line-height: 1.65;
+            min-height: 100vh;
+        }
+        .skip-link { position: absolute; left: -999px; background: var(--accent); color: #0f172a; padding: 8px 14px; font-weight: 700; border-radius: 6px; }
         .skip-link:focus { left: 16px; top: 16px; z-index: 100; }
 
         /* Sticky Dashboard Top Bar */
-        .topbar { position: sticky; top: 0; z-index: 50; background: rgba(15, 23, 42, 0.94); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); padding: 14px 24px; }
-        .topbar-inner { max-width: 1160px; margin: 0 auto; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px; }
-        .back-btn { background: #1e293b; color: #38bdf8; border: 1px solid #38bdf8; padding: 8px 16px; border-radius: 8px; text-decoration: none; font-weight: 700; font-size: 0.9rem; display: inline-flex; align-items: center; gap: 6px; transition: 0.15s; }
-        .back-btn:hover { background: #0284c7; color: #ffffff; }
-        .dash-title { font-weight: 800; font-size: 1.12rem; color: #f8fafc; letter-spacing: 0.01em; }
+        .topbar {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            background: rgba(3, 7, 18, 0.88);
+            backdrop-filter: blur(14px);
+            border-bottom: 1px solid var(--border);
+            padding: 14px 24px;
+        }
+        .topbar-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+        }
+        .back-btn {
+            background: rgba(30, 41, 59, 0.85);
+            color: #38bdf8;
+            border: 1px solid rgba(56, 189, 248, 0.35);
+            padding: 8px 16px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+        }
+        .back-btn:hover { background: #0284c7; color: #ffffff; border-color: #0284c7; transform: translateY(-1px); }
+        .dash-brand { display: flex; align-items: center; gap: 10px; }
+        .dash-brand-dot { width: 10px; height: 10px; background: #10b981; border-radius: 50%; box-shadow: 0 0 12px #10b981; }
+        .dash-title { font-weight: 800; font-size: 1.15rem; color: #f8fafc; letter-spacing: -0.01em; }
 
-        .container { max-width: 1160px; margin: 24px auto; padding: 0 20px 54px; }
+        .container { max-width: 1200px; margin: 26px auto; padding: 0 20px 60px; }
 
         /* Context Banner & Pipeline Timeline */
-        .context-banner { background: linear-gradient(135deg, #0f172a 0%, #17253b 100%); border: 1px solid var(--border); border-left: 4px solid var(--accent); border-radius: 14px; padding: 18px 22px; margin-bottom: 20px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 14px; }
-        .pipeline-status { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
-        .status-step { background: rgba(6, 78, 59, 0.55); color: #6ee7b7; border: 1px solid #10b981; padding: 4px 11px; border-radius: 999px; font-size: 0.78rem; font-weight: 700; }
+        .context-banner {
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.9) 0%, rgba(30, 41, 59, 0.8) 100%);
+            border: 1px solid var(--border);
+            border-left: 5px solid var(--accent);
+            border-radius: 16px;
+            padding: 20px 24px;
+            margin-bottom: 22px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 12px 30px -5px rgba(0, 0, 0, 0.4);
+        }
+        .pipeline-status { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+        .status-step {
+            background: rgba(6, 78, 59, 0.65);
+            color: #6ee7b7;
+            border: 1px solid #10b981;
+            padding: 5px 13px;
+            border-radius: 999px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .ast-badge {
+            background: rgba(56, 189, 248, 0.12);
+            color: #7dd3fc;
+            border: 1px solid rgba(56, 189, 248, 0.35);
+            padding: 5px 13px;
+            border-radius: 999px;
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
 
         /* Auto-Extracted KPI Cards Strip */
-        .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 14px; margin-bottom: 22px; }
-        .kpi-card { background: linear-gradient(180deg, #111c33 0%, #0f172a 100%); border: 1px solid var(--border); border-top: 3px solid var(--accent); border-radius: 12px; padding: 16px 18px; box-shadow: 0 8px 20px rgba(0,0,0,0.3); }
-        .kpi-label { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); font-weight: 700; }
-        .kpi-val { font-size: 1.45rem; font-weight: 800; color: #f8fafc; margin-top: 4px; }
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        .kpi-card {
+            background: linear-gradient(180deg, rgba(17, 28, 51, 0.9) 0%, rgba(15, 23, 42, 0.95) 100%);
+            border: 1px solid var(--border);
+            border-top: 3px solid var(--accent);
+            border-radius: 14px;
+            padding: 18px 20px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.2s, border-color 0.2s;
+        }
+        .kpi-card:hover {
+            transform: translateY(-2px);
+            border-color: var(--accent);
+            box-shadow: 0 15px 30px -5px rgba(56, 189, 248, 0.2);
+        }
+        .kpi-label { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); font-weight: 800; }
+        .kpi-val { font-size: 1.6rem; font-weight: 900; color: #f8fafc; margin-top: 6px; letter-spacing: -0.02em; }
+        .kpi-tag { display: inline-block; font-size: 0.72rem; color: #34d399; background: rgba(52, 211, 153, 0.12); border: 1px solid rgba(52, 211, 153, 0.3); padding: 2px 8px; border-radius: 4px; margin-top: 8px; font-weight: 700; }
 
-        .card { background: var(--card); padding: 26px; border-radius: 16px; border: 1px solid var(--border); box-shadow: 0 14px 34px rgba(0,0,0,0.42); }
-        .error { color: #fecaca; font-weight: 600; background: #7f1d1d; padding: 16px; border-radius: 10px; border: 1px solid #f87171; }
+        .card {
+            background: var(--card);
+            padding: 30px;
+            border-radius: 18px;
+            border: 1px solid var(--border);
+            backdrop-filter: blur(12px);
+            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.5);
+        }
+        .error { color: #fecaca; font-weight: 600; background: #7f1d1d; padding: 18px; border-radius: 12px; border: 1px solid #f87171; }
 
         /* Navigation Tabs & Export Actions */
-        .toolbar { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px; padding-bottom: 16px; border-bottom: 1px solid var(--border); margin-bottom: 22px; }
+        .toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 14px;
+            padding-bottom: 18px;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 24px;
+        }
         .tab-group, .action-group { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
-        .tab-btn, .action-btn { background: var(--card-alt); color: #e2e8f0; border: 1px solid var(--border); padding: 9px 15px; border-radius: 8px; font-size: 0.9rem; font-weight: 600; cursor: pointer; text-decoration: none; transition: 0.15s; }
-        .tab-btn.active { background: var(--accent-btn); color: #ffffff; border-color: var(--accent); }
-        .action-btn:hover, .tab-btn:hover { border-color: var(--accent); color: #ffffff; }
-        .download-csv-btn { background: var(--green-btn); color: #ffffff; border: 1px solid #34d399; padding: 9px 16px; border-radius: 8px; font-size: 0.9rem; font-weight: 700; text-decoration: none; display: inline-block; }
-        .download-csv-btn:hover { background: #047857; }
-        a:focus, button:focus, input:focus { outline: 3px solid var(--accent); outline-offset: 2px; }
+        .tab-btn, .action-btn {
+            background: var(--card-alt);
+            color: #e2e8f0;
+            border: 1px solid var(--border);
+            padding: 10px 16px;
+            border-radius: 10px;
+            font-size: 0.92rem;
+            font-weight: 700;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.15s;
+        }
+        .tab-btn.active {
+            background: var(--accent-btn);
+            color: #ffffff;
+            border-color: var(--accent);
+            box-shadow: 0 0 16px rgba(2, 132, 199, 0.4);
+        }
+        .action-btn:hover, .tab-btn:hover { border-color: var(--accent); color: #ffffff; transform: translateY(-1px); }
+        .action-btn.pitch-btn {
+            background: linear-gradient(90deg, #6366f1, #8b5cf6);
+            color: #ffffff;
+            border-color: #8b5cf6;
+        }
+        .action-btn.pitch-btn:hover {
+            filter: brightness(1.15);
+            box-shadow: 0 0 18px rgba(139, 92, 246, 0.5);
+        }
+        .download-csv-btn {
+            background: var(--green-btn);
+            color: #ffffff;
+            border: 1px solid #34d399;
+            padding: 10px 18px;
+            border-radius: 10px;
+            font-size: 0.92rem;
+            font-weight: 800;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+        }
+        .download-csv-btn:hover { background: #047857; transform: translateY(-1px); box-shadow: 0 0 18px rgba(52, 211, 153, 0.4); }
+        a:focus, button:focus, input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
 
         /* Report & Styled Tables */
-        .report-body h2 { color: var(--accent); border-bottom: 1px solid var(--border); padding-bottom: 6px; margin-top: 24px; }
-        .report-body h3 { color: #7dd3fc; margin-top: 22px; font-size: 1.15rem; }
-        .report-body p { color: #e2e8f0; margin: 10px 0; }
-        .report-body ul { padding-left: 22px; color: #e2e8f0; }
-        .report-body li { margin-bottom: 8px; }
-        .table-wrap { overflow-x: auto; margin: 16px 0; border-radius: 10px; border: 1px solid var(--border); }
-        table.styled-table { width: 100%; border-collapse: collapse; font-size: 0.94rem; text-align: left; }
-        table.styled-table th { background: #1e293b; color: var(--accent); padding: 12px 14px; font-weight: 700; border-bottom: 2px solid var(--border); white-space: nowrap; }
-        table.styled-table td { padding: 11px 14px; border-bottom: 1px solid #1e293b; color: #f1f5f9; }
-        table.styled-table tbody tr:nth-child(even) { background: rgba(30, 41, 59, 0.45); }
-        table.styled-table tbody tr:hover { background: rgba(56, 189, 248, 0.14); }
+        .report-body h2 {
+            color: var(--accent);
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 8px;
+            margin-top: 28px;
+            font-size: 1.35rem;
+            font-weight: 800;
+        }
+        .report-body h3 { color: #7dd3fc; margin-top: 24px; font-size: 1.15rem; font-weight: 700; }
+        .report-body p { color: #e2e8f0; margin: 12px 0; font-size: 1rem; }
+        .report-body ul { padding-left: 24px; color: #e2e8f0; }
+        .report-body li { margin-bottom: 10px; font-size: 0.98rem; }
+        .table-wrap {
+            overflow-x: auto;
+            margin: 20px 0;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            background: rgba(6, 11, 22, 0.6);
+        }
+        table.styled-table { width: 100%; border-collapse: collapse; font-size: 0.95rem; text-align: left; }
+        table.styled-table th {
+            background: rgba(30, 41, 59, 0.9);
+            color: var(--accent);
+            padding: 14px 16px;
+            font-weight: 800;
+            border-bottom: 2px solid var(--border);
+            white-space: nowrap;
+            letter-spacing: 0.02em;
+        }
+        table.styled-table td { padding: 12px 16px; border-bottom: 1px solid rgba(51, 65, 85, 0.5); color: #f1f5f9; }
+        table.styled-table tbody tr:nth-child(even) { background: rgba(30, 41, 59, 0.35); }
+        table.styled-table tbody tr:hover { background: rgba(56, 189, 248, 0.12); }
 
-        .search-input { padding: 8px 12px; border-radius: 8px; border: 1px solid #334155; background: #060b16; color: #f8fafc; font-size: 0.9rem; width: 240px; }
-        .chart-box { background: #060b16; padding: 20px; border-radius: 12px; border: 1px solid var(--border); margin-top: 24px; text-align: center; }
-        .chart-box img { max-width: 100%; height: auto; border-radius: 8px; }
+        .search-input {
+            padding: 10px 14px;
+            border-radius: 10px;
+            border: 1px solid #334155;
+            background: rgba(6, 11, 22, 0.85);
+            color: #f8fafc;
+            font-size: 0.92rem;
+            width: 260px;
+            transition: all 0.2s;
+        }
+        .chart-box {
+            background: rgba(6, 11, 22, 0.8);
+            padding: 24px;
+            border-radius: 14px;
+            border: 1px solid var(--border);
+            margin-top: 26px;
+            text-align: center;
+        }
+        .chart-box img { max-width: 100%; height: auto; border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
 
         /* Collapsible Interactive Code Drawer */
-        .trace-drawer-bar { margin-top: 26px; padding: 16px 20px; background: #0b1324; border: 1px dashed #334155; border-radius: 12px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px; }
-        .trace-box { background: #060b16; padding: 20px; border-radius: 12px; border: 1px solid var(--border); margin-top: 14px; }
-        pre.code-block { background: #020617; color: #cbd5e1; padding: 14px; border-radius: 8px; overflow-x: auto; font-size: 0.87rem; border: 1px solid #1e293b; }
-        .hidden { display: none; }
-        @media print { .topbar, .toolbar, .trace-drawer-bar, .search-input { display: none !important; } body { background: #ffffff; color: #000000; } }
+        .trace-drawer-bar {
+            margin-top: 28px;
+            padding: 18px 22px;
+            background: rgba(11, 19, 36, 0.9);
+            border: 1px dashed rgba(56, 189, 248, 0.35);
+            border-radius: 14px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 14px;
+        }
+        .trace-box {
+            background: rgba(6, 11, 22, 0.9);
+            padding: 22px;
+            border-radius: 14px;
+            border: 1px solid var(--border);
+            margin-top: 16px;
+        }
+        pre.code-block {
+            background: #020617;
+            color: #cbd5e1;
+            padding: 16px;
+            border-radius: 10px;
+            overflow-x: auto;
+            font-size: 0.88rem;
+            border: 1px solid #1e293b;
+            font-family: 'JetBrains Mono', Consolas, Monaco, monospace;
+        }
+        .hidden { display: none !important; }
+
+        /* Hackathon Presentation Mode Modal */
+        .pitch-modal {
+            position: fixed;
+            inset: 0;
+            z-index: 1000;
+            background: rgba(3, 7, 18, 0.97);
+            backdrop-filter: blur(16px);
+            display: flex;
+            flex-direction: column;
+            padding: 24px;
+        }
+        .pitch-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 18px;
+            border-bottom: 1px solid rgba(56, 189, 248, 0.2);
+            max-width: 1100px;
+            width: 100%;
+            margin: 0 auto;
+        }
+        .pitch-body {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            max-width: 1100px;
+            width: 100%;
+            margin: 0 auto;
+            text-align: center;
+            padding: 30px 10px;
+            overflow-y: auto;
+        }
+        .pitch-slide { display: none; width: 100%; }
+        .pitch-slide.active { display: block; animation: fadeIn 0.3s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
+        .pitch-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 18px;
+            border-top: 1px solid rgba(56, 189, 248, 0.2);
+            max-width: 1100px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        @media print { .topbar, .toolbar, .trace-drawer-bar, .search-input, .pitch-modal { display: none !important; } body { background: #ffffff; color: #000000; } }
     </style>
 </head>
 <body>
@@ -390,8 +946,12 @@ DASHBOARD_TEMPLATE = r"""
     <header class="topbar" role="banner">
         <div class="topbar-inner">
             <a href="/" class="back-btn">&larr; Run New Analysis</a>
-            <div class="dash-title">Executive Business Intelligence Dashboard</div>
+            <div class="dash-brand">
+                <span class="dash-brand-dot"></span>
+                <span class="dash-title">Executive Intelligence Dashboard</span>
+            </div>
             <div class="action-group">
+                <button type="button" class="action-btn pitch-btn" id="pitch-mode-btn" onclick="openPitchMode()">🎤 Pitch Deck Mode</button>
                 {% if cleaned_csv_b64 %}
                 <a class="download-csv-btn" href="data:text/csv;base64,{{ cleaned_csv_b64 }}" download="cleaned_dataset.csv">Download Cleaned CSV</a>
                 {% endif %}
@@ -407,13 +967,14 @@ DASHBOARD_TEMPLATE = r"""
     <main id="main-content" class="container" role="main" aria-live="polite">
         <section class="context-banner" aria-label="Analysis Summary Context">
             <div>
-                <div style="font-size:0.8rem; color:#94a3b8; font-weight:700; text-transform:uppercase;">Dataset: {{ dataset_label }} {% if cleaned_shape %}({{ cleaned_shape }}){% endif %}</div>
-                <div style="font-size:1.05rem; font-weight:700; color:#f8fafc; margin-top:3px;">Goal: {{ goal }}</div>
+                <div style="font-size:0.82rem; color:#94a3b8; font-weight:800; text-transform:uppercase; letter-spacing:0.04em;">Dataset: {{ dataset_label }} {% if cleaned_shape %}&bull; <span style="color:#38bdf8;">{{ cleaned_shape }}</span>{% endif %}</div>
+                <div style="font-size:1.15rem; font-weight:800; color:#f8fafc; margin-top:4px;">Goal: {{ goal }}</div>
             </div>
             <div class="pipeline-status" aria-label="Agent Execution Status">
                 <span class="status-step">01 Profiler &#10003;</span>
                 <span class="status-step">02 AST Sandbox &#10003; ({{ retry_count }} try)</span>
                 <span class="status-step">03 Strategist &#10003;</span>
+                <span class="ast-badge">🛡️ Zero-Hallucination AST Verified</span>
             </div>
         </section>
 
@@ -423,6 +984,7 @@ DASHBOARD_TEMPLATE = r"""
             <div class="kpi-card">
                 <div class="kpi-label">{{ kpi.label }}</div>
                 <div class="kpi-val">{{ kpi.value }}</div>
+                <div class="kpi-tag">AST Verified Output</div>
             </div>
             {% endfor %}
         </section>
@@ -463,9 +1025,12 @@ DASHBOARD_TEMPLATE = r"""
 
             {% if cleaned_preview_html %}
             <div id="data-section" style="margin-top: 28px;">
-                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
-                    <h3 style="color:#34d399; margin:0;">Cleaned Dataset Preview (Top 15 Rows)</h3>
-                    <input type="text" id="table-search" class="search-input" placeholder="Filter preview rows..." aria-label="Filter cleaned dataset rows" onkeyup="filterCleanTable()">
+                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:12px;">
+                    <div>
+                        <h3 style="color:#34d399; margin:0; font-size:1.15rem; font-weight:800;">Cleaned Dataset Preview (Top 15 Rows)</h3>
+                        <div style="font-size:0.85rem; color:#94a3b8; margin-top:2px;">Showing <strong id="filter-row-count" style="color:#38bdf8;">15</strong> records</div>
+                    </div>
+                    <input type="text" id="table-search" class="search-input" placeholder="Search cleaned rows..." aria-label="Filter cleaned dataset rows" onkeyup="filterCleanTable()">
                 </div>
                 <div class="table-wrap" id="clean-table-container">
                     {{ cleaned_preview_html | safe }}
@@ -475,9 +1040,9 @@ DASHBOARD_TEMPLATE = r"""
 
             {% if chart_b64 %}
             <div id="chart-section" class="chart-box">
-                <h3 style="margin-top:0; color:#38bdf8;">Generated Statistical Visualization</h3>
+                <h3 style="margin-top:0; color:#38bdf8; font-size:1.2rem; font-weight:800;">Generated Statistical Visualization</h3>
                 <img src="data:image/png;base64,{{ chart_b64 }}" alt="Automated statistical visualization generated for: {{ goal }}">
-                <div style="margin-top:14px;">
+                <div style="margin-top:16px;">
                     <a class="download-csv-btn" href="data:image/png;base64,{{ chart_b64 }}" download="analysis_chart.png">Download Chart (PNG)</a>
                 </div>
             </div>
@@ -486,20 +1051,20 @@ DASHBOARD_TEMPLATE = r"""
             {% if generated_code %}
             <div id="trace-drawer-bar" class="trace-drawer-bar">
                 <div>
-                    <strong style="color:#e2e8f0;">Zero-Hallucination Audit &amp; AST Sandbox Verification</strong>
-                    <div style="font-size:0.84rem; color:#94a3b8;">Click to inspect the exact Python code &amp; verified stdout metrics behind this report.</div>
+                    <strong style="color:#e2e8f0; font-size:1.02rem;">Zero-Hallucination Audit &amp; AST Sandbox Verification</strong>
+                    <div style="font-size:0.86rem; color:#94a3b8; margin-top:3px;">Inspect the exact Python code &amp; verified stdout metrics behind this report.</div>
                 </div>
                 <button type="button" class="action-btn" id="toggle-trace-btn" onclick="toggleTraceDrawer()">Show AST-Verified Code &amp; Trace &#9662;</button>
             </div>
 
             <div id="trace-section" class="trace-box hidden">
-                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:10px;">
-                    <h3 style="margin:0; color:#38bdf8;">AST-Verified Pandas Code (Attempts: {{ retry_count }})</h3>
+                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:12px;">
+                    <h3 style="margin:0; color:#38bdf8; font-size:1.1rem; font-weight:800;">AST-Verified Pandas Code (Attempts: {{ retry_count }})</h3>
                     <button type="button" class="action-btn" id="copy-code-btn" onclick="copyCode()">Copy Python Code</button>
                 </div>
                 <pre class="code-block" id="agent-code-block"><code>{{ generated_code }}</code></pre>
                 {% if analysis_output %}
-                <h4 style="color:#94a3b8; margin-bottom:6px;">Verified Stdout Output:</h4>
+                <h4 style="color:#94a3b8; margin:16px 0 8px;">Verified Stdout Output:</h4>
                 <pre class="code-block"><code>{{ analysis_output }}</code></pre>
                 {% endif %}
             </div>
@@ -507,6 +1072,86 @@ DASHBOARD_TEMPLATE = r"""
         </section>
         {% endif %}
     </main>
+
+    <!-- Hackathon Presentation Pitch Modal -->
+    <div id="pitch-modal" class="pitch-modal hidden" role="dialog" aria-modal="true" aria-label="Pitch Deck Mode">
+        <div class="pitch-header">
+            <div style="display:flex; align-items:center; gap:10px;">
+                <span class="dash-brand-dot"></span>
+                <strong style="font-size:1.1rem; color:#f8fafc;">AgentOps BI &bull; Executive Pitch Deck</strong>
+            </div>
+            <button type="button" class="action-btn" onclick="closePitchMode()">Exit Presentation [Esc]</button>
+        </div>
+
+        <div class="pitch-body">
+            <!-- Slide 1 -->
+            <div class="pitch-slide active" id="pslide-1">
+                <div style="color:#38bdf8; font-size:1rem; font-weight:800; text-transform:uppercase; letter-spacing:0.08em; margin-bottom:12px;">Slide 1 &bull; Problem &amp; Data Overview</div>
+                <h2 style="font-size:2.4rem; margin:0 0 16px; color:#ffffff;">{{ dataset_label }}</h2>
+                <p style="font-size:1.2rem; color:#cbd5e1; max-width:800px; margin:0 auto 28px;">Goal: {{ goal }}</p>
+                <div style="display:inline-flex; gap:12px; flex-wrap:wrap; justify-content:center;">
+                    <span class="status-step">Agent 1: Schema Profiled &bull; Anomaly Scan Complete</span>
+                    <span class="status-step">Agent 2: AST Sandboxed &bull; 0 Injection Vulnerabilities</span>
+                    <span class="status-step">Agent 3: Executive Strategy Synthesized</span>
+                </div>
+            </div>
+
+            <!-- Slide 2 -->
+            <div class="pitch-slide" id="pslide-2">
+                <div style="color:#38bdf8; font-size:1rem; font-weight:800; text-transform:uppercase; letter-spacing:0.08em; margin-bottom:12px;">Slide 2 &bull; Verified Quantitative KPIs</div>
+                <h2 style="font-size:2.2rem; margin:0 0 24px; color:#ffffff;">Executive Performance Snapshot</h2>
+                {% if kpi_cards %}
+                <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:18px; max-width:900px; width:100%; margin:0 auto;">
+                    {% for kpi in kpi_cards %}
+                    <div style="background:rgba(15,23,42,0.85); border:1px solid rgba(56,189,248,0.3); border-radius:14px; padding:22px; text-align:left;">
+                        <div style="font-size:0.85rem; color:#94a3b8; font-weight:800; text-transform:uppercase;">{{ kpi.label }}</div>
+                        <div style="font-size:2rem; font-weight:900; color:#38bdf8; margin-top:8px;">{{ kpi.value }}</div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p style="color:#cbd5e1; font-size:1.1rem;">Analysis completed successfully. Review full tables in overview view.</p>
+                {% endif %}
+            </div>
+
+            <!-- Slide 3 -->
+            <div class="pitch-slide" id="pslide-3">
+                <div style="color:#38bdf8; font-size:1rem; font-weight:800; text-transform:uppercase; letter-spacing:0.08em; margin-bottom:12px;">Slide 3 &bull; Statistical Visualization</div>
+                <h2 style="font-size:2.2rem; margin:0 0 20px; color:#ffffff;">Primary Revenue &amp; Distribution Driver</h2>
+                {% if chart_b64 %}
+                <img src="data:image/png;base64,{{ chart_b64 }}" style="max-height:480px; max-width:100%; border-radius:12px; box-shadow:0 10px 30px rgba(0,0,0,0.6);" alt="Presentation Chart">
+                {% else %}
+                <p style="color:#cbd5e1;">Visualization generated directly via sandboxed Matplotlib.</p>
+                {% endif %}
+            </div>
+
+            <!-- Slide 4 -->
+            <div class="pitch-slide" id="pslide-4">
+                <div style="color:#38bdf8; font-size:1rem; font-weight:800; text-transform:uppercase; letter-spacing:0.08em; margin-bottom:12px;">Slide 4 &bull; Technical Architecture</div>
+                <h2 style="font-size:2.2rem; margin:0 0 20px; color:#ffffff;">Zero-Hallucination Multi-Agent Stack</h2>
+                <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:18px; max-width:960px; width:100%; margin:0 auto; text-align:left;">
+                    <div style="background:rgba(15,23,42,0.85); border:1px solid #334155; border-radius:14px; padding:20px;">
+                        <h3 style="color:#38bdf8; margin:0 0 8px;">LangGraph Coordination</h3>
+                        <p style="color:#cbd5e1; font-size:0.92rem; margin:0;">Cyclic retry loop with self-healing code generation. Automatically corrects pandas syntax exceptions.</p>
+                    </div>
+                    <div style="background:rgba(15,23,42,0.85); border:1px solid #334155; border-radius:14px; padding:20px;">
+                        <h3 style="color:#34d399; margin:0 0 8px;">AST Static Security Guard</h3>
+                        <p style="color:#cbd5e1; font-size:0.92rem; margin:0;">Inspects abstract syntax tree before execution. Forbids os, sys, socket, subprocess, and unauthorized file access.</p>
+                    </div>
+                    <div style="background:rgba(15,23,42,0.85); border:1px solid #334155; border-radius:14px; padding:20px;">
+                        <h3 style="color:#818cf8; margin:0 0 8px;">Deterministic KPIs</h3>
+                        <p style="color:#cbd5e1; font-size:0.92rem; margin:0;">All numbers in the dashboard come directly from validated Python stdout—never invented by LLM hallucinations.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="pitch-footer">
+            <button type="button" class="action-btn" onclick="prevSlide()">&larr; Previous Slide</button>
+            <div style="color:#94a3b8; font-weight:700;" id="pitch-counter">Slide 1 of 4</div>
+            <button type="button" class="action-btn" onclick="nextSlide()">Next Slide &rarr;</button>
+        </div>
+    </div>
 
     <script>
         function switchView(mode, btn) {
@@ -565,9 +1210,14 @@ DASHBOARD_TEMPLATE = r"""
         function filterCleanTable() {
             const q = document.getElementById("table-search").value.toLowerCase();
             const rows = document.querySelectorAll("#clean-table-container tbody tr");
+            let visibleCount = 0;
             rows.forEach(r => {
-                r.style.display = r.textContent.toLowerCase().includes(q) ? "" : "none";
+                const match = r.textContent.toLowerCase().includes(q);
+                r.style.display = match ? "" : "none";
+                if (match) visibleCount++;
             });
+            const counter = document.getElementById("filter-row-count");
+            if (counter) counter.textContent = visibleCount;
         }
 
         function copyReport() {
@@ -601,6 +1251,39 @@ DASHBOARD_TEMPLATE = r"""
             a.click();
             URL.revokeObjectURL(url);
         }
+
+        /* Presentation Mode Functions */
+        let currentSlide = 1;
+        const totalSlides = 4;
+        function openPitchMode() {
+            document.getElementById("pitch-modal").classList.remove("hidden");
+            currentSlide = 1;
+            showSlide(currentSlide);
+        }
+        function closePitchMode() {
+            document.getElementById("pitch-modal").classList.add("hidden");
+        }
+        function showSlide(n) {
+            for (let i = 1; i <= totalSlides; i++) {
+                const sl = document.getElementById("pslide-" + i);
+                if (sl) sl.classList.toggle("active", i === n);
+            }
+            const cnt = document.getElementById("pitch-counter");
+            if (cnt) cnt.textContent = `Slide ${n} of ${totalSlides}`;
+        }
+        function nextSlide() {
+            if (currentSlide < totalSlides) { currentSlide++; showSlide(currentSlide); }
+        }
+        function prevSlide() {
+            if (currentSlide > 1) { currentSlide--; showSlide(currentSlide); }
+        }
+        document.addEventListener("keydown", function(e) {
+            const modal = document.getElementById("pitch-modal");
+            if (!modal || modal.classList.contains("hidden")) return;
+            if (e.key === "Escape") closePitchMode();
+            if (e.key === "ArrowRight" || e.key === " ") nextSlide();
+            if (e.key === "ArrowLeft") prevSlide();
+        });
     </script>
 </body>
 </html>

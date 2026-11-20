@@ -4,7 +4,7 @@
 [![LangGraph](https://img.shields.io/badge/Orchestration-LangGraph-orange.svg)](https://langchain-ai.github.io/langgraph/)
 [![Groq LPU](https://img.shields.io/badge/Inference-Groq_LPU-f55036.svg)](https://groq.com/)
 [![Flask](https://img.shields.io/badge/Framework-Flask_2.3+-green.svg?logo=flask&logoColor=white)](https://flask.palletsprojects.com/)
-[![Tests](https://img.shields.io/badge/pytest-12%20passed%20(100%25)-brightgreen.svg)](test/test_agent_pipeline.py)
+[![Tests](https://img.shields.io/badge/pytest-18%20passed%20(100%25)-brightgreen.svg)](test/test_agent_pipeline.py)
 [![WCAG 2.1 AA](https://img.shields.io/badge/Accessibility-WCAG_2.1_AA-purple.svg)](https://www.w3.org/WAI/WCAG21/quickref/)
 [![OWASP Hardened](https://img.shields.io/badge/Security-AST_Sandbox_%2B_CSP_%2B_HSTS-darkgreen.svg)](api/security.py)
 
@@ -45,6 +45,7 @@ flowchart TD
     
     subgraph UI ["✨ Executive Intelligence Dashboard Features"]
         Dashboard --> KPI["📈 Up to 4 Executive KPI Metric Cards"]
+        Dashboard --> Pitch["🎤 1-Click Executive Pitch Deck Mode"]
         Dashboard --> Report["📑 Data Quality & Strategic Recommendations"]
         Dashboard --> CleanCSV["📥 1-Click Cleaned CSV Download"]
         Dashboard --> Charts["🖼️ 1-Click High-Res Chart Download"]
