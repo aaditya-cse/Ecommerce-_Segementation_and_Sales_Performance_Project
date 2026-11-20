@@ -22,7 +22,10 @@ from langchain_groq import ChatGroq
 from langchain_core.messages import SystemMessage, HumanMessage
 from langgraph.graph import StateGraph, END
 
-load_dotenv()
+_cur_dir = os.path.dirname(os.path.abspath(__file__))
+_root_dir = os.path.dirname(_cur_dir)
+load_dotenv(os.path.join(_root_dir, ".env"))
+load_dotenv(os.path.join(_cur_dir, ".env"))
 
 # ==========================================
 # SECURITY: AST STATIC ANALYZER FOR SANDBOX
@@ -82,17 +85,17 @@ def clean_llm_text(text: str) -> str:
 def get_active_groq_model() -> str:
     api_key = os.getenv("GROQ_API_KEY")
     preferred = [
+        "llama-3.3-70b-versatile",
         "llama-3.1-8b-instant",
-        "llama-3.1-8b-instant",
-        "openai/gpt-oss-20b",
-        "qwen/qwen3-32b",
+        "mixtral-8x7b-32768",
+        "gemma2-9b-it",
     ]
     try:
         req = urllib.request.Request(
             "https://api.groq.com/openai/v1/models",
             headers={"Authorization": f"Bearer {api_key}", "User-Agent": "Mozilla/5.0"},
         )
-        with urllib.request.urlopen(req, timeout=10) as resp:
+        with urllib.request.urlopen(req, timeout=5) as resp:
             ids = [m["id"] for m in json.loads(resp.read().decode()).get("data", [])]
             for m in preferred:
                 if m in ids:

@@ -12,21 +12,36 @@ os.environ["MPLCONFIGDIR"] = os.path.join(tempfile.gettempdir(), "matplotlib")
 os.makedirs(os.environ["MPLCONFIGDIR"], exist_ok=True)
 
 from flask import Flask, request, render_template_string, redirect, url_for
+from dotenv import load_dotenv
 
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+load_dotenv(os.path.join(ROOT_DIR, ".env"))
+load_dotenv(os.path.join(ROOT_DIR, "multi_agent", ".env"))
+
 sys.path.insert(0, os.path.join(ROOT_DIR, "multi_agent"))
 sys.path.insert(0, os.path.join(ROOT_DIR, "api"))
 
 from universal_analyst_agent import build_universal_graph
 try:
-    from security import apply_hardened_headers
+    from security import (
+        apply_hardened_headers,
+        SlidingWindowRateLimiter,
+        validate_csv_bytes,
+        sanitize_csv_cell,
+    )
 except ImportError:
-    from api.security import apply_hardened_headers
+    from api.security import (
+        apply_hardened_headers,
+        SlidingWindowRateLimiter,
+        validate_csv_bytes,
+        sanitize_csv_cell,
+    )
 
 app = Flask(__name__)
 app.config["MAX_CONTENT_LENGTH"] = 5 * 1024 * 1024
 logging.basicConfig(level=logging.INFO)
 
+RATE_LIMITER = SlidingWindowRateLimiter(max_requests=30, window_seconds=60)
 AGENT_GRAPH = build_universal_graph()
 
 ALLOWED_SAMPLES = {
@@ -462,6 +477,9 @@ DASHBOARD_TEMPLATE = r"""
             <div id="chart-section" class="chart-box">
                 <h3 style="margin-top:0; color:#38bdf8;">Generated Statistical Visualization</h3>
                 <img src="data:image/png;base64,{{ chart_b64 }}" alt="Automated statistical visualization generated for: {{ goal }}">
+                <div style="margin-top:14px;">
+                    <a class="download-csv-btn" href="data:image/png;base64,{{ chart_b64 }}" download="analysis_chart.png">Download Chart (PNG)</a>
+                </div>
             </div>
             {% endif %}
 
@@ -575,6 +593,26 @@ def analyze(path):
     if request.method == "GET":
         return render_template_string(HOME_TEMPLATE)
 
+    client_ip = request.headers.get("X-Forwarded-For", request.remote_addr or "127.0.0.1").split(",")[0].strip()
+    allowed, retry_after = RATE_LIMITER.is_allowed(client_ip)
+    if not allowed:
+        return render_template_string(
+            DASHBOARD_TEMPLATE,
+            report_raw="",
+            report_html="",
+            chart_b64="",
+            cleaned_csv_b64="",
+            cleaned_preview_html="",
+            cleaned_shape="",
+            generated_code="",
+            analysis_output="",
+            kpi_cards=[],
+            retry_count=1,
+            dataset_label="Rate Limited",
+            error=f"Rate limit exceeded: Too many requests from your IP. Please wait {retry_after} seconds before launching another analysis.",
+            goal=request.form.get("user_goal", ""),
+        ), 429
+
     report_raw = ""
     report_html = ""
     chart_b64 = ""
@@ -592,14 +630,19 @@ def analyze(path):
 
     try:
         if not os.getenv("GROQ_API_KEY"):
-            raise ValueError("Server configuration incomplete: GROQ_API_KEY is not configured.")
+            raise ValueError(
+                "GROQ_API_KEY is not configured. Please set GROQ_API_KEY in your .env file or environment variables to enable the AI agents."
+            )
 
         if uploaded and uploaded.filename:
             safe_name = secure_filename(uploaded.filename)
             if not safe_name.lower().endswith(".csv"):
                 raise ValueError("Invalid file format. Please upload a .csv file.")
+            raw_bytes = uploaded.read()
+            decoded_text = validate_csv_bytes(raw_bytes)
             tmp_csv = os.path.join(tempfile.gettempdir(), safe_name)
-            uploaded.save(tmp_csv)
+            with open(tmp_csv, "w", encoding="utf-8") as f:
+                f.write(decoded_text)
             csv_path = tmp_csv
             dataset_label = f"Uploaded: {safe_name}"
         else:
@@ -665,3 +708,9 @@ def analyze(path):
         error=error,
         goal=goal,
     )
+
+
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 5000))
+    print(f"\n🚀 AgentOps BI Studio starting on http://127.0.0.1:{port}\n")
+    app.run(host="0.0.0.0", port=port, debug=True)
