@@ -30,10 +30,10 @@ load_dotenv(os.path.join(_root_dir, ".env"))
 load_dotenv(os.path.join(_cur_dir, ".env"))
 
 # Pipeline configuration constants
-_DEFAULT_GROQ_MODEL = "llama-3.1-8b-instant"
+_DEFAULT_GROQ_MODEL = "llama-3.3-70b-versatile"
 _LLM_TEMPERATURE_ANALYST = 0.1
 _LLM_TEMPERATURE_STRATEGIST = 0.2
-_MAX_PIPELINE_RETRIES = 3
+_MAX_PIPELINE_RETRIES = 1
 _CHART_DPI = 150
 _NETWORK_TIMEOUT_SECONDS = 5
 
@@ -128,39 +128,10 @@ def clean_llm_text(text: str) -> str:
 
 @lru_cache(maxsize=1)
 def get_active_groq_model() -> str:
-    """Returns verified active Groq model with dynamic live discovery and resilient fallback."""
+    """Returns active Groq model without blocking network overhead."""
     custom_model = os.getenv("GROQ_MODEL")
     if custom_model:
         return custom_model.strip()
-
-    api_key = os.getenv("GROQ_API_KEY", "")
-    preferred = [
-        "llama-3.3-70b-versatile",
-        "llama-3.1-8b-instant",
-        "mixtral-8x7b-32768",
-        "gemma2-9b-it",
-    ]
-    blocked_keywords = ("whisper", "guard", "tts", "orpheus", "safeguard", "prompt-guard")
-    if api_key:
-        try:
-            req = urllib.request.Request(
-                "https://api.groq.com/openai/v1/models",
-                headers={"Authorization": f"Bearer {api_key}", "User-Agent": "AgentOps/1.0"},
-            )
-            with urllib.request.urlopen(req, timeout=3) as resp:
-                data = json.loads(resp.read().decode()).get("data", [])
-                ids = [
-                    m["id"] for m in data
-                    if m.get("id") and not any(b in m["id"].lower() for b in blocked_keywords)
-                ]
-                for m in preferred:
-                    if m in ids:
-                        return m
-                if ids:
-                    return ids[0]
-        except Exception:
-            pass
-
     return "llama-3.3-70b-versatile"
 
 
@@ -400,8 +371,8 @@ def pandas_analyst_agent(state: UniversalAgentState) -> Dict[str, Any]:
             model=get_active_groq_model(),
             temperature=_LLM_TEMPERATURE_ANALYST,
             max_tokens=650,
-            timeout=12,
-            max_retries=1,
+            request_timeout=4.0,
+            max_retries=0,
         )
         raw_reply = llm.invoke([SystemMessage(content=system_prompt), HumanMessage(content=prompt)]).content
         clean_code = clean_llm_text(raw_reply).replace("```python", "").replace("```", "").strip()
@@ -409,7 +380,13 @@ def pandas_analyst_agent(state: UniversalAgentState) -> Dict[str, Any]:
         # Fallback to secondary model if primary model threw NotFoundError or failed
         try:
             alt_model = "llama-3.1-8b-instant" if "70b" in get_active_groq_model() else "llama-3.3-70b-versatile"
-            alt_llm = ChatGroq(model=alt_model, temperature=_LLM_TEMPERATURE_ANALYST, max_tokens=650, timeout=12, max_retries=1)
+            alt_llm = ChatGroq(
+                model=alt_model,
+                temperature=_LLM_TEMPERATURE_ANALYST,
+                max_tokens=650,
+                request_timeout=3.0,
+                max_retries=0,
+            )
             raw_reply = alt_llm.invoke([SystemMessage(content=system_prompt), HumanMessage(content=prompt)]).content
             clean_code = clean_llm_text(raw_reply).replace("```python", "").replace("```", "").strip()
         except Exception:
@@ -753,15 +730,21 @@ def executive_strategist_agent(state: UniversalAgentState) -> Dict[str, Any]:
             model=get_active_groq_model(),
             temperature=_LLM_TEMPERATURE_STRATEGIST,
             max_tokens=750,
-            timeout=12,
-            max_retries=1,
+            request_timeout=4.0,
+            max_retries=0,
         )
         raw_report = llm.invoke([SystemMessage(content=system_prompt), HumanMessage(content=user_msg)]).content
         report = clean_llm_text(raw_report)
     except Exception:
         try:
             alt_model = "llama-3.1-8b-instant" if "70b" in get_active_groq_model() else "llama-3.3-70b-versatile"
-            alt_llm = ChatGroq(model=alt_model, temperature=_LLM_TEMPERATURE_STRATEGIST, max_tokens=750, timeout=12, max_retries=1)
+            alt_llm = ChatGroq(
+                model=alt_model,
+                temperature=_LLM_TEMPERATURE_STRATEGIST,
+                max_tokens=750,
+                request_timeout=3.0,
+                max_retries=0,
+            )
             raw_report = alt_llm.invoke([SystemMessage(content=system_prompt), HumanMessage(content=user_msg)]).content
             report = clean_llm_text(raw_report)
         except Exception:
