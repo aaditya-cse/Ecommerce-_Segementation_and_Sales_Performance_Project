@@ -15,8 +15,13 @@ from flask import Flask, request, render_template_string, redirect, url_for
 
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(ROOT_DIR, "multi_agent"))
+sys.path.insert(0, os.path.join(ROOT_DIR, "api"))
 
 from universal_analyst_agent import build_universal_graph
+try:
+    from security import apply_hardened_headers
+except ImportError:
+    from api.security import apply_hardened_headers
 
 app = Flask(__name__)
 app.config["MAX_CONTENT_LENGTH"] = 5 * 1024 * 1024
@@ -561,10 +566,7 @@ DASHBOARD_TEMPLATE = r"""
 
 @app.after_request
 def add_security_headers(response):
-    response.headers["X-Content-Type-Options"] = "nosniff"
-    response.headers["X-Frame-Options"] = "DENY"
-    response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
-    return response
+    return apply_hardened_headers(response)
 
 
 @app.route("/", defaults={"path": ""}, methods=["GET", "POST"])
