@@ -5,22 +5,37 @@ import re
 from typing import Dict, List
 
 
-def extract_kpi_cards(stdout_text: str, limit: int = 4) -> List[Dict[str, str]]:
-    """Extract up to `limit` verified Key: Value KPI metrics from sandbox stdout."""
-    kpis: List[Dict[str, str]] = []
-    if not stdout_text:
-        return kpis
-    for raw_line in stdout_text.splitlines():
-        line = raw_line.strip()
-        if ":" in line and not line.startswith("===") and len(line) < 75:
-            label_part, val_part = line.split(":", 1)
-            label = re.sub(r"\s*\(.*?\)", "", label_part).strip()
-            val = val_part.strip()
-            if label and val and any(ch.isdigit() for ch in val) and len(label) <= 32:
-                kpis.append({"label": label, "value": val})
-        if len(kpis) >= limit:
+def extract_kpi_cards(analysis_output: str) -> list[dict]:
+    """Extracts clean, deduplicated numeric KPI cards while ignoring Pandas dtype/Name footers."""
+    if not analysis_output:
+        return []
+    cards = []
+    seen_labels = set()
+    blocked_terms = ("dtype", "int64", "float64", "object", "length:", "name:", "=== ", "---")
+    for raw_line in analysis_output.splitlines():
+        line = raw_line.strip().lstrip("-*• ")
+        if not line or ":" not in line:
+            continue
+        low = line.lower()
+        if any(b in low for b in blocked_terms):
+            continue
+        label, val = line.split(":", 1)
+        label = label.strip(" *#_`")
+        val = val.strip(" *#_`")
+        if not label or not val or len(label) > 36 or len(val) > 28:
+            continue
+        if label.lower() in ("name", "dtype", "index", "columns", "shape", "error", "warning"):
+            continue
+        if not any(ch.isdigit() for ch in val) or "dtype" in val.lower():
+            continue
+        norm_key = "".join(ch for ch in label.lower() if ch.isalnum())
+        if norm_key in seen_labels:
+            continue
+        seen_labels.add(norm_key)
+        cards.append({"label": label, "value": val})
+        if len(cards) >= 4:
             break
-    return kpis
+    return cards
 
 
 def format_inline_md(text: str) -> str:
