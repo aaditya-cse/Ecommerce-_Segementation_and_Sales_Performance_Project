@@ -185,7 +185,8 @@ HOME_TEMPLATE = r"""
             content: '';
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: radial-gradient(650px circle at var(--cursor-x) var(--cursor-y), rgba(56, 189, 248, 0.08), transparent 80%);
+            background: radial-gradient(850px circle at 50% 18%, rgba(56, 189, 248, 0.08), transparent 75%),
+                        radial-gradient(650px circle at 85% 85%, rgba(99, 102, 241, 0.06), transparent 70%);
             pointer-events: none;
             z-index: 0;
         }
@@ -644,7 +645,7 @@ HOME_TEMPLATE = r"""
             } catch (e) {}
         }
 
-        // 3D Particle Constellation Canvas
+        // 3D Particle Constellation Canvas (High-Performance 60FPS)
         function init3DCanvas() {
             const canvas = document.getElementById("bg-canvas");
             if (!canvas) return;
@@ -655,26 +656,31 @@ HOME_TEMPLATE = r"""
             window.addEventListener("resize", () => {
                 width = canvas.width = window.innerWidth;
                 height = canvas.height = window.innerHeight;
-            });
+            }, { passive: true });
 
             let mouseX = 0, mouseY = 0;
+            let mouseTicking = false;
             window.addEventListener("mousemove", (e) => {
-                mouseX = (e.clientX - width / 2) * 0.04;
-                mouseY = (e.clientY - height / 2) * 0.04;
-                document.documentElement.style.setProperty("--cursor-x", e.clientX + "px");
-                document.documentElement.style.setProperty("--cursor-y", e.clientY + "px");
-            });
+                if (!mouseTicking) {
+                    requestAnimationFrame(() => {
+                        mouseX = (e.clientX - width / 2) * 0.02;
+                        mouseY = (e.clientY - height / 2) * 0.02;
+                        mouseTicking = false;
+                    });
+                    mouseTicking = true;
+                }
+            }, { passive: true });
 
-            const numNodes = 45;
+            const numNodes = 20;
             const nodes = [];
             for (let i = 0; i < numNodes; i++) {
                 nodes.push({
-                    x: (Math.random() - 0.5) * width * 1.4,
-                    y: (Math.random() - 0.5) * height * 1.4,
-                    z: Math.random() * 500 + 100,
-                    vx: (Math.random() - 0.5) * 0.5,
-                    vy: (Math.random() - 0.5) * 0.5,
-                    vz: (Math.random() - 0.5) * 0.3
+                    x: (Math.random() - 0.5) * width,
+                    y: (Math.random() - 0.5) * height,
+                    z: Math.random() * 400 + 80,
+                    vx: (Math.random() - 0.5) * 0.4,
+                    vy: (Math.random() - 0.5) * 0.4,
+                    vz: (Math.random() - 0.5) * 0.25
                 });
             }
 
@@ -689,12 +695,12 @@ HOME_TEMPLATE = r"""
                     p.y += p.vy;
                     p.z += p.vz;
 
-                    if (p.z < 60) p.z = 600;
-                    if (p.z > 600) p.z = 60;
-                    if (p.x < -width) p.x = width;
-                    if (p.x > width) p.x = -width;
-                    if (p.y < -height) p.y = height;
-                    if (p.y > height) p.y = -height;
+                    if (p.z < 60) p.z = 480;
+                    if (p.z > 480) p.z = 60;
+                    if (p.x < -width / 2) p.x = width / 2;
+                    if (p.x > width / 2) p.x = -width / 2;
+                    if (p.y < -height / 2) p.y = height / 2;
+                    if (p.y > height / 2) p.y = -height / 2;
 
                     const scale = fov / (fov + p.z);
                     const px = p.x * scale + width / 2 + mouseX * scale;
@@ -702,7 +708,7 @@ HOME_TEMPLATE = r"""
                     projected.push({ x: px, y: py, scale: scale });
 
                     ctx.beginPath();
-                    ctx.arc(px, py, Math.max(1, 2.4 * scale), 0, Math.PI * 2);
+                    ctx.arc(px, py, Math.max(1, 2.2 * scale), 0, Math.PI * 2);
                     ctx.fillStyle = "rgba(56, 189, 248, " + (0.35 * scale) + ")";
                     ctx.fill();
                 }
@@ -711,12 +717,13 @@ HOME_TEMPLATE = r"""
                     for (let j = i + 1; j < projected.length; j++) {
                         const dx = projected[i].x - projected[j].x;
                         const dy = projected[i].y - projected[j].y;
-                        const dist = Math.sqrt(dx * dx + dy * dy);
-                        if (dist < 110) {
+                        if (Math.abs(dx) > 100 || Math.abs(dy) > 100) continue;
+                        const distSq = dx * dx + dy * dy;
+                        if (distSq < 10000) {
                             ctx.beginPath();
                             ctx.moveTo(projected[i].x, projected[i].y);
                             ctx.lineTo(projected[j].x, projected[j].y);
-                            const alpha = (1 - dist / 110) * 0.18 * projected[i].scale;
+                            const alpha = (1 - Math.sqrt(distSq) / 100) * 0.16 * projected[i].scale;
                             ctx.strokeStyle = "rgba(129, 140, 248, " + alpha + ")";
                             ctx.lineWidth = 1;
                             ctx.stroke();
@@ -728,30 +735,28 @@ HOME_TEMPLATE = r"""
             requestAnimationFrame(render);
         }
 
-        // 3D Card Tilt Interaction
+        // 3D Card Tilt Interaction (Smooth 60FPS)
         function init3DTilt() {
             const cards = document.querySelectorAll(".agent-card, .preset-card");
             cards.forEach(card => {
-                if (!card.querySelector(".tilt-glare")) {
-                    const g = document.createElement("div");
-                    g.className = "tilt-glare";
-                    card.appendChild(g);
-                }
+                let rafId = null;
                 card.addEventListener("mousemove", e => {
-                    const rect = card.getBoundingClientRect();
-                    const x = e.clientX - rect.left;
-                    const y = e.clientY - rect.top;
-                    const cx = rect.width / 2;
-                    const cy = rect.height / 2;
-                    const rotX = ((y - cy) / cy) * -8;
-                    const rotY = ((x - cx) / cx) * 8;
-                    card.style.transform = `perspective(1000px) rotateX(${rotX.toFixed(2)}deg) rotateY(${rotY.toFixed(2)}deg) scale3d(1.02, 1.02, 1.02)`;
-                    card.style.setProperty("--glare-x", `${(x / rect.width * 100).toFixed(1)}%`);
-                    card.style.setProperty("--glare-y", `${(y / rect.height * 100).toFixed(1)}%`);
-                });
+                    if (rafId) cancelAnimationFrame(rafId);
+                    rafId = requestAnimationFrame(() => {
+                        const rect = card.getBoundingClientRect();
+                        const x = e.clientX - rect.left;
+                        const y = e.clientY - rect.top;
+                        const cx = rect.width / 2;
+                        const cy = rect.height / 2;
+                        const rotX = ((y - cy) / cy) * -6;
+                        const rotY = ((x - cx) / cx) * 6;
+                        card.style.transform = `perspective(800px) rotateX(${rotX.toFixed(2)}deg) rotateY(${rotY.toFixed(2)}deg) scale3d(1.015, 1.015, 1.015)`;
+                    });
+                }, { passive: true });
                 card.addEventListener("mouseenter", () => playBlip(560, 0.02));
                 card.addEventListener("mouseleave", () => {
-                    card.style.transform = "perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)";
+                    if (rafId) cancelAnimationFrame(rafId);
+                    card.style.transform = "perspective(800px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)";
                 });
             });
         }
@@ -857,7 +862,8 @@ DASHBOARD_TEMPLATE = r"""
             content: '';
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: radial-gradient(650px circle at var(--cursor-x) var(--cursor-y), rgba(56, 189, 248, 0.08), transparent 80%);
+            background: radial-gradient(850px circle at 50% 18%, rgba(56, 189, 248, 0.08), transparent 75%),
+                        radial-gradient(650px circle at 85% 85%, rgba(99, 102, 241, 0.06), transparent 70%);
             pointer-events: none;
             z-index: 0;
         }
@@ -1996,7 +2002,7 @@ DASHBOARD_TEMPLATE = r"""
             document.getElementById("graph-modal").classList.add("hidden");
         }
 
-        // 3D Particle Constellation Canvas
+        // 3D Particle Constellation Canvas (High-Performance 60FPS)
         function init3DCanvas() {
             const canvas = document.getElementById("bg-canvas");
             if (!canvas) return;
@@ -2007,26 +2013,31 @@ DASHBOARD_TEMPLATE = r"""
             window.addEventListener("resize", () => {
                 width = canvas.width = window.innerWidth;
                 height = canvas.height = window.innerHeight;
-            });
+            }, { passive: true });
 
             let mouseX = 0, mouseY = 0;
+            let mouseTicking = false;
             window.addEventListener("mousemove", (e) => {
-                mouseX = (e.clientX - width / 2) * 0.04;
-                mouseY = (e.clientY - height / 2) * 0.04;
-                document.documentElement.style.setProperty("--cursor-x", e.clientX + "px");
-                document.documentElement.style.setProperty("--cursor-y", e.clientY + "px");
-            });
+                if (!mouseTicking) {
+                    requestAnimationFrame(() => {
+                        mouseX = (e.clientX - width / 2) * 0.02;
+                        mouseY = (e.clientY - height / 2) * 0.02;
+                        mouseTicking = false;
+                    });
+                    mouseTicking = true;
+                }
+            }, { passive: true });
 
-            const numNodes = 42;
+            const numNodes = 20;
             const nodes = [];
             for (let i = 0; i < numNodes; i++) {
                 nodes.push({
-                    x: (Math.random() - 0.5) * width * 1.4,
-                    y: (Math.random() - 0.5) * height * 1.4,
-                    z: Math.random() * 500 + 100,
-                    vx: (Math.random() - 0.5) * 0.45,
-                    vy: (Math.random() - 0.5) * 0.45,
-                    vz: (Math.random() - 0.5) * 0.3
+                    x: (Math.random() - 0.5) * width,
+                    y: (Math.random() - 0.5) * height,
+                    z: Math.random() * 400 + 80,
+                    vx: (Math.random() - 0.5) * 0.4,
+                    vy: (Math.random() - 0.5) * 0.4,
+                    vz: (Math.random() - 0.5) * 0.25
                 });
             }
 
@@ -2041,12 +2052,12 @@ DASHBOARD_TEMPLATE = r"""
                     p.y += p.vy;
                     p.z += p.vz;
 
-                    if (p.z < 60) p.z = 600;
-                    if (p.z > 600) p.z = 60;
-                    if (p.x < -width) p.x = width;
-                    if (p.x > width) p.x = -width;
-                    if (p.y < -height) p.y = height;
-                    if (p.y > height) p.y = -height;
+                    if (p.z < 60) p.z = 480;
+                    if (p.z > 480) p.z = 60;
+                    if (p.x < -width / 2) p.x = width / 2;
+                    if (p.x > width / 2) p.x = -width / 2;
+                    if (p.y < -height / 2) p.y = height / 2;
+                    if (p.y > height / 2) p.y = -height / 2;
 
                     const scale = fov / (fov + p.z);
                     const px = p.x * scale + width / 2 + mouseX * scale;
@@ -2054,7 +2065,7 @@ DASHBOARD_TEMPLATE = r"""
                     projected.push({ x: px, y: py, scale: scale });
 
                     ctx.beginPath();
-                    ctx.arc(px, py, Math.max(1, 2.4 * scale), 0, Math.PI * 2);
+                    ctx.arc(px, py, Math.max(1, 2.2 * scale), 0, Math.PI * 2);
                     ctx.fillStyle = "rgba(56, 189, 248, " + (0.35 * scale) + ")";
                     ctx.fill();
                 }
@@ -2063,12 +2074,13 @@ DASHBOARD_TEMPLATE = r"""
                     for (let j = i + 1; j < projected.length; j++) {
                         const dx = projected[i].x - projected[j].x;
                         const dy = projected[i].y - projected[j].y;
-                        const dist = Math.sqrt(dx * dx + dy * dy);
-                        if (dist < 110) {
+                        if (Math.abs(dx) > 100 || Math.abs(dy) > 100) continue;
+                        const distSq = dx * dx + dy * dy;
+                        if (distSq < 10000) {
                             ctx.beginPath();
                             ctx.moveTo(projected[i].x, projected[i].y);
                             ctx.lineTo(projected[j].x, projected[j].y);
-                            const alpha = (1 - dist / 110) * 0.18 * projected[i].scale;
+                            const alpha = (1 - Math.sqrt(distSq) / 100) * 0.16 * projected[i].scale;
                             ctx.strokeStyle = "rgba(129, 140, 248, " + alpha + ")";
                             ctx.lineWidth = 1;
                             ctx.stroke();
@@ -2080,30 +2092,28 @@ DASHBOARD_TEMPLATE = r"""
             requestAnimationFrame(render);
         }
 
-        // 3D Card Tilt Interaction
+        // 3D Card Tilt Interaction (Smooth 60FPS)
         function init3DTilt() {
             const cards = document.querySelectorAll(".kpi-card, .sim-card, .graph-node");
             cards.forEach(card => {
-                if (!card.querySelector(".tilt-glare")) {
-                    const g = document.createElement("div");
-                    g.className = "tilt-glare";
-                    card.appendChild(g);
-                }
+                let rafId = null;
                 card.addEventListener("mousemove", e => {
-                    const rect = card.getBoundingClientRect();
-                    const x = e.clientX - rect.left;
-                    const y = e.clientY - rect.top;
-                    const cx = rect.width / 2;
-                    const cy = rect.height / 2;
-                    const rotX = ((y - cy) / cy) * -7;
-                    const rotY = ((x - cx) / cx) * 7;
-                    card.style.transform = `perspective(1000px) rotateX(${rotX.toFixed(2)}deg) rotateY(${rotY.toFixed(2)}deg) scale3d(1.02, 1.02, 1.02)`;
-                    card.style.setProperty("--glare-x", `${(x / rect.width * 100).toFixed(1)}%`);
-                    card.style.setProperty("--glare-y", `${(y / rect.height * 100).toFixed(1)}%`);
-                });
+                    if (rafId) cancelAnimationFrame(rafId);
+                    rafId = requestAnimationFrame(() => {
+                        const rect = card.getBoundingClientRect();
+                        const x = e.clientX - rect.left;
+                        const y = e.clientY - rect.top;
+                        const cx = rect.width / 2;
+                        const cy = rect.height / 2;
+                        const rotX = ((y - cy) / cy) * -6;
+                        const rotY = ((x - cx) / cx) * 6;
+                        card.style.transform = `perspective(800px) rotateX(${rotX.toFixed(2)}deg) rotateY(${rotY.toFixed(2)}deg) scale3d(1.015, 1.015, 1.015)`;
+                    });
+                }, { passive: true });
                 card.addEventListener("mouseenter", () => playBlip(560, 0.02));
                 card.addEventListener("mouseleave", () => {
-                    card.style.transform = "perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)";
+                    if (rafId) cancelAnimationFrame(rafId);
+                    card.style.transform = "perspective(800px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)";
                 });
             });
         }
