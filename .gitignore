@@ -5,6 +5,7 @@ multi_agent/.venv/
 venv/
 __pycache__/
 *.pyc
+.pytest_cache/
 .ipynb_checkpoints/
 .DS_Store
 Thumbs.db

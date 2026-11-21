@@ -1924,9 +1924,11 @@ DASHBOARD_TEMPLATE = r"""
                 <h2 style="font-size:2.4rem; margin:0 0 16px; color:#ffffff;">{{ dataset_label }}</h2>
                 <p style="font-size:1.2rem; color:#cbd5e1; max-width:800px; margin:0 auto 28px;">Goal: {{ goal }}</p>
                 <div style="display:inline-flex; gap:12px; flex-wrap:wrap; justify-content:center;">
-                    <span class="status-step">Agent 1: Schema Profiled &bull; Anomaly Scan Complete</span>
-                    <span class="status-step">Agent 2: AST Sandboxed &bull; 0 Injection Vulnerabilities</span>
-                    <span class="status-step">Agent 3: Executive Strategy Synthesized</span>
+                    <span class="status-step">1. Schema &amp; Hygiene Auditor</span>
+                    <span class="status-step">2. AST Sandbox Analyst</span>
+                    <span class="status-step">3. AutoML Segmenter &amp; Forecaster</span>
+                    <span class="status-step">4. What-If Modeler</span>
+                    <span class="status-step">5. Boardroom Strategist</span>
                 </div>
             </div>
 
@@ -1978,11 +1980,31 @@ DASHBOARD_TEMPLATE = r"""
                     </div>
                 </div>
             </div>
+
+            <!-- Slide 5 -->
+            <div class="pitch-slide" id="pslide-5">
+                <div style="color:#38bdf8; font-size:1rem; font-weight:800; text-transform:uppercase; letter-spacing:0.08em; margin-bottom:12px;">Slide 5 &bull; Executive Roadmap &amp; ROI</div>
+                <h2 style="font-size:2.2rem; margin:0 0 20px; color:#ffffff;">Actionable Growth Playbook</h2>
+                <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:18px; max-width:960px; width:100%; margin:0 auto; text-align:left;">
+                    <div style="background:rgba(15,23,42,0.85); border:1px solid #334155; border-radius:14px; padding:20px;">
+                        <h3 style="color:#38bdf8; margin:0 0 8px;">1. High-Value Cohorts</h3>
+                        <p style="color:#cbd5e1; font-size:0.92rem; margin:0;">Protect Champion segment LTV via VIP loyalty programs and predictive repurchase reminders.</p>
+                    </div>
+                    <div style="background:rgba(15,23,42,0.85); border:1px solid #334155; border-radius:14px; padding:20px;">
+                        <h3 style="color:#34d399; margin:0 0 8px;">2. Margin Recovery</h3>
+                        <p style="color:#cbd5e1; font-size:0.92rem; margin:0;">Recover leakage by trimming return friction and replacing cash refunds with store credits.</p>
+                    </div>
+                    <div style="background:rgba(15,23,42,0.85); border:1px solid #334155; border-radius:14px; padding:20px;">
+                        <h3 style="color:#f59e0b; margin:0 0 8px;">3. Scalable Automation</h3>
+                        <p style="color:#cbd5e1; font-size:0.92rem; margin:0;">Deploy autonomous agentic loops to continuously monitor revenue health across catalogs.</p>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <div class="pitch-footer">
             <button type="button" class="action-btn" onclick="prevSlide()">&larr; Previous Slide</button>
-            <div style="color:#94a3b8; font-weight:700;" id="pitch-counter">Slide 1 of 4</div>
+            <div style="color:#94a3b8; font-weight:700;" id="pitch-counter">Slide 1 of 5</div>
             <button type="button" class="action-btn" onclick="nextSlide()">Next Slide &rarr;</button>
         </div>
     </div>
@@ -2434,7 +2456,7 @@ DASHBOARD_TEMPLATE = r"""
 
         /* Presentation Mode Functions */
         let currentSlide = 1;
-        const totalSlides = 4;
+        const totalSlides = 5;
         function openPitchMode() {
             playBlip(800, 0.06);
             document.getElementById("pitch-modal").classList.remove("hidden");

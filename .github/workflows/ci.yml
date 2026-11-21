@@ -30,7 +30,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Run 12 Automated Security & Pipeline Tests
+      - name: Run 32 Automated Security & Pipeline Tests
         env:
           GROQ_API_KEY: "test-ci-key"
           MPLCONFIGDIR: "/tmp/matplotlib"
