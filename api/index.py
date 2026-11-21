@@ -2489,16 +2489,36 @@ DASHBOARD_TEMPLATE = r"""
             const uploadedFilename = document.getElementById("chat-uploaded-filename") ? document.getElementById("chat-uploaded-filename").value : "";
 
             try {
-                const response = await fetch("/api/chat", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        question: query,
-                        sample_csv: sampleCsv,
-                        uploaded_filename: uploadedFilename
-                    })
-                });
-                const data = await response.json();
+                let response = null;
+                try {
+                    response = await fetch("/api/chat", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json", "Accept": "application/json" },
+                        body: JSON.stringify({
+                            question: query,
+                            sample_csv: sampleCsv,
+                            uploaded_filename: uploadedFilename
+                        })
+                    });
+                } catch (fetchErr) {
+                    response = await fetch("api/chat", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json", "Accept": "application/json" },
+                        body: JSON.stringify({
+                            question: query,
+                            sample_csv: sampleCsv,
+                            uploaded_filename: uploadedFilename
+                        })
+                    });
+                }
+
+                let data;
+                const contentType = response.headers.get("content-type") || "";
+                if (contentType.includes("application/json")) {
+                    data = await response.json();
+                } else {
+                    data = { status: "error", error: "Backend server responded with non-JSON format (" + response.status + ")" };
+                }
 
                 if (typingIndicator) typingIndicator.classList.add("hidden");
                 if (submitBtn) submitBtn.disabled = false;
@@ -2528,7 +2548,10 @@ DASHBOARD_TEMPLATE = r"""
                     <div class="msg-avatar">⚠️</div>
                     <div class="msg-body">
                         <div class="msg-sender">System Notice</div>
-                        <div class="msg-text">Failed to connect to the agent swarm. Please try again.</div>
+                        <div class="msg-text">
+                            <strong>Backend Disconnected:</strong> Please make sure <code>python app.py</code> is actively running in your terminal at <code>http://127.0.0.1:5000</code>.<br>
+                            <small style="color:#94a3b8; font-size:0.75rem;">Status: ${escapeHtml(err.message || 'Connection refused')}</small>
+                        </div>
                     </div>
                 `;
                 chatThread.appendChild(errDiv);

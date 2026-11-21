@@ -11,9 +11,9 @@ from api.index import app
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
-    is_debug = os.environ.get("FLASK_DEBUG", "1").lower() in ("1", "true")
+    is_debug = os.environ.get("FLASK_DEBUG", "0").lower() in ("1", "true")
     print("\n=======================================================")
     print("  🚀 AgentOps BI Studio - Autonomous 5-Agent Swarm")
-    print(f"  Running locally at: http://127.0.0.1:{port}")
+    print(f"  Running locally at: http://127.0.0.1:{port} and http://localhost:{port}")
     print("=======================================================\n")
-    app.run(host="127.0.0.1", port=port, debug=is_debug)
+    app.run(host="0.0.0.0", port=port, debug=is_debug)
