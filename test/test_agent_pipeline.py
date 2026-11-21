@@ -331,3 +331,31 @@ def test_compute_data_health_score_single_row():
     assert score["uniqueness_pct"] == 100.0
 
 
+def test_api_chat_returns_factual_answers():
+    """Test that /api/chat interactive console returns structured analytical answers."""
+    client = app.test_client()
+    resp = client.post(
+        "/api/chat",
+        json={
+            "question": "Compare customer segments by average discount, or break down monthly trends...",
+            "sample_csv": "data/raw/ecommerce_sales_data.csv",
+        },
+    )
+    assert resp.status_code == 200
+    data = resp.get_json()
+    assert data["status"] == "success"
+    assert "answer" in data
+    assert len(data["answer"]) > 20
+    assert data["agent"] == "Boardroom Strategist Agent"
+
+
+def test_api_chat_rejects_empty_question():
+    """Test that /api/chat rejects empty query strings with HTTP 400."""
+    client = app.test_client()
+    resp = client.post("/api/chat", json={"question": "   "})
+    assert resp.status_code == 400
+    data = resp.get_json()
+    assert data["status"] == "error"
+
+
+

@@ -326,6 +326,158 @@ def schema_profiler_agent(state: UniversalAgentState) -> Dict[str, Any]:
     }
 
 
+def generate_resilient_analysis_code(user_goal: str) -> str:
+    """Generates query-aware, AST-sandboxed Python analysis code when no LLM is configured."""
+    goal_lower = user_goal.lower()
+
+    if any(k in goal_lower for k in ("discount", "avg discount", "discount_pct")):
+        return (
+            "df = pd.read_csv(CSV_PATH)\n"
+            "df = df.drop_duplicates().copy()\n"
+            "for col in ['Region', 'Category', 'Order_Status']:\n"
+            "    if col in df.columns: df[col] = df[col].astype(str).str.strip().str.title()\n"
+            "if 'Age' in df.columns: df['Age'] = df['Age'].fillna(df['Age'].median())\n"
+            "if 'Discount_Pct' in df.columns: df['Discount_Pct'] = df['Discount_Pct'].fillna(df['Discount_Pct'].median())\n"
+            "if 'Unit_Price' in df.columns and 'Quantity' in df.columns:\n"
+            "    df['Total_Sales'] = np.round(df['Unit_Price'] * df['Quantity'].abs() * (1 - df['Discount_Pct'] / 100.0), 2)\n"
+            "df.to_csv(CLEANED_CSV_PATH, index=False)\n"
+            "print('=== DISCOUNT & REVENUE ANALYSIS ===')\n"
+            "print(f'Overall Average Discount: {df[\"Discount_Pct\"].mean():.1f}%')\n"
+            "if 'Category' in df.columns:\n"
+            "    cat_disc = df.groupby('Category').agg(Avg_Discount=('Discount_Pct', 'mean'), Avg_Order_Value=('Total_Sales', 'mean'), Order_Count=('Discount_Pct', 'count')).round(1).sort_values(by='Avg_Discount', ascending=False)\n"
+            "    print('\\nAverage Discount & Order Value by Category:')\n"
+            "    print(cat_disc)\n"
+            "if 'Customer_ID' in df.columns and 'Order_Date' in df.columns:\n"
+            "    df['Order_Date'] = pd.to_datetime(df['Order_Date'])\n"
+            "    snap = df['Order_Date'].max() + pd.Timedelta(days=1)\n"
+            "    rfm = df.groupby('Customer_ID').agg(Recency=('Order_Date', lambda x: (snap - x.max()).days), Frequency=('Order_Date', 'count'), Monetary=('Total_Sales', 'sum'), Avg_Discount=('Discount_Pct', 'mean')).reset_index()\n"
+            "    def assign_seg(r):\n"
+            "        if r['Recency'] > 150: return 'At Risk'\n"
+            "        elif r['Frequency'] >= 4 and r['Monetary'] >= 10000: return 'Champions / VIP'\n"
+            "        elif r['Frequency'] >= 2: return 'Loyal Customers'\n"
+            "        else: return 'New / Potential'\n"
+            "    rfm['Segment'] = rfm.apply(assign_seg, axis=1)\n"
+            "    seg_disc = rfm.groupby('Segment').agg(Customers=('Customer_ID', 'count'), Avg_Discount_Pct=('Avg_Discount', 'mean'), Avg_Spend=('Monetary', 'mean')).round(1)\n"
+            "    print('\\nCustomer Segments by Average Discount:')\n"
+            "    print(seg_disc)\n"
+            "fig, ax = plt.subplots(figsize=(8.5, 4.2))\n"
+            "if 'Category' in df.columns:\n"
+            "    cat_disc['Avg_Discount'].plot(kind='bar', ax=ax, color='#818cf8', edgecolor='none')\n"
+            "    ax.set_title('Average Discount Rate by Product Category (%)', fontsize=12, fontweight='bold', color='white')\n"
+            "    ax.set_ylabel('Discount %', color='white')\n"
+            "    ax.tick_params(colors='white')\n"
+            "plt.tight_layout()\n"
+            "fig.savefig(CHART_PATH, dpi=100, facecolor='#0f172a')\n"
+            "plt.close(fig)\n"
+        )
+
+    if any(k in goal_lower for k in ("month", "trend", "temporal", "time", "season")):
+        return (
+            "df = pd.read_csv(CSV_PATH)\n"
+            "df = df.drop_duplicates().copy()\n"
+            "df['Order_Date'] = pd.to_datetime(df['Order_Date'])\n"
+            "df['Order_Month'] = df['Order_Date'].dt.to_period('M').astype(str)\n"
+            "df.to_csv(CLEANED_CSV_PATH, index=False)\n"
+            "deliv = df[df['Order_Status'] == 'Delivered'] if 'Order_Status' in df.columns else df\n"
+            "monthly = deliv.groupby('Order_Month').agg(Net_Revenue=('Total_Sales', 'sum'), Orders=('Total_Sales', 'count')).reset_index()\n"
+            "print('=== MONTHLY PERFORMANCE BREAKDOWN ===')\n"
+            "print(monthly.to_string(index=False))\n"
+            "print(f'Total Net Delivered Revenue: INR {monthly[\"Net_Revenue\"].sum():,.2f}')\n"
+            "print(f'Peak Month: {monthly.loc[monthly[\"Net_Revenue\"].idxmax(), \"Order_Month\"]} (INR {monthly[\"Net_Revenue\"].max():,.2f})')\n"
+            "fig, ax1 = plt.subplots(figsize=(8.5, 4.2))\n"
+            "ax1.plot(monthly['Order_Month'], monthly['Net_Revenue'], marker='o', color='#38bdf8', linewidth=2.5, label='Net Revenue')\n"
+            "ax1.set_title('Monthly Revenue Trajectory (Delivered Orders)', fontsize=12, fontweight='bold', color='white')\n"
+            "ax1.set_ylabel('Revenue (INR)', color='#38bdf8')\n"
+            "ax1.tick_params(colors='white', rotation=30)\n"
+            "plt.tight_layout()\n"
+            "fig.savefig(CHART_PATH, dpi=100, facecolor='#0f172a')\n"
+            "plt.close(fig)\n"
+        )
+
+    if any(k in goal_lower for k in ("segment", "rfm", "vip", "loyal", "churn", "customer")):
+        return (
+            "df = pd.read_csv(CSV_PATH)\n"
+            "df = df.drop_duplicates().copy()\n"
+            "df['Order_Date'] = pd.to_datetime(df['Order_Date'])\n"
+            "df.to_csv(CLEANED_CSV_PATH, index=False)\n"
+            "snap = df['Order_Date'].max() + pd.Timedelta(days=1)\n"
+            "rfm = df.groupby('Customer_ID').agg(Recency=('Order_Date', lambda x: (snap - x.max()).days), Frequency=('Order_Date', 'count'), Monetary=('Total_Sales', 'sum')).reset_index()\n"
+            "def assign_seg(r):\n"
+            "    if r['Recency'] > 150: return 'At Risk'\n"
+            "    elif r['Frequency'] >= 4 and r['Monetary'] >= 10000: return 'Champions / VIP'\n"
+            "    elif r['Frequency'] >= 2: return 'Loyal Customers'\n"
+            "    else: return 'New / Potential'\n"
+            "rfm['Segment'] = rfm.apply(assign_seg, axis=1)\n"
+            "summary = rfm.groupby('Segment').agg(Customers=('Customer_ID', 'count'), Avg_Recency=('Recency', 'mean'), Avg_Orders=('Frequency', 'mean'), Total_Spend=('Monetary', 'sum'), Avg_Spend=('Monetary', 'mean')).round(1).sort_values(by='Total_Spend', ascending=False)\n"
+            "summary['Spend_Share_Pct'] = (summary['Total_Spend'] / rfm['Monetary'].sum() * 100).round(1)\n"
+            "print('=== RFM CUSTOMER SEGMENTATION SUMMARY ===')\n"
+            "print(summary)\n"
+            "fig, ax = plt.subplots(figsize=(8.5, 4.2))\n"
+            "summary['Total_Spend'].plot(kind='bar', ax=ax, color=['#2ca02c', '#1f77b4', '#d62728', '#ff7f0e'])\n"
+            "ax.set_title('Cumulative Spend by Customer Segment (INR)', fontsize=12, fontweight='bold', color='white')\n"
+            "ax.set_ylabel('Total Spend (INR)', color='white')\n"
+            "ax.tick_params(colors='white')\n"
+            "plt.tight_layout()\n"
+            "fig.savefig(CHART_PATH, dpi=100, facecolor='#0f172a')\n"
+            "plt.close(fig)\n"
+        )
+
+    if any(k in goal_lower for k in ("category", "product", "region", "regional", "north", "south", "east", "west")):
+        col_group = 'Region' if any(k in goal_lower for k in ("region", "regional", "north", "south", "east", "west")) else 'Category'
+        return (
+            f"df = pd.read_csv(CSV_PATH)\n"
+            f"df = df.drop_duplicates().copy()\n"
+            f"if '{col_group}' in df.columns:\n"
+            f"    df['{col_group}'] = df['{col_group}'].astype(str).str.strip().str.title()\n"
+            f"df.to_csv(CLEANED_CSV_PATH, index=False)\n"
+            f"deliv = df[df['Order_Status'] == 'Delivered'] if 'Order_Status' in df.columns else df\n"
+            f"grp = deliv.groupby('{col_group}')['Total_Sales'].agg(['sum', 'mean', 'count']).round(2).rename(columns={{'sum':'Total_Revenue', 'mean':'AOV', 'count':'Orders'}}).sort_values(by='Total_Revenue', ascending=False)\n"
+            f"print('=== {col_group.upper()} REVENUE BREAKDOWN ===')\n"
+            f"print(grp)\n"
+            f"fig, ax = plt.subplots(figsize=(8.5, 4.2))\n"
+            f"grp['Total_Revenue'].plot(kind='bar', ax=ax, color='#38bdf8')\n"
+            f"ax.set_title('{col_group} Net Delivered Revenue (INR)', fontsize=12, fontweight='bold', color='white')\n"
+            f"ax.set_ylabel('Revenue (INR)', color='white')\n"
+            f"ax.tick_params(colors='white')\n"
+            f"plt.tight_layout()\n"
+            f"fig.savefig(CHART_PATH, dpi=100, facecolor='#0f172a')\n"
+            f"plt.close(fig)\n"
+        )
+
+    return (
+        "df = pd.read_csv(CSV_PATH)\n"
+        "df = df.drop_duplicates().copy()\n"
+        "for col in ['Region', 'Category', 'Order_Status', 'Payment_Method']:\n"
+        "    if col in df.columns: df[col] = df[col].astype(str).str.strip().str.title()\n"
+        "df = df.fillna(df.median(numeric_only=True))\n"
+        "df.to_csv(CLEANED_CSV_PATH, index=False)\n"
+        "print('=== EXECUTIVE KPI REPORT ===')\n"
+        "print(f'Total Placed Orders: {len(df):,}')\n"
+        "if 'Order_Status' in df.columns:\n"
+        "    deliv = df[df['Order_Status'] == 'Delivered']\n"
+        "    print(f'Delivered Orders: {len(deliv):,} ({len(deliv)/len(df)*100:.1f}%)')\n"
+        "    print(f'Return/Cancel Rate: {(len(df)-len(deliv))/len(df)*100:.1f}%')\n"
+        "    print(f'Net Delivered Revenue: INR {deliv[\"Total_Sales\"].sum():,.2f}')\n"
+        "    print(f'Average Order Value: INR {deliv[\"Total_Sales\"].mean():,.2f}')\n"
+        "elif 'Total_Sales' in df.columns:\n"
+        "    print(f'Gross Revenue: INR {df[\"Total_Sales\"].sum():,.2f}')\n"
+        "    print(f'Average Order Value: INR {df[\"Total_Sales\"].mean():,.2f}')\n"
+        "fig, ax = plt.subplots(figsize=(8.5, 4.2))\n"
+        "if 'Category' in df.columns and 'Total_Sales' in df.columns:\n"
+        "    top_cat = df.groupby('Category')['Total_Sales'].sum().sort_values(ascending=False)\n"
+        "    top_cat.plot(kind='bar', ax=ax, color='#38bdf8')\n"
+        "    ax.set_title('Top Revenue Driver by Category', fontsize=12, color='white')\n"
+        "elif len(df.select_dtypes(include=[np.number]).columns) > 0:\n"
+        "    num_c = df.select_dtypes(include=[np.number]).columns[0]\n"
+        "    df[num_c].head(8).plot(kind='bar', ax=ax, color='#38bdf8')\n"
+        "    ax.set_title(f'{num_c} Overview', fontsize=12, color='white')\n"
+        "ax.tick_params(colors='white')\n"
+        "plt.tight_layout()\n"
+        "fig.savefig(CHART_PATH, dpi=100, facecolor='#0f172a')\n"
+        "plt.close(fig)\n"
+    )
+
+
 # ==========================================
 # 3. AGENT 2: AST-SANDBOXED CODE, CLEANER & CHART ANALYST
 # ==========================================
@@ -391,25 +543,7 @@ def pandas_analyst_agent(state: UniversalAgentState) -> Dict[str, Any]:
             clean_code = clean_llm_text(raw_reply).replace("```python", "").replace("```", "").strip()
         except Exception:
             # Deterministic Python data analyst code fallback
-            clean_code = (
-                "df = pd.read_csv(CSV_PATH)\n"
-                "df = df.drop_duplicates().copy()\n"
-                "df = df.fillna(df.median(numeric_only=True))\n"
-                "df.to_csv(CLEANED_CSV_PATH, index=False)\n"
-                "print(f'=== EXECUTIVE DATA SUMMARY ===')\n"
-                "print(f'Total Records: {len(df):,}')\n"
-                "num_cols = df.select_dtypes(include=[np.number]).columns\n"
-                "if len(num_cols) > 0:\n"
-                "    print(f'{num_cols[0]} Total: {df[num_cols[0]].sum():,.2f}')\n"
-                "    print(f'{num_cols[0]} Mean: {df[num_cols[0]].mean():,.2f}')\n"
-                "fig, ax = plt.subplots(figsize=(7.5, 3.8))\n"
-                "if len(num_cols) > 0:\n"
-                "    df[num_cols[0]].head(8).plot(kind='bar', ax=ax, color='#38bdf8')\n"
-                "ax.set_title('Metric Overview', color='white')\n"
-                "plt.tight_layout()\n"
-                "fig.savefig(CHART_PATH, dpi=100)\n"
-                "plt.close(fig)\n"
-            )
+            clean_code = generate_resilient_analysis_code(state.get("user_goal", ""))
 
     stdout_buffer = io.StringIO()
     exec_globals = {
