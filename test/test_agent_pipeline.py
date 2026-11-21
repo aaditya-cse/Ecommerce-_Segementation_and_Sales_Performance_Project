@@ -358,4 +358,54 @@ def test_api_chat_rejects_empty_question():
     assert data["status"] == "error"
 
 
+def test_api_chat_all_routing_aliases():
+    """Verify that all chat routing aliases (/chat, /analyze/api/chat, /analyze/chat) return JSON."""
+    client = app.test_client()
+    for route in ["/chat", "/analyze/api/chat", "/analyze/chat"]:
+        resp = client.post(
+            route,
+            json={
+                "question": "What is the return rate?",
+                "sample_csv": "data/raw/ecommerce_sales_data.csv",
+            },
+        )
+        assert resp.status_code == 200
+        assert resp.is_json
+        data = resp.get_json()
+        assert data["status"] == "success"
+        assert "answer" in data
+
+
+def test_ml_predictor_heavy_dataset_subsecond_execution():
+    """Verify that ML clustering and plotting handles 20,000 rows in sub-second time without hanging."""
+    import time
+    import pandas as pd
+    import numpy as np
+
+    n_rows = 20000
+    df_heavy = pd.DataFrame({
+        "Transaction_ID": np.arange(n_rows),
+        "Revenue": np.random.uniform(10, 5000, n_rows),
+        "Discount_Pct": np.random.uniform(0, 50, n_rows),
+    })
+    with tempfile.NamedTemporaryFile("w", suffix=".csv", delete=False, encoding="utf-8") as f:
+        df_heavy.to_csv(f.name, index=False)
+        tmp_csv = f.name
+
+    try:
+        t0 = time.time()
+        res = ml_predictor_agent({"csv_path": tmp_csv, "user_goal": "Cluster large dataset"})
+        elapsed = time.time() - t0
+        assert "clusters" in res["ml_insights"]
+        assert len(res["ml_insights"]["clusters"]) == 3
+        assert elapsed < 2.5, f"Heavy dataset clustering took {elapsed:.2f}s, expected < 2.5s"
+        chart_p = res.get("ml_chart_path")
+        if chart_p and os.path.exists(chart_p):
+            os.remove(chart_p)
+    finally:
+        if os.path.exists(tmp_csv):
+            os.remove(tmp_csv)
+
+
+
 

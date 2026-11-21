@@ -629,19 +629,39 @@ def ml_predictor_agent(state: UniversalAgentState) -> Dict[str, Any]:
             X_norm = (X_raw - mins) / ranges
             
             k = 3 if len(df) >= 15 else 2
-            indices = np.linspace(0, len(df) - 1, k, dtype=int)
-            centroids = X_norm[indices].copy()
             
-            labels = np.zeros(len(df), dtype=int)
+            # Sub-second clustering for large datasets (fit centroids on representative sample)
+            fit_sample_size = min(len(df), 10000)
+            if len(df) > fit_sample_size:
+                sample_idx = np.linspace(0, len(df) - 1, fit_sample_size, dtype=int)
+                X_fit = X_norm[sample_idx]
+            else:
+                X_fit = X_norm
+
+            indices = np.linspace(0, len(X_fit) - 1, k, dtype=int)
+            centroids = X_fit[indices].copy()
+            
+            fit_labels = np.zeros(len(X_fit), dtype=int)
             for _ in range(15):
-                dists = np.linalg.norm(X_norm[:, None, :] - centroids[None, :, :], axis=2)
+                dists = np.linalg.norm(X_fit[:, None, :] - centroids[None, :, :], axis=2)
                 new_labels = np.argmin(dists, axis=1)
-                if np.array_equal(labels, new_labels):
+                if np.array_equal(fit_labels, new_labels):
                     break
-                labels = new_labels
+                fit_labels = new_labels
                 for j in range(k):
-                    if np.any(labels == j):
-                        centroids[j] = X_norm[labels == j].mean(axis=0)
+                    if np.any(fit_labels == j):
+                        centroids[j] = X_fit[fit_labels == j].mean(axis=0)
+
+            # Assign labels across full dataset (chunked to prevent OOM on heavy datasets)
+            if len(df) > fit_sample_size:
+                labels = np.zeros(len(df), dtype=int)
+                chunk_sz = 20000
+                for start in range(0, len(df), chunk_sz):
+                    end = min(start + chunk_sz, len(df))
+                    chunk_dists = np.linalg.norm(X_norm[start:end, None, :] - centroids[None, :, :], axis=2)
+                    labels[start:end] = np.argmin(chunk_dists, axis=1)
+            else:
+                labels = fit_labels
 
             cluster_means = [float(X_raw[labels == j, 0].mean()) if np.any(labels == j) else 0.0 for j in range(k)]
             sorted_order = np.argsort(cluster_means)
@@ -686,7 +706,7 @@ def ml_predictor_agent(state: UniversalAgentState) -> Dict[str, Any]:
                 r_squared = max(0.0, min(1.0, 1.0 - (ss_res / (ss_tot + 1e-9))))
                 growth_velocity = ((y_pred[-1] - y_pred[0]) / (abs(y_pred[0]) + 1e-9)) * 100
                 
-                proj_horizon = max(3, int(len(y_vals) * 0.25))
+                proj_horizon = min(50, max(3, int(len(y_vals) * 0.25)))
                 proj_x = np.arange(len(y_vals), len(y_vals) + proj_horizon, dtype=float)
                 proj_y = slope * proj_x + intercept
                 
@@ -707,15 +727,25 @@ def ml_predictor_agent(state: UniversalAgentState) -> Dict[str, Any]:
             fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(11.5, 4.2))
             fig.patch.set_facecolor("#0b1324")
             
+            # Representative points for scatter visualization (capped at 2500 points for sub-100ms render)
+            max_scatter_pts = 2500
+            if len(df) > max_scatter_pts:
+                scatter_idx = np.random.RandomState(42).choice(len(df), max_scatter_pts, replace=False)
+                X_scatter = X_raw[scatter_idx]
+                labels_scatter = remapped_labels[scatter_idx]
+            else:
+                X_scatter = X_raw
+                labels_scatter = remapped_labels
+
             palette = ["#f59e0b", "#38bdf8", "#10b981"]
             for j in range(k):
-                mask = (remapped_labels == j)
+                mask = (labels_scatter == j)
                 c_name = segment_names[j].split(":")[1].strip() if ":" in segment_names[j] else segment_names[j]
                 ax1.scatter(
-                    X_raw[mask, 0],
-                    X_raw[mask, 1],
+                    X_scatter[mask, 0],
+                    X_scatter[mask, 1],
                     color=palette[j % len(palette)],
-                    label=f"{c_name} ({np.sum(mask)})",
+                    label=f"{c_name} ({np.sum(remapped_labels == j)})",
                     alpha=0.8,
                     edgecolors="#0f172a",
                     s=55
@@ -733,15 +763,28 @@ def ml_predictor_agent(state: UniversalAgentState) -> Dict[str, Any]:
                 spine.set_color("#334155")
                 
             ax2.set_facecolor("#030712")
-            ax2.plot(x_vals, y_vals, color="#64748b", alpha=0.5, label="Observed", linewidth=1.2)
+            # Downsample observed time-series points to max 500 points for fast rendering
+            if len(y_vals) > 500:
+                sub_idx = np.linspace(0, len(y_vals) - 1, 500, dtype=int)
+                plot_x = x_vals[sub_idx]
+                plot_y = y_vals[sub_idx]
+                plot_pred = y_pred[sub_idx]
+            else:
+                plot_x = x_vals
+                plot_y = y_vals
+                plot_pred = y_pred
+
+            ax2.plot(plot_x, plot_y, color="#64748b", alpha=0.5, label="Observed", linewidth=1.2)
             if "forecast" in ml_insights:
-                ax2.plot(x_vals, y_pred, color="#38bdf8", label=f"Trend Fit (R²={ml_insights['forecast']['r_squared']})", linewidth=2.2)
+                ax2.plot(plot_x, plot_pred, color="#38bdf8", label=f"Trend Fit (R²={ml_insights['forecast']['r_squared']})", linewidth=2.2)
                 ax2.plot(proj_x, proj_y, color="#34d399", linestyle="--", label="Projected Forward", linewidth=2.2)
                 band = np.std(y_vals) * 0.75
+                combined_x = np.concatenate([plot_x, proj_x])
+                combined_y = np.concatenate([plot_pred, proj_y])
                 ax2.fill_between(
-                    np.concatenate([x_vals, proj_x]),
-                    np.concatenate([y_pred, proj_y]) - band,
-                    np.concatenate([y_pred, proj_y]) + band,
+                    combined_x,
+                    combined_y - band,
+                    combined_y + band,
                     color="#38bdf8",
                     alpha=0.12,
                     label="90% Confidence Interval"

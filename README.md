@@ -4,7 +4,7 @@
 [![LangGraph](https://img.shields.io/badge/Orchestration-LangGraph_5--Agent_Swarm-orange.svg)](https://langchain-ai.github.io/langgraph/)
 [![Groq LPU](https://img.shields.io/badge/Inference-Groq_LPU_%2B_Offline_Engine-f55036.svg)](https://groq.com/)
 [![Flask](https://img.shields.io/badge/Framework-Flask_3.1+-green.svg?logo=flask&logoColor=white)](https://flask.palletsprojects.com/)
-[![Tests](https://img.shields.io/badge/pytest-28%20passed%20(100%25)-brightgreen.svg)](test/test_agent_pipeline.py)
+[![Tests](https://img.shields.io/badge/pytest-32%20passed%20(100%25)-brightgreen.svg)](test/test_agent_pipeline.py)
 [![WCAG 2.1 AA](https://img.shields.io/badge/Accessibility-WCAG_2.1_AA-purple.svg)](https://www.w3.org/WAI/WCAG21/quickref/)
 [![OWASP Hardened](https://img.shields.io/badge/Security-AST_Sandbox_%2B_SAFE__BUILTINS_%2B_CSP-darkgreen.svg)](api/security.py)
 
@@ -105,9 +105,9 @@ flowchart TD
 
 ---
 
-## 🧪 Comprehensive Test Suite (28 Unit Tests • 100% Pass)
+## 🧪 Comprehensive Test Suite (32 Unit Tests • 100% Pass)
 
-The test suite covers negative testing, security injection attacks, AST evasions, edge cases, and all 5 agents:
+The test suite covers negative testing, security injection attacks, AST evasions, heavy dataset scalability, routing aliases, and all 5 agents:
 
 ```bash
 ============================= test session starts =============================
@@ -143,8 +143,12 @@ test/test_agent_pipeline.py::test_safe_builtins_whitelist_integrity PASSED
 test/test_agent_pipeline.py::test_ml_predictor_handles_empty_or_missing_csv PASSED
 test/test_agent_pipeline.py::test_financial_modeler_handles_missing_file PASSED
 test/test_agent_pipeline.py::test_compute_data_health_score_single_row PASSED
+test/test_agent_pipeline.py::test_api_chat_returns_factual_answers PASSED
+test/test_agent_pipeline.py::test_api_chat_rejects_empty_question PASSED
+test/test_agent_pipeline.py::test_api_chat_all_routing_aliases PASSED
+test/test_agent_pipeline.py::test_ml_predictor_heavy_dataset_subsecond_execution PASSED
 
-============================= 28 passed in 5.12s ==============================
+============================= 32 passed in 6.99s ==============================
 ```
 
 ---
@@ -166,7 +170,7 @@ test/test_agent_pipeline.py::test_compute_data_health_score_single_row PASSED
 │       ├── edtech_student_enrollments.csv    # EdTech cohort benchmark dataset
 │       └── food_delivery_operations.csv      # Logistics/operations benchmark dataset
 ├── test/
-│   ├── test_agent_pipeline.py  # 28 comprehensive automated unit & security tests
+│   ├── test_agent_pipeline.py  # 32 comprehensive automated unit & security tests
 │   └── __init__.py
 ├── app.py                    # Top-level entry point runner
 ├── pytest.ini                # Pytest test suite configuration
@@ -213,7 +217,7 @@ python api/index.py
 ```
 Open **[http://127.0.0.1:5000](http://127.0.0.1:5000)** in your browser.
 
-### 4. Run the 28-Test Suite
+### 4. Run the 32-Test Suite
 
 ```bash
 pytest -v
@@ -231,4 +235,4 @@ pytest -v
 | **Execution Safety** | Vulnerable raw `exec()` / `eval()` | **Static AST Security Inspection + SAFE_BUILTINS whitelist** |
 | **Financial Modeling** | Static descriptive summaries | **What-If Sensitivity Engine** (+5%, +12%, +22% margin expansion scenarios) |
 | **Performance & UI** | Clunky static tables | **60FPS 3D Constellation UI, Specular Glare Tilt, Tactile Audio & Pitch Deck** |
-| **Test Verification** | Minimal or 0 unit tests | **28 Automated Unit & Security Tests (100% Pass Rate)** |
+| **Test Verification** | Minimal or 0 unit tests | **32 Automated Unit & Security Tests (100% Pass Rate)** |

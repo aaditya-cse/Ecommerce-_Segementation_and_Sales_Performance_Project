@@ -45,7 +45,7 @@ except ImportError:
     )
 
 app = Flask(__name__)
-app.config["MAX_CONTENT_LENGTH"] = 5 * 1024 * 1024
+app.config["MAX_CONTENT_LENGTH"] = 25 * 1024 * 1024
 logging.basicConfig(level=logging.INFO)
 
 RATE_LIMITER = SlidingWindowRateLimiter(max_requests=30, window_seconds=60)
@@ -2329,31 +2329,25 @@ DASHBOARD_TEMPLATE = r"""
                     switchView(mode, this);
                 });
             });
-            const toggleTrace = document.getElementById("toggle-trace-btn");
-            if (toggleTrace) {
-                toggleTrace.addEventListener("click", toggleTraceDrawer);
-            }
-            const copyBtn = document.getElementById("copy-btn");
-            if (copyBtn) {
-                copyBtn.addEventListener("click", copyReport);
-            }
-            const copyCodeBtn = document.getElementById("copy-code-btn");
-            if (copyCodeBtn) {
-                copyCodeBtn.addEventListener("click", copyCode);
-            }
             const searchInput = document.getElementById("table-search");
             if (searchInput) {
                 searchInput.addEventListener("input", filterCleanTable);
             }
         });
 
-        function toggleTraceDrawer() {
+        function toggleTraceDrawer(e) {
+            if (e && e.preventDefault) e.preventDefault();
             playBlip(600, 0.03);
             const tr = document.getElementById("trace-section");
             const btn = document.getElementById("toggle-trace-btn");
             if (!tr || !btn) return;
-            const isHidden = tr.classList.toggle("hidden");
-            btn.innerHTML = isHidden ? "Show AST-Verified Code &amp; Trace &#9662;" : "Hide AST-Verified Code &amp; Trace &#9652;";
+            if (tr.classList.contains("hidden")) {
+                tr.classList.remove("hidden");
+                btn.innerHTML = "Hide AST-Verified Code &amp; Trace &#9652;";
+            } else {
+                tr.classList.add("hidden");
+                btn.innerHTML = "Show AST-Verified Code &amp; Trace &#9662;";
+            }
         }
 
         function filterCleanTable() {
@@ -2373,22 +2367,56 @@ DASHBOARD_TEMPLATE = r"""
             playBlip(900, 0.05);
             const rawBox = document.getElementById("raw-markdown");
             if (!rawBox) return;
-            navigator.clipboard.writeText(rawBox.value).then(() => {
-                const btn = document.getElementById("copy-btn");
-                btn.textContent = "Copied!";
-                setTimeout(() => { btn.textContent = "Copy Report"; }, 2000);
-            });
+            const textToCopy = rawBox.value;
+            const btn = document.getElementById("copy-btn");
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(textToCopy).then(() => {
+                    if (btn) btn.textContent = "Copied!";
+                    setTimeout(() => { if (btn) btn.textContent = "Copy Report"; }, 2000);
+                }).catch(() => {
+                    rawBox.select();
+                    document.execCommand("copy");
+                    if (btn) btn.textContent = "Copied!";
+                    setTimeout(() => { if (btn) btn.textContent = "Copy Report"; }, 2000);
+                });
+            } else {
+                rawBox.select();
+                document.execCommand("copy");
+                if (btn) btn.textContent = "Copied!";
+                setTimeout(() => { if (btn) btn.textContent = "Copy Report"; }, 2000);
+            }
         }
 
         function copyCode() {
             playBlip(900, 0.05);
             const codeEl = document.getElementById("agent-code-block");
             if (!codeEl) return;
-            navigator.clipboard.writeText(codeEl.innerText).then(() => {
-                const btn = document.getElementById("copy-code-btn");
-                btn.textContent = "Code Copied!";
-                setTimeout(() => { btn.textContent = "Copy Python Code"; }, 2000);
-            });
+            const textToCopy = codeEl.innerText;
+            const btn = document.getElementById("copy-code-btn");
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(textToCopy).then(() => {
+                    if (btn) btn.textContent = "Code Copied!";
+                    setTimeout(() => { if (btn) btn.textContent = "Copy Python Code"; }, 2000);
+                }).catch(() => {
+                    const ta = document.createElement("textarea");
+                    ta.value = textToCopy;
+                    document.body.appendChild(ta);
+                    ta.select();
+                    document.execCommand("copy");
+                    document.body.removeChild(ta);
+                    if (btn) btn.textContent = "Code Copied!";
+                    setTimeout(() => { if (btn) btn.textContent = "Copy Python Code"; }, 2000);
+                });
+            } else {
+                const ta = document.createElement("textarea");
+                ta.value = textToCopy;
+                document.body.appendChild(ta);
+                ta.select();
+                document.execCommand("copy");
+                document.body.removeChild(ta);
+                if (btn) btn.textContent = "Code Copied!";
+                setTimeout(() => { if (btn) btn.textContent = "Copy Python Code"; }, 2000);
+            }
         }
 
         function downloadReport() {
@@ -2490,34 +2518,38 @@ DASHBOARD_TEMPLATE = r"""
 
             try {
                 let response = null;
-                try {
-                    response = await fetch("/api/chat", {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json", "Accept": "application/json" },
-                        body: JSON.stringify({
-                            question: query,
-                            sample_csv: sampleCsv,
-                            uploaded_filename: uploadedFilename
-                        })
-                    });
-                } catch (fetchErr) {
-                    response = await fetch("api/chat", {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json", "Accept": "application/json" },
-                        body: JSON.stringify({
-                            question: query,
-                            sample_csv: sampleCsv,
-                            uploaded_filename: uploadedFilename
-                        })
-                    });
+                const endpoints = ["/api/chat", "api/chat", "/chat", "chat", "/analyze/api/chat", "/analyze/chat"];
+                for (const ep of endpoints) {
+                    try {
+                        const res = await fetch(ep, {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json", "Accept": "application/json" },
+                            body: JSON.stringify({
+                                question: query,
+                                sample_csv: sampleCsv,
+                                uploaded_filename: uploadedFilename
+                            })
+                        });
+                        const ct = res.headers.get("content-type") || "";
+                        if (res.ok && ct.includes("application/json")) {
+                            response = res;
+                            break;
+                        } else if (!response) {
+                            response = res;
+                        }
+                    } catch (fetchErr) {}
                 }
 
                 let data;
-                const contentType = response.headers.get("content-type") || "";
-                if (contentType.includes("application/json")) {
-                    data = await response.json();
+                if (!response) {
+                    data = { status: "error", error: "Could not reach agent backend. Please check server connectivity." };
                 } else {
-                    data = { status: "error", error: "Backend server responded with non-JSON format (" + response.status + ")" };
+                    const contentType = response.headers.get("content-type") || "";
+                    if (contentType.includes("application/json")) {
+                        data = await response.json();
+                    } else {
+                        data = { status: "error", error: "Swarm backend responded with non-JSON format (" + response.status + "). Please refresh and try again." };
+                    }
                 }
 
                 if (typingIndicator) typingIndicator.classList.add("hidden");
@@ -2708,6 +2740,8 @@ def answer_followup_query(csv_path: str, query: str) -> str:
 
 @app.route("/api/chat", methods=["POST"])
 @app.route("/chat", methods=["POST"])
+@app.route("/analyze/api/chat", methods=["POST"])
+@app.route("/analyze/chat", methods=["POST"])
 def api_chat():
     """Interactive follow-up query endpoint for the 5-Agent Swarm."""
     client_ip = request.headers.get("X-Forwarded-For", request.remote_addr or "127.0.0.1").split(",")[0].strip()
@@ -2766,6 +2800,9 @@ def api_chat():
 @app.route("/", defaults={"path": ""}, methods=["GET", "POST"])
 @app.route("/<path:path>", methods=["GET", "POST"])
 def analyze(path):
+    if "chat" in path.lower() or (request.is_json and request.method == "POST"):
+        return api_chat()
+
     charts_b64 = []
     if request.method == "GET":
         return render_template_string(HOME_TEMPLATE)
@@ -2795,7 +2832,7 @@ def analyze(path):
             goal=request.form.get("user_goal", ""),
         ), 429
 
-    if request.content_length and request.content_length > 5 * 1024 * 1024:
+    if request.content_length and request.content_length > 25 * 1024 * 1024:
         return render_template_string(
             DASHBOARD_TEMPLATE,
             report_raw="",
@@ -2814,7 +2851,7 @@ def analyze(path):
             scenario_models={},
             retry_count=1,
             dataset_label="Payload Too Large",
-            error="Payload Too Large: Maximum allowed upload size is 5 MB.",
+            error="Payload Too Large: Maximum allowed upload size is 25 MB.",
             goal=request.form.get("user_goal", "")[:500],
         ), 413
 
