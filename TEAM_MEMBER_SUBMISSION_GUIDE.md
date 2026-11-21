@@ -1,4 +1,4 @@
-# 🚨 Team Member Individual Submission Guide — HackQube
+# 🚨 Team Member Individual Submission Guide — Apex HackQube
 ## Step-by-Step Instructions for EVERY Team Member
 
 > [!CAUTION]
@@ -71,12 +71,12 @@ When the form opens, paste the following answers:
 
 | Google Form Field | Your Input |
 | :--- | :--- |
-| **Team Name** | `Team HackQube` |
+| **Team Name** | `Apex HackQube` |
 | **Your Name** | `<YOUR FULL NAME>` |
 | **Project Title** | `AgentOps BI Studio` |
 | **Project Tagline** | `Autonomous 5-Agent Multi-Agent Swarm for Enterprise E-Commerce Intelligence` |
 | **Project Repo URL** | `https://github.com/<YOUR_USERNAME>/Ecommerce-_Segementation_and_Sales_Performance_Project` |
-| **Presentation Link** | `https://drive.google.com/file/d/1B8Q5DaACRMvYlM_RmX15Es5T9sr0rO4X/view?usp=sharing` (or `https://docs.google.com/presentation/d/1wVW9v0u4WCwyx49aPKY3M9Mh2DkFNCZzUtvfvQuGTuQ/edit`) |
+| **Presentation Link** | `https://drive.google.com/file/d/1AblgKGlnSa7Ee54aVt3bQsTRni_cD8d_/view?usp=sharing` (or `https://docs.google.com/presentation/d/1wVW9v0u4WCwyx49aPKY3M9Mh2DkFNCZzUtvfvQuGTuQ/edit`) |
 | **Project Description** | *(Copy from `PROJECT_SUBMISSION_KIT.md` Section 2 or 3)* |
 | **Tech Stack** | `Python, LangGraph, LangChain, Groq LLMs, NumPy, Pandas, Scikit-Learn, Flask, AST Sandbox, Web Audio API` |
 | **Submission Proof** | Upload the screenshot captured in **Step 2**. |
@@ -91,4 +91,4 @@ Once you click **Submit** on Google Form:
 3. Drop a message in your team chat: *"Submitted individually! 🚀"*.
 
 ---
-*Created for Team HackQube — Let's bring home the 1st prize! 🏆*
+*Created for Team Apex HackQube — Let's bring home the 1st prize! 🏆*

@@ -1,4 +1,4 @@
-# 🏆 Hackathon Project Submission Kit — Team HackQube
+# 🏆 Hackathon Project Submission Kit — Team Apex HackQube
 ## Project: **AgentOps BI Studio**
 ### *Autonomous 5-Agent Multi-Agent Swarm for Enterprise E-Commerce Intelligence*
 
@@ -16,9 +16,9 @@
 - **Project Name:** `AgentOps BI Studio`
 - **Short Tagline:** `Autonomous 5-Agent Multi-Agent Swarm for Enterprise E-Commerce Intelligence`
 - **Track / Theme:** `Autonomous AI Agents / Enterprise Data Intelligence / FinTech & E-Commerce`
-- **Team Name:** `Team HackQube`
+- **Team Name:** `Apex HackQube` (or `Team Apex HackQube`)
 - **Primary GitHub Repository:** `https://github.com/aaditya-cse/Ecommerce-_Segementation_and_Sales_Performance_Project`
-- **Presentation Deck (Google Drive Link):** `https://drive.google.com/file/d/1B8Q5DaACRMvYlM_RmX15Es5T9sr0rO4X/view?usp=sharing`
+- **Presentation Deck (Google Drive Link):** `https://drive.google.com/file/d/1AblgKGlnSa7Ee54aVt3bQsTRni_cD8d_/view?usp=sharing`
 - **Presentation Deck (Google Slides Link):** `https://docs.google.com/presentation/d/1wVW9v0u4WCwyx49aPKY3M9Mh2DkFNCZzUtvfvQuGTuQ/edit`
 - **Local Presentation File:** `AgentOps_BI_Studio_Presentation.pptx` (included in repository root)
 - **Interactive Web Pitch Deck:** `pitch_deck.html` (viewable in any web browser)

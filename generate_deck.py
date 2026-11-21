@@ -27,7 +27,7 @@ def set_slide_background(slide):
     fill.fore_color.rgb = COLOR_BG
 
 
-def add_header(slide, title_text, category="AGY HACKATHON 2026 • TEAM HACKQUBE"):
+def add_header(slide, title_text, category="AGY HACKATHON 2026 • TEAM APEX HACKQUBE"):
     """Adds a standard executive header to the slide."""
     # Category tag
     cat_box = slide.shapes.add_textbox(Inches(0.8), Inches(0.4), Inches(11.7), Inches(0.4))
@@ -73,7 +73,10 @@ def add_card(slide, left, top, width, height, title="", border_color=None):
     return card
 
 
-def build_deck(output_pptx="AgentOps_BI_Studio_Presentation.pptx"):
+def build_deck(output_pptx=None):
+    if output_pptx is None:
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        output_pptx = os.path.join(base_dir, "AgentOps_BI_Studio_Presentation.pptx")
     prs = Presentation()
     prs.slide_width = Inches(13.333)
     prs.slide_height = Inches(7.5)
@@ -111,7 +114,7 @@ def build_deck(output_pptx="AgentOps_BI_Studio_Presentation.pptx"):
     meta_box = s1.shapes.add_textbox(Inches(1.5), Inches(4.5), Inches(10.333), Inches(1.2))
     tf_meta = meta_box.text_frame
     pm1 = tf_meta.paragraphs[0]
-    pm1.text = "🏆 HACKATHON 2026 SUBMISSION  |  TEAM HACKQUBE"
+    pm1.text = "🏆 HACKATHON 2026 SUBMISSION  |  TEAM APEX HACKQUBE"
     pm1.font.size = Pt(13)
     pm1.font.bold = True
     pm1.font.color.rgb = COLOR_EMERALD
@@ -524,7 +527,7 @@ def build_deck(output_pptx="AgentOps_BI_Studio_Presentation.pptx"):
     # ==========================================
     s12 = prs.slides.add_slide(blank_layout)
     set_slide_background(s12)
-    add_header(s12, "Project Submission Summary | Team HackQube", "FINAL VERIFICATION • READY FOR SUBMISSION")
+    add_header(s12, "Project Submission Summary | Team Apex HackQube", "FINAL VERIFICATION • READY FOR SUBMISSION")
 
     add_card(s12, Inches(1.5), Inches(1.6), Inches(10.333), Inches(5.2), "Executive Submission Profile", COLOR_CYAN)
     tb12 = s12.shapes.add_textbox(Inches(1.8), Inches(2.2), Inches(9.7), Inches(4.4))
@@ -532,7 +535,7 @@ def build_deck(output_pptx="AgentOps_BI_Studio_Presentation.pptx"):
     tb12.text_frame.text = (
         "🚀 PROJECT NAME: AgentOps BI Studio\n"
         "🏷️ TRACK: Autonomous AI Agents / Data Intelligence\n"
-        "👥 TEAM: Team HackQube (Individual Submissions Ready)\n\n"
+        "👥 TEAM: Team Apex HackQube (Individual Submissions Ready)\n\n"
         "🔗 GITHUB REPOSITORY:\n"
         "https://github.com/aaditya-cse/Ecommerce-_Segementation_and_Sales_Performance_Project\n\n"
         "🌟 CORE HIGHLIGHTS:\n"
